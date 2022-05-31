@@ -1,0 +1,223 @@
+local clmain = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CL_MAIN_GameScript")) or wait()
+if getgenv().Key == "earlyaccess" then
+    clmain.newAlert("Flooded v3 Loaded!",Color3.fromRGB(0,255,100))
+else
+    game.Players.LocalPlayer:Kick("Incorrect Key.")
+    wait(1)
+    game:Shutdown()
+end
+local gmt = getrawmetatable(game)
+setreadonly(gmt,false)
+local oldindex = gmt.__index
+game:GetService("Players").LocalPlayer.PlayerGui.GameGui.HUD.GameStats.Ingame.Info.Time.Count.Text = "RIPECHEESE"
+gmt.__index = newcclosure(function(self,b)
+    if b=="WalkSpeed"then
+        return 
+    end
+    if b == "JumpPower" then
+       return 50 
+    end
+    return oldindex(self,b)
+end)
+    getgenv().oof = false
+    local a = game.Players.LocalPlayer.PlayerGui.GameGui.VoteMap
+    local b = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
+    function vote()
+        local c = {[1] = b, [2] = 8, [3] = 0}
+        game:GetService("ReplicatedStorage").Remote.UpdMapVote:FireServer(unpack(c))
+        wait()
+        local c = {[1] = b, [2] = 2, [3] = 0}
+        game:GetService("ReplicatedStorage").Remote.UpdMapVote:FireServer(unpack(c))
+    end
+    local d =
+        a:GetPropertyChangedSignal("Visible"):Connect(
+        function(e)
+            wait(math.random(0, 1))
+            if a.Visible == true and getgenv().oof == true then
+                print("Voting..")
+                vote()
+            end
+        end
+    )
+print("Loaded!")
+local lp = game.Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+local TS = game:GetService("TweenService")
+local function Time(targetpos)
+    local tme = (targetpos - lp.Character.HumanoidRootPart.Position).Magnitude / math.random(16,20)
+    return tme
+end
+local function tween(pos)
+    local toof = TS:Create(lp.Character.HumanoidRootPart, TweenInfo.new(Time(pos),Enum.EasingStyle.Linear,Enum.EasingDirection.Out), {CFrame = CFrame.new(pos)})
+    toof:Play()
+    return toof
+end
+
+
+getgenv().active = false
+spawn(function()
+while wait() do
+local function oof()
+    print(game.Workspace.Multiplayer:WaitForChild("Map").Name)
+    wait(1)
+    Map = workspace.Multiplayer:WaitForChild("Map")
+    for i,v in pairs(Map:GetDescendants()) do
+        if v.Name == "Handle" then
+            v:Destroy()
+        end
+    end
+    if Map:FindFirstChild("Settings") ~= nil then
+        print(Map.Settings.MapName.Value)
+    end
+    if Map:FindFirstChild("ExitRegion",true) then
+        local oos = tween(Map:FindFirstChild("ExitRegion",true).Position,Map:FindFirstChild("ExitRegion",true).CFrame)
+        oos.Completed:wait()
+        wait()
+        Map:FindFirstChild("ExitRegion",true):Destroy()
+        if getgenv().active == true then
+            oof()
+        end
+    end
+    for i,v in pairs(Map:GetDescendants()) do
+        if v:IsA("Part") and v:FindFirstChild("TouchInterest") ~= nil and v.Parent ~= nil then
+            local toof = tween(v.Position,v.CFrame)
+            toof.Completed:wait()
+            v:Destroy()
+        end
+    end
+end
+if getgenv().active == true then
+    oof()
+end
+end
+end)
+local UIS = game:GetService'UserInputService'
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local colors = {
+    SchemeColor = Color3.fromRGB(0,100,255),
+    Background = Color3.fromRGB(40, 40, 40),
+    Header = Color3.fromRGB(30, 30, 30),
+    TextColor = Color3.fromRGB(255,255,255),
+    ElementColor = Color3.fromRGB(60, 60, 60)
+}
+local Window = Library.CreateLib("Flood GUI v3", colors)
+local a = Window:NewTab("Auto")
+local l = Window:NewTab("Local-Player")
+local b = Window:NewTab("Blatant")
+local t = Window:NewTab("TAS")
+local auto = a:NewSection("Auto")
+local loc = l:NewSection("Local Player")
+local blatant = b:NewSection("Blatant")
+local tas = t:NewSection("TAS")
+UIS.InputBegan:connect(function(UserInput)
+    if UserInput.KeyCode == Enum.KeyCode[game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Options.Pages.Keybinds.SWIMJUMP.Status.Text] then
+        lp.Character.HumanoidRootPart.SwimVel.Velocity = Vector3.new(0,20,0)
+    end
+end)
+UIS.InputEnded:connect(function(UserInput)
+    if UserInput.KeyCode == Enum.KeyCode[game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Options.Pages.Keybinds.SWIMJUMP.Status.Text] then
+        lp.Character.HumanoidRootPart.SwimVel.Velocity = Vector3.new(0,0,0)
+    end
+end)
+UIS.InputBegan:connect(function(UserInput)
+    if UserInput.KeyCode == Enum.KeyCode[game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Options.Pages.Keybinds.SWIMDIVE.Status.Text] then
+        lp.Character.HumanoidRootPart.SwimVel.Velocity = Vector3.new(0,-20,0)
+    end
+end)
+UIS.InputEnded:connect(function(UserInput)
+    if UserInput.KeyCode == Enum.KeyCode[game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Options.Pages.Keybinds.SWIMDIVE.Status.Text] then
+        lp.Character.HumanoidRootPart.SwimVel.Velocity = Vector3.new(0,0,0)
+    end
+end)
+loc:NewSlider("Walkspeed", "Change your walkspeed!", 100,20,function(t)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = t
+end)
+UIS.InputBegan:connect(function(UserInput)
+    if UserInput.UserInputType == Enum.UserInputType.Keyboard and UserInput.KeyCode == Enum.KeyCode.Space and getgenv().infjump == true then
+        lp.Character.HumanoidRootPart.Velocity = Vector3.new(lp.Character.HumanoidRootPart.Velocity.X,50,lp.Character.HumanoidRootPart.Velocity.Z)
+    end
+end)
+loc:NewSlider("JumpPower", "Change your jumppower!", 200,50,function(t)
+    game.Players.LocalPlayer.Character.Humanoid.JumpPower = t
+end)
+local save = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir
+getgenv().godmode = false
+spawn(function()while wait() do
+    if getgenv().godmode == true then
+        getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = function()
+            return 0 -- return idea not mine
+        end
+    else
+        getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = save
+    end
+end
+end)
+blatant:NewKeybind("Infinite Air", "Infinite Air/God Mode", Enum.KeyCode.R, function()
+	if getgenv().godmode ~= false then
+        clmain.newAlert("Infinite Air Disabled!",Color3.fromRGB(255,0,0))
+        getgenv().godmode = false
+    else
+        clmain.newAlert("Infinite Air Enabled!",Color3.fromRGB(0,255,0))
+        getgenv().godmode = true
+    end
+end)
+getgenv().noclip = false
+blatant:NewKeybind("Noclip", "Walk through some walls!", Enum.KeyCode.G, function()
+	if getgenv().noclip ~= false then
+        lp.Character:WaitForChild("Torso").CanCollide = getgenv().noclip
+        lp.Character:WaitForChild("HumanoidRootPart").CanCollide = getgenv().noclip
+        clmain.newAlert("Noclip Disabled!",Color3.fromRGB(255,0,0))
+        getgenv().noclip = false
+    else
+        lp.Character:WaitForChild("Torso").CanCollide = getgenv().noclip
+        lp.Character:WaitForChild("HumanoidRootPart").CanCollide = getgenv().noclip
+        clmain.newAlert("Noclip Enabled!",Color3.fromRGB(0,255,0))
+        getgenv().noclip = true
+    end
+end)
+auto:NewToggle("Auto-Play [High XP]", "Requires TAS files", function(t)
+    getgenv().play = t
+end)
+getgenv().play = false
+spawn(function()
+    while wait() do
+        if getgenv().play ~= false then
+            print(game.Workspace.Multiplayer:WaitForChild("NewMap").Name)
+            print(game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value)
+            local success, response = pcall(readfile,game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value .. ".json")
+            if not success then
+                print("TAS file does not exist, Aborting...")
+                break
+            else
+                getgenv().RunName = game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value
+                loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/41f9cf6e0d8f11903b531fa42ec20b6b/raw/44577cec7405ea15721aa65679ede3ae33746828/Tas%2520Run", true))()
+            end
+            print(game.Workspace.Multiplayer:WaitForChild("OldMap").Name)
+        end
+    end
+end)
+blatant:NewToggle("Inf-Jump", "Infinitely Jump!", function(t)
+    getgenv().infjump = t
+end)
+getgenv().infjump = false
+UIS.InputBegan:connect(function(UserInput)
+    if UserInput.UserInputType == Enum.UserInputType.Keyboard and UserInput.KeyCode == Enum.KeyCode.Space and getgenv().infjump == true then
+        lp.Character.HumanoidRootPart.Velocity = Vector3.new(lp.Character.HumanoidRootPart.Velocity.X,50,lp.Character.HumanoidRootPart.Velocity.Z)
+    end
+end)
+auto:NewToggle("Auto-Farm [Low XP]", "Automatically wins for you!", function(t)
+    getgenv().active = t
+end)
+auto:NewToggle("Auto-Vote", "Automatically votes for you!", function(t)
+    getgenv().oof = t
+end)
+tas:NewButton("Rejoin","Rejoin game so you can create another TAS",function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/1gtVMUz3"))()
+end)
+tas:NewButton("Create TAS","Create a TAS, Press then enter lift.",function()
+    loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/87466f9b6f9333449c683643e59fdf94/raw/440d5306e1aa87f1ba20e94be005bffe945e0f8a/Tas", true))()
+end)
+tas:NewTextBox("Run TAS","Run TAS file",function(value)
+    getgenv().RunName = value
+    loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/41f9cf6e0d8f11903b531fa42ec20b6b/raw/44577cec7405ea15721aa65679ede3ae33746828/Tas%2520Run", true))()
+end)
