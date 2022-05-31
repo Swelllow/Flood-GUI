@@ -1,6 +1,5 @@
 local clmain = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CL_MAIN_GameScript")) or wait()
 clmain.newAlert("Flooded v3 Loaded!",Color3.fromRGB(0,255,100))
-print("Correct Key!")
 local gmt = getrawmetatable(game)
 setreadonly(gmt,false)
 local oldindex = gmt.__index
