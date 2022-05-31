@@ -151,13 +151,23 @@ end)
 loc:NewSlider("JumpPower", "Change your jumppower!", 200,50,function(t)
     game.Players.LocalPlayer.Character.Humanoid.JumpPower = t
 end)
+spawn(function()
+    while game.Workspace.Multiplayer:WaitForChild("NewMap") do
+        for i,v in pairs(game.Workspace.Multiplayer:WaitForChild("Map"):GetDescendants()) do
+            if v.Name == "WaterState" then
+                v.Value = "water"
+                v.Changed:Connect(function()
+                    v.Value = "water"
+                end)
+            end
+        end
+    end
+end)
 local save = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir
 getgenv().godmode = false
 spawn(function()while wait() do
     if getgenv().godmode == true then
-        getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = function()
-            return 0 -- return idea not mine
-        end
+        getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = function()end
     else
         getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = save
     end
@@ -197,7 +207,10 @@ spawn(function()
             print(game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value)
             local success, response = pcall(readfile,game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value .. ".json")
             if not success then
-                print("TAS file does not exist, Aborting...")
+                print("TAS file does not exist, Resetting!")
+                game.Players.LocalPlayer.Character.Humanoid.Health = 0
+                wait(1)
+                game:GetService("ReplicatedStorage").Remote.AddedWaiting:FireServer(b)
                 break
             else
                 getgenv().RunName = game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value
@@ -207,7 +220,7 @@ spawn(function()
         end
     end
 end)
-blatant:NewToggle("Inf-Jump", "Infinitely Jump!", function(t)
+blatant:NewToggle("Infinite Jump", "Infinitely Jump!", function(t)
     getgenv().infjump = t
 end)
 getgenv().infjump = false
