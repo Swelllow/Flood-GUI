@@ -115,7 +115,15 @@ local other = k:NewSection("Other")
 other:NewButton("Copy Discord Invite", "Copies discord invite to clipboard!", function()
     setclipboard("https://discord.gg/8N2M9fHJqa")
 end)
+getgenv().ui = true
 other:NewKeybind("ToggleUI", "Toggle UI with this keybind.", Enum.KeyCode.J, function()
+	if getgenv().ui == true then
+		clmain.newAlert("UI Disabled!",Color3.fromRGB(255,0,0))
+		getgenv().ui = false
+	else
+		clmain.newAlert("UI Enabled!",Color3.fromRGB(0,60,255))
+		getgenv().ui = true
+	end
 	Library:ToggleUI()
 end)
 
