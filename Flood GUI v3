@@ -111,9 +111,13 @@ local loc = l:NewSection("Local Player")
 local blatant = b:NewSection("Blatant")
 local tas = t:NewSection("TAS")
 local other = k:NewSection("Other")
+Section:NewButton("Copy Discord Invite", "Copies discord invite to clipboard!", function()
+    setclipboard("https://discord.gg/8N2M9fHJqa")
+end)
 other:NewKeybind("ToggleUI", "Toggle UI with this keybind.", Enum.KeyCode.J, function()
 	Library:ToggleUI()
 end)
+
 UIS.InputBegan:connect(function(UserInput)
     if UserInput.KeyCode == Enum.KeyCode[game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Options.Pages.Keybinds.SWIMJUMP.Status.Text] then
         lp.Character.HumanoidRootPart.SwimVel.Velocity = Vector3.new(0,20,0)
