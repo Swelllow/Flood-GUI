@@ -1,6 +1,7 @@
 local clmain = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CL_MAIN_GameScript")) or wait()
 if getgenv().Key == "earlyaccess" then
     clmain.newAlert("Flooded v3 Loaded!",Color3.fromRGB(0,255,100))
+    print("Correct Key!")
 else
     game.Players.LocalPlayer:Kick("Incorrect Key.")
     wait(1)
