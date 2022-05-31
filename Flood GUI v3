@@ -209,7 +209,8 @@ spawn(function()
             if not success then
                 print("TAS file does not exist, Resetting!")
                 game.Players.LocalPlayer.Character.Humanoid.Health = 0
-                wait()
+                game.Players.LocalPlayer.CharacterAdded:Wait()
+		wait()
                 game:GetService("ReplicatedStorage").Remote.AddedWaiting:FireServer(-game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer())
                 break
             else
