@@ -100,7 +100,7 @@ local colors = {
     TextColor = Color3.fromRGB(255,255,255),
     ElementColor = Color3.fromRGB(60, 60, 60)
 }
-local Window = Library.CreateLib("Flood GUI v3", colors)
+local Window = Library.CreateLib("Flood GUI v3 | By Tomato", colors)
 local a = Window:NewTab("Auto")
 local l = Window:NewTab("Local-Player")
 local b = Window:NewTab("Blatant")
