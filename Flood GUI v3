@@ -13,26 +13,23 @@ gmt.__index = newcclosure(function(self,b)
     end
     return oldindex(self,b)
 end)
-    getgenv().oof = false
-    local a = game.Players.LocalPlayer.PlayerGui.GameGui.VoteMap
-    local b = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
-    function vote()
-        local c = {[1] = b, [2] = 8, [3] = 0}
-        game:GetService("ReplicatedStorage").Remote.UpdMapVote:FireServer(unpack(c))
-        wait()
-        local c = {[1] = b, [2] = 2, [3] = 0}
-        game:GetService("ReplicatedStorage").Remote.UpdMapVote:FireServer(unpack(c))
+getgenv().oof = false
+local votemap = game.Players.LocalPlayer.PlayerGui.GameGui.VoteMap
+local key = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
+function vote()
+     wait()
+     game:GetService("ReplicatedStorage").Remote.UpdMapVote:FireServer(key,8,0)
+     wait()
+     game:GetService("ReplicatedStorage").Remote.UpdMapVote:FireServer(key,2,0)
+end
+votemap.Changed:Connect(function(change)
+    if change == "Visible" then
+	if votemap.Visible == true and getgenv().oof == true then
+	    print("Voting..")
+       	    vote()
+	end
     end
-    local d =
-        a:GetPropertyChangedSignal("Visible"):Connect(
-        function(e)
-            wait(math.random(0, 1))
-            if a.Visible == true and getgenv().oof == true then
-                print("Voting..")
-                vote()
-            end
-        end
-    )
+end)
 print("Loaded!")
 local lp = game.Players.LocalPlayer
 local TweenService = game:GetService("TweenService")
@@ -203,20 +200,19 @@ getgenv().play = false
 spawn(function()
     while wait() do
         if getgenv().play ~= false then
-            print(game.Workspace.Multiplayer:WaitForChild("NewMap").Name)
-            print(game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value)
+            print("Loading TAS for: " .. game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value)
             local success, response = pcall(readfile,game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value .. ".json")
             if not success then
                 print("TAS file does not exist, Resetting!")
                 game.Players.LocalPlayer.Character.Humanoid.Health = 0
                 game.Players.LocalPlayer.CharacterAdded:Wait()
-		wait()
+                wait()
                 game:GetService("ReplicatedStorage").Remote.AddedWaiting:FireServer(-game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer())
-                break
             else
                 getgenv().RunName = game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value
                 loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/41f9cf6e0d8f11903b531fa42ec20b6b/raw/44577cec7405ea15721aa65679ede3ae33746828/Tas%2520Run", true))()
             end
+            print("TAS completed                                                           " .. game.Workspace.Multiplayer:WaitForChild("OldMap").Settings.MapName.Value)
         end
     end
 end)
