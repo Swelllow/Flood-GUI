@@ -68,6 +68,14 @@ local function oof()
         oos.Completed:wait()
         wait()
         Map:FindFirstChild("ExitRegion",true):Destroy()
+	game.Players.LocalPlayer.Character.Humanoid.Health = 0
+	game.Players.LocalPlayer.CharacterAdded:Wait()
+	wait(.1)
+	game:GetService("ReplicatedStorage").Remote.AddedWaiting:FireServer(-game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer())
+	wait(.3)
+	for i,v in pairs(getconnections(game:GetService("Players").LocalPlayer.PlayerGui.GameGui.Waiting.UI.Content.Buttons.MapVote.MouseButton1Click)) do
+   	    v:Fire()
+	end
         if getgenv().active == true then
             return
         end
