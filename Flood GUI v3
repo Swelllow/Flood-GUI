@@ -26,6 +26,7 @@ votemap.Changed:Connect(function(change)
     if change == "Visible" then
 	if votemap.Visible == true and getgenv().oof == true then
 	    print("Voting..")
+	    wait()
        	    vote()
 	end
     end
@@ -50,7 +51,7 @@ spawn(function()
 while wait() do
 local function oof()
     print(game.Workspace.Multiplayer:WaitForChild("Map").Name)
-    wait(1)
+    wait()
     Map = workspace.Multiplayer:WaitForChild("Map")
     for i,v in pairs(Map:GetDescendants()) do
         if v.Name == "Handle" then
@@ -66,7 +67,7 @@ local function oof()
         wait()
         Map:FindFirstChild("ExitRegion",true):Destroy()
         if getgenv().active == true then
-            oof()
+            return
         end
     end
     for i,v in pairs(Map:GetDescendants()) do
