@@ -50,7 +50,6 @@ getgenv().active = false
 spawn(function()
 while wait() do
 print(game.Workspace.Multiplayer:WaitForChild("Map").Name)
-wait(1)
 local function oof()
     print(game.Workspace.Multiplayer:WaitForChild("Map").Name)
     wait()
@@ -83,6 +82,7 @@ local function oof()
 end
 if getgenv().active == true then
     oof()
+    repeat wait() until game.Workspace.Multiplayer:WaitForChild("OldMap")
     game.Players.LocalPlayer.Character.Humanoid.Health = 0
     game.Players.LocalPlayer.CharacterAdded:Wait()
     wait(.1)
