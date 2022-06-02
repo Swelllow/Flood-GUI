@@ -210,8 +210,12 @@ spawn(function()
                 clmain.newAlert("TAS file does not exist, Resetting!",Color3.fromRGB(230,76,0))
                 game.Players.LocalPlayer.Character.Humanoid.Health = 0
                 game.Players.LocalPlayer.CharacterAdded:Wait()
-                wait(1)
+                wait(.1)
                 game:GetService("ReplicatedStorage").Remote.AddedWaiting:FireServer(-game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer())
+		wait(.3)
+		for i,v in pairs(getconnections(game:GetService("Players").LocalPlayer.PlayerGui.GameGui.Waiting.UI.Content.Buttons.MapVote.MouseButton1Click)) do
+   			 v:Fire()
+		end
             else
                 getgenv().RunName = game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value
                 loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/41f9cf6e0d8f11903b531fa42ec20b6b/raw/44577cec7405ea15721aa65679ede3ae33746828/Tas%2520Run", true))()
