@@ -74,6 +74,7 @@ local function oof()
         if v:IsA("Part") and v:FindFirstChild("TouchInterest") ~= nil and v.Parent ~= nil then
             local toof = tween(v.Position,v.CFrame)
             toof.Completed:wait()
+	    wait()
             v:Destroy()
         end
     end
