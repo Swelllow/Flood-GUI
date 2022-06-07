@@ -258,7 +258,18 @@ end)
 tas:NewButton("Create TAS","Create a TAS, Press then enter lift.",function()
     loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/87466f9b6f9333449c683643e59fdf94/raw/440d5306e1aa87f1ba20e94be005bffe945e0f8a/Tas", true))()
 end)
-tas:NewTextBox("Run TAS","Run TAS file",function(value)
-    getgenv().RunName = value
-    loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/41f9cf6e0d8f11903b531fa42ec20b6b/raw/44577cec7405ea15721aa65679ede3ae33746828/Tas%2520Run", true))()
+tas:NewButton("Run TAS","Press then choose map you made TAS is for!",function()
+	    print("Loading TAS for: " .. game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value)
+            local success, response = pcall(readfile,game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value .. ".json")
+            if not success then
+                clmain.newAlert("TAS file does not exist, Resetting!",Color3.fromRGB(230,76,0))
+		game.Players.LocalPlayer.Humanoid.Health = 0
+            else
+                getgenv().RunName = game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value
+                loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/41f9cf6e0d8f11903b531fa42ec20b6b/raw/44577cec7405ea15721aa65679ede3ae33746828/Tas%2520Run", true))()
+            end
+	    repeat
+	    	wait()
+	    until game.Workspace.Multiplayer:WaitForChild("OldMap")
+            print("TAS completed.")
 end)
