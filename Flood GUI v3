@@ -59,7 +59,6 @@ end
 getgenv().active = false
 spawn(function()
 while wait() do
-print(game.Workspace.Multiplayer:WaitForChild("Map").Name)
 local function oof()
     print(game.Workspace.Multiplayer:WaitForChild("Map").Name)
     wait()
