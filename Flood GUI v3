@@ -1,4 +1,5 @@
 local clmain = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CL_MAIN_GameScript")) or wait()
+local char = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:wait()
 local bb=game:service'VirtualUser'
 game:service'Players'.LocalPlayer.Idled:connect(function()
 bb:CaptureController()bb:ClickButton2(Vector2.new())
@@ -8,7 +9,7 @@ setreadonly(gmt,false)
 local oldindex = gmt.__index
 game:GetService("Players").LocalPlayer.PlayerGui.GameGui.HUD.GameStats.Ingame.Info.Time.Count.Text = "RIPECHEESE"
 gmt.__index = newcclosure(function(self,b)
-    if b=="WalkSpeed"then
+    if b=="WalkSpeed" and tostring(self) == "Humanoid" then
         return 
     end
     if b == "JumpPower" then
@@ -16,6 +17,11 @@ gmt.__index = newcclosure(function(self,b)
     end
     return oldindex(self,b)
 end)
+local fakehum = char:WaitForChild("Humanoid"):Clone()
+fakehum.Name = "humanoid"
+fakehum.Parent = game.ReplicatedStorage
+setupvalue(clmain.swimJump,3,fakehum)
+setupvalue(clmain.swimDive,3,fakehum)
 getgenv().oof = false
 local votemap = game.Players.LocalPlayer.PlayerGui.GameGui.VoteMap
 local key = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
@@ -133,27 +139,6 @@ other:NewKeybind("ToggleUI", "Toggle UI with this keybind.", Enum.KeyCode.J, fun
 		getgenv().ui = true
 	end
 	Library:ToggleUI()
-end)
-
-UIS.InputBegan:connect(function(UserInput)
-    if UserInput.KeyCode == Enum.KeyCode[game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Options.Pages.Keybinds.SWIMJUMP.Status.Text] then
-        lp.Character.HumanoidRootPart.SwimVel.Velocity = Vector3.new(0,20,0)
-    end
-end)
-UIS.InputEnded:connect(function(UserInput)
-    if UserInput.KeyCode == Enum.KeyCode[game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Options.Pages.Keybinds.SWIMJUMP.Status.Text] then
-        lp.Character.HumanoidRootPart.SwimVel.Velocity = Vector3.new(0,0,0)
-    end
-end)
-UIS.InputBegan:connect(function(UserInput)
-    if UserInput.KeyCode == Enum.KeyCode[game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Options.Pages.Keybinds.SWIMDIVE.Status.Text] then
-        lp.Character.HumanoidRootPart.SwimVel.Velocity = Vector3.new(0,-20,0)
-    end
-end)
-UIS.InputEnded:connect(function(UserInput)
-    if UserInput.KeyCode == Enum.KeyCode[game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Options.Pages.Keybinds.SWIMDIVE.Status.Text] then
-        lp.Character.HumanoidRootPart.SwimVel.Velocity = Vector3.new(0,0,0)
-    end
 end)
 loc:NewSlider("Walkspeed", "Change your walkspeed!", 100,20,function(t)
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = t
@@ -286,4 +271,5 @@ tas:NewButton("Run-TAS","Press then enter lift!",function()
 	    until game.Workspace.Multiplayer:WaitForChild("OldMap")
             print("TAS completed.")
 end)
+wait(.1)
 clmain.newAlert("Flooded v3 Loaded!",Color3.fromRGB(0,255,100))
