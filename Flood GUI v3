@@ -17,10 +17,11 @@ getgenv().oof = false
 local votemap = game.Players.LocalPlayer.PlayerGui.GameGui.VoteMap
 local key = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
 function vote()
-     wait()
+     wait(1)
      game:GetService("ReplicatedStorage").Remote.UpdMapVote:FireServer(key,8,0)
-     wait()
-     game:GetService("ReplicatedStorage").Remote.UpdMapVote:FireServer(key,2,0)
+     if not game.Workspace.Multiplayer:WaitForChild("NewMap",7) then
+          game:GetService("ReplicatedStorage").Remote.UpdMapVote:FireServer(key,2,0)
+     end
 end
 votemap.Changed:Connect(function(change)
     if change == "Visible" then
