@@ -1,5 +1,8 @@
 local clmain = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CL_MAIN_GameScript")) or wait()
-clmain.newAlert("Flooded v3 Loaded!",Color3.fromRGB(0,255,100))
+local bb=game:service'VirtualUser'
+game:service'Players'.LocalPlayer.Idled:connect(function()
+bb:CaptureController()bb:ClickButton2(Vector2.new())
+end)
 local gmt = getrawmetatable(game)
 setreadonly(gmt,false)
 local oldindex = gmt.__index
@@ -283,3 +286,4 @@ tas:NewButton("Run-TAS","Press then enter lift!",function()
 	    until game.Workspace.Multiplayer:WaitForChild("OldMap")
             print("TAS completed.")
 end)
+clmain.newAlert("Flooded v3 Loaded!",Color3.fromRGB(0,255,100))
