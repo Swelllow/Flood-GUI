@@ -97,6 +97,8 @@ if getgenv().active == true then
         v:Fire()
     end
     end
+else
+	wait(1)
 end
 end
 end)
@@ -168,6 +170,7 @@ end)
 spawn(function()
     while game.Workspace.Multiplayer:WaitForChild("NewMap") do
         for i,v in pairs(game.Workspace.Multiplayer:WaitForChild("Map"):GetDescendants()) do
+	    wait()
             if v.Name == "WaterState" then
 	    	local new = Instance.new("StringValue")
 		new.Parent = v.Parent
@@ -179,7 +182,7 @@ spawn(function()
                 end)
             end
         end
-	wait(3)
+	wait(5)
     end
 end)
 local save = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir
