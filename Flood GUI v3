@@ -17,11 +17,6 @@ gmt.__index = newcclosure(function(self,b)
     end
     return oldindex(self,b)
 end)
-local fakehum = char:WaitForChild("Humanoid"):Clone()
-fakehum.Name = "humanoid"
-fakehum.Parent = game.ReplicatedStorage
-setupvalue(clmain.swimJump,3,fakehum)
-setupvalue(clmain.swimDive,3,fakehum)
 getgenv().oof = false
 local votemap = game.Players.LocalPlayer.PlayerGui.GameGui.VoteMap
 local key = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
@@ -141,6 +136,26 @@ other:NewKeybind("ToggleUI", "Toggle UI with this keybind.", Enum.KeyCode.J, fun
 end)
 loc:NewSlider("Walkspeed", "Change your walkspeed!", 100,20,function(t)
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = t
+end)
+UIS.InputBegan:connect(function(UserInput)
+    if UserInput.KeyCode == Enum.KeyCode[game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Options.Pages.Keybinds.SWIMJUMP.Status.Text] then
+        lp.Character.HumanoidRootPart.SwimVel.Velocity = Vector3.new(0,20,0)
+    end
+end)
+UIS.InputEnded:connect(function(UserInput)
+    if UserInput.KeyCode == Enum.KeyCode[game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Options.Pages.Keybinds.SWIMJUMP.Status.Text] then
+        lp.Character.HumanoidRootPart.SwimVel.Velocity = Vector3.new(0,0,0)
+    end
+end)
+UIS.InputBegan:connect(function(UserInput)
+    if UserInput.KeyCode == Enum.KeyCode[game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Options.Pages.Keybinds.SWIMDIVE.Status.Text] then
+        lp.Character.HumanoidRootPart.SwimVel.Velocity = Vector3.new(0,-20,0)
+    end
+end)
+UIS.InputEnded:connect(function(UserInput)
+    if UserInput.KeyCode == Enum.KeyCode[game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Options.Pages.Keybinds.SWIMDIVE.Status.Text] then
+        lp.Character.HumanoidRootPart.SwimVel.Velocity = Vector3.new(0,0,0)
+    end
 end)
 UIS.InputBegan:connect(function(UserInput)
     if UserInput.UserInputType == Enum.UserInputType.Keyboard and UserInput.KeyCode == Enum.KeyCode.Space and getgenv().infjump == true then
