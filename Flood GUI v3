@@ -176,7 +176,7 @@ spawn(function()while wait() do
         getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = save
 	for i,v in pairs(game.Workspace.Multiplayer:WaitForChild("Map"):GetDescendants()) do
             if v.Name == "oldval" then
-		v.Parent.WaterState.Value = v.Val
+		v.Parent.WaterState.Value = v.Value
             end
 	    v:Destroy()
         end
