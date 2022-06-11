@@ -226,7 +226,7 @@ auto:NewToggle("Auto-Play [High XP]", "Requires TAS files", function(t)
 end)
 getgenv().play = false
 spawn(function()
-    while wait(2.7) do
+    while wait(2.7) and game.Workspace.Multiplayer:WaitForChild("NewMap") do
         if getgenv().play ~= false then
             print("Loading TAS for: " .. game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value)
             local success, response = pcall(readfile,game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value .. ".json")
