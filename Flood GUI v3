@@ -218,7 +218,7 @@ end)
 getgenv().play = false
 spawn(function()
     while wait() do
-        if getgenv().play ~= false and game.Workspace.Multiplayer:WaitForChild("NewMap") then
+        if getgenv().play ~= false and game.Workspace.Multiplayer:WaitForChild("NewMap",20) then
             print("Loading TAS for: " .. game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value)
             local success, response = pcall(readfile,game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value .. ".json")
             if not success then
