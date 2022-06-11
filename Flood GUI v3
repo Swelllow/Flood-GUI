@@ -170,19 +170,13 @@ end)
 spawn(function()
     while game.Workspace.Multiplayer:WaitForChild("NewMap") do
         for i,v in pairs(game.Workspace.Multiplayer:WaitForChild("Map"):GetDescendants()) do
-	    wait()
             if v.Name == "WaterState" then
-	    	local new = Instance.new("StringValue")
-		new.Parent = v.Parent
-		new.Value = v.Value
-		new.Name = "oldval"
                 v.Value = "water"
                 v.Changed:Connect(function()
                     v.Value = "water"
                 end)
             end
         end
-	wait(5)
     end
 end)
 local save = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir
@@ -192,12 +186,6 @@ spawn(function()while wait() do
         getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = function()end
     else
         getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = save
-	for i,v in pairs(game.Workspace.Multiplayer:WaitForChild("Map"):GetDescendants()) do
-            if v.Name == "oldval" then
-		v.Parent.WaterState.Value = v.Value
-            end
-	    v:Destroy()
-        end
     end
 end
 end)
