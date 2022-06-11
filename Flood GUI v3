@@ -58,7 +58,7 @@ end
 
 getgenv().active = false
 spawn(function()
-while wait() do
+while wait(1) do
 local function oof()
     print(game.Workspace.Multiplayer:WaitForChild("Map").Name)
     wait()
@@ -91,7 +91,7 @@ local function oof()
 end
 if getgenv().active == true then
     oof()
-    if Map:FindFirstChild("ExitRegion",true) ~= nil then
+    if Map:FindFirstChild("ExitRegion",true) == nil then
     repeat wait() until game.Workspace.Multiplayer:WaitForChild("OldMap")
     game.Players.LocalPlayer.Character.Humanoid.Health = 0
     game.Players.LocalPlayer.CharacterAdded:Wait()
@@ -160,6 +160,7 @@ spawn(function()
                 end)
             end
         end
+	wait(3)
     end
 end)
 local save = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir
@@ -217,8 +218,8 @@ spawn(function()
             else
                 getgenv().RunName = game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value
                 loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/41f9cf6e0d8f11903b531fa42ec20b6b/raw/44577cec7405ea15721aa65679ede3ae33746828/Tas%2520Run", true))()
-            end
-            print("TAS completed. -------------------- " .. game.Workspace.Multiplayer:WaitForChild("OldMap").Name)
+            	print("TAS completed. -------------------- " .. game.Workspace.Multiplayer:WaitForChild("OldMap").Name)
+	    end
 	    wait(2)
         end
     end
