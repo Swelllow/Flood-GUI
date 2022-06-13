@@ -219,7 +219,6 @@ getgenv().play = false
 spawn(function()
     while wait() do
         if getgenv().play ~= false and game.Workspace.Multiplayer:WaitForChild("NewMap",20) then
-            print("Loading TAS for: " .. game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value)
             local success, response = pcall(readfile,game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value .. ".json")
             if not success then
                 clmain.newAlert("TAS file does not exist, Resetting!",Color3.fromRGB(230,76,0))
@@ -234,7 +233,7 @@ spawn(function()
             else
                 getgenv().RunName = game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value
                 loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/41f9cf6e0d8f11903b531fa42ec20b6b/raw/44577cec7405ea15721aa65679ede3ae33746828/Tas%2520Run", true))()
-            	print("TAS completed. -------------------- " .. game.Workspace.Multiplayer:WaitForChild("OldMap").Name)
+            	print("TAS completed." .. game.Workspace.Multiplayer:WaitForChild("OldMap").Name)
 	    end
         end
     end
