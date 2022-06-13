@@ -287,7 +287,7 @@ tas:NewButton("Enable Toggle Swim (Permanant)", "Lets you swim in TAS.", functio
     getgenv().spoofedpos = Vector3.new(0,1000,0)
     local oldindex
     oldindex = hookmetamethod(game,"__index",function(self,b)
-        if b == "Position" then
+        if b == "Position" and not checkcaller() then
             return getgenv().spoofedpos 
         end
         return oldindex(self,b)
