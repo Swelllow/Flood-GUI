@@ -283,6 +283,32 @@ tas:NewButton("Run-TAS","Press then enter lift!",function()
 	    until game.Workspace.Multiplayer:WaitForChild("OldMap")
             print("TAS completed.")
 end)
+tas:NewButton("Enable Toggle Swim (Permanant)", "Lets you swim in TAS.", function()
+    getgenv().spoofedpos = Vector3.new(0,1000,0)
+    local oldindex
+    oldindex = hookmetamethod(game,"__index",function(self,b)
+        if b == "Position" then
+            return getgenv().spoofedpos 
+        end
+        return oldindex(self,b)
+    end)
+    spawn(function()
+        while wait() do
+            if getgenv().swim == true then
+                getgenv().spoofedpos = Vector3.new(-22.93394660949707, -153.28439331054688, 0.13860256969928741)
+            else
+                getgenv().spoofedpos = Vector3.new(0, 1000, 0)
+            end
+        end
+    end)
+end)
+tas:NewKeybind("Toggle Swim (Press Enable Toggle Swim First)","Toggle swiming!", Enum.KeyCode.T, function()
+    if getgenv().swim == true then
+        getgenv().swim = false
+    else
+        getgenv().swim = true
+    end
+end)
 wait(.1)
 clmain.newAlert("Flooded v3 Loaded!",Color3.fromRGB(0,255,100))
 --resets character to fix lag bug
