@@ -259,23 +259,6 @@ tas:NewButton("Rejoin","Rejoin game so you can create another TAS",function()
     loadstring(game:HttpGet("https://pastebin.com/raw/1gtVMUz3"))()
 end)
 tas:NewButton("Create-TAS","Create a TAS, Press then enter lift.",function()
-        getgenv().spoofedpos = Vector3.new(0,1000,0)
-        local oldindex
-        oldindex = hookmetamethod(game,"__index",function(self,b)
-        if b == "Position" and not checkcaller() then
-            return getgenv().spoofedpos 
-        end
-        return oldindex(self,b)
-        end)
-        spawn(function()
-        while wait() do
-            if getgenv().swim == true then
-                    getgenv().spoofedpos = Vector3.new(-22.93394660949707, -153.28439331054688, 0.13860256969928741)
-                else
-                    getgenv().spoofedpos = Vector3.new(0, 1000, 0)
-                end
-            end
-        end)
 	getgenv().script = function()
    	game.Workspace.DescendantAdded:Connect(function(child)
             if child:IsA("Sound") then
@@ -303,6 +286,26 @@ tas:NewButton("Run-TAS","Press then enter lift!",function()
             print("TAS completed.")
 end)
 tas:NewKeybind("Toggle Swim","Only works while creating TAS.", Enum.KeyCode.T, function()
+	if getgenv().onetime == false then
+	getgenv().spoofedpos = Vector3.new(0,1000,0)
+        local oldindex
+        oldindex = hookmetamethod(game,"__index",function(self,b)
+        if b == "Position" and not checkcaller() then
+            return getgenv().spoofedpos 
+        end
+        return oldindex(self,b)
+        end)
+        spawn(function()
+        while wait() do
+            if getgenv().swim == true then
+                    getgenv().spoofedpos = Vector3.new(-22.93394660949707, -153.28439331054688, 0.13860256969928741)
+                else
+                    getgenv().spoofedpos = Vector3.new(0, 1000, 0)
+                end
+            end
+        end)
+	end
+	getgenv().onetime = true
     if getgenv().swim == true then
         getgenv().swim = false
     else
