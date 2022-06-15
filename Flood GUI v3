@@ -269,18 +269,13 @@ tas:NewButton("Create-TAS","Create a TAS, Press then enter lift.",function()
         local oldindex
         oldindex = hookmetamethod(game,"__index",function(self,b)
         if tostring(self) == "HumanoidRootPart" and b == "Position" and not checkcaller() then
-            return getgenv().spoofedpos 
+            if getgenv().swim == true then
+              return getgenv().spoofedpos
+            else
+              return oldindex(self,b)
+            end 
         end
         return oldindex(self,b)
-        end)
-        spawn(function()
-        while wait() do
-            if getgenv().swim == true then
-                    getgenv().spoofedpos = Vector3.new(-22.93394660949707, -153.28439331054688, 0.13860256969928741)
-                else
-                    getgenv().spoofedpos = Vector3.new(0, 1000, 0)
-                end
-            end
         end)
 for i,v in pairs(workspace:WaitForChild("Map"):GetDescendants()) do
     if string.lower(v.Name) == "waterstate" then
