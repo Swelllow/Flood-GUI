@@ -256,7 +256,7 @@ auto:NewToggle("Auto-Vote", "Automatically votes for you!", function(t)
     getgenv().oof = t
 end)
 tas:NewButton("Rejoin","Rejoin game so you can create another TAS",function()
-    loadstring(game:HttpGet("https://pastebin.com/raw/1gtVMUz3"))()
+    game:GetService("TeleportService"):Teleport(game.PlaceId, game:GetService("Players").LocalPlayer)
 end)
 tas:NewButton("Create-TAS","Create a TAS, Press then enter lift.",function()
 	getgenv().swim = false
