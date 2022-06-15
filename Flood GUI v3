@@ -259,7 +259,7 @@ tas:NewButton("Rejoin","Rejoin game so you can create another TAS",function()
     loadstring(game:HttpGet("https://pastebin.com/raw/1gtVMUz3"))()
 end)
 tas:NewButton("Create-TAS","Create a TAS, Press then enter lift.",function()
-	getgenv().script = function()
+	getgenv().swim = false
    	game.Workspace.DescendantAdded:Connect(function(child)
             if child:IsA("Sound") then
                 child:Destroy()
@@ -289,8 +289,6 @@ for i,v in pairs(workspace:WaitForChild("Map"):GetDescendants()) do
 	end
     	loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/87466f9b6f9333449c683643e59fdf94/raw/440d5306e1aa87f1ba20e94be005bffe945e0f8a/Tas", true))()
 	end
-	local secure=loadstring(game:HttpGet("https://raw.githubusercontent.com/ImMejor35/bad-ui-lib-ngl/main/securescript"))()
-	secure.runscript("getgenv().script()")
 end)
 tas:NewButton("Run-TAS","Press then enter lift!",function()
 	    print("Loading TAS for: " .. game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value)
