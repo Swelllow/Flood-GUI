@@ -4,7 +4,7 @@ local bb=game:service'VirtualUser'
 game:service'Players'.LocalPlayer.Idled:connect(function()
 bb:CaptureController()bb:ClickButton2(Vector2.new())
 end)
-if getgenv().wow==true then while true do end end
+if getgenv().wow==true then error("Already Executed!")end
 local gmt = getrawmetatable(game)
 setreadonly(gmt,false)
 local oldindex = gmt.__index
@@ -177,28 +177,18 @@ spawn(function()
                 v.Changed:Connect(function()
                     v.Value = "water"
                 end)
-		v.Parent.Touched:Connect(function()
-            		getgenv().swim = true
-       		end)
-        	v.Parent.TouchEnded:Connect(function()
+                v.Parent.Touched:Connect(function()
+                    getgenv().swim = true
+                end)
+                v.Parent.TouchEnded:Connect(function()
             		getgenv().swim = false
-       		end)
+                end)
             end
         end
     end
-    for i,v in pairs(workspace:WaitForChild("Map"):GetDescendants()) do
-    if string.lower(v.Name) == "waterstate" then
-        v.Parent.Touched:Connect(function()
-            getgenv().swim = true
-        end)
-        v.Parent.TouchEnded:Connect(function()
-            getgenv().swim = false
-        end)
-    end
-    	loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/87466f9b6f9333449c683643e59fdf94/raw/440d5306e1aa87f1ba20e94be005bffe945e0f8a/Tas", true))()
-	end
+    loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/87466f9b6f9333449c683643e59fdf94/raw/440d5306e1aa87f1ba20e94be005bffe945e0f8a/Tas", true))()
 end)
-end)
+
 local save = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir
 getgenv().godmode = false
 spawn(function()
@@ -296,6 +286,8 @@ tas:NewButton("Create-TAS","Create a TAS, Press then enter lift.",function()
         end
         return oldindex(self,b)
         end)
+    loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/87466f9b6f9333449c683643e59fdf94/raw/440d5306e1aa87f1ba20e94be005bffe945e0f8a/Tas", true))()
+end)
 tas:NewButton("Run-TAS","Press then enter lift!",function()
 	    print("Loading TAS for: " .. game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value)
             local success, response = pcall(readfile,game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value .. ".json")
