@@ -286,7 +286,6 @@ for i,v in pairs(workspace:WaitForChild("Map"):GetDescendants()) do
             getgenv().swim = false
         end)
     end
-	end
     	loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/87466f9b6f9333449c683643e59fdf94/raw/440d5306e1aa87f1ba20e94be005bffe945e0f8a/Tas", true))()
 	end
 end)
