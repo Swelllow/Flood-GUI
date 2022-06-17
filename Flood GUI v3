@@ -28,6 +28,11 @@ function vote()
           game:GetService("ReplicatedStorage").Remote.UpdMapVote:FireServer(key,2,0)
      end
 end
+game.Players.PlayerAdded:Connect(function()
+	if getgenv().autoleave == true then
+		game.Players.LocalPlayer.Kick("Auto-Leave is enabled. So you were kicked because a player joined.")	
+	end
+end)
 votemap.Changed:Connect(function(change)
     if change == "Visible" then
 	if votemap.Visible == true and getgenv().oof == true then
@@ -307,6 +312,9 @@ tas:NewKeybind("Toggle Swim","Only works while creating TAS.", Enum.KeyCode.T, f
     else
         getgenv().swim = true
     end
+end)
+auto:NewToggle("Auto-Leave", "Automatically leaves when player joins!", function(t)
+    getgenv().autoleave = t
 end)
 wait(.1)
 clmain.newAlert("Flooded v3 Loaded!",Color3.fromRGB(0,255,100))
