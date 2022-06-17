@@ -274,12 +274,11 @@ tas:NewButton("Create-TAS","Create a TAS, Press then enter lift.",function()
                 child:Destroy()
             end
    	end)
-	getgenv().spoofedpos = Vector3.new(0,1000,0)
         local oldindex
         oldindex = hookmetamethod(game,"__index",function(self,b)
         if tostring(self) == "HumanoidRootPart" and b == "Position" and not checkcaller() then
             if getgenv().swim == true then
-              return getgenv().spoofedpos
+              return Vector3.new(-23, -153, 0)
             else
               return oldindex(self,b)
             end 
