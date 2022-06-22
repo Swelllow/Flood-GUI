@@ -227,9 +227,9 @@ auto:NewToggle("Auto-Play [High XP]", "Requires TAS files", function(t)
 end)
 getgenv().play = false
 spawn(function()
-    while wait(.1) do
-        if getgenv().play ~= false then
-            local success, response = pcall(readfile,game.Workspace.Multiplayer:WaitForChild("NewMap").Settings.MapName.Value .. ".json")
+    while task.wait() do
+        if getgenv().play ~= false and game.Workspace.Multiplayer:WaitForChild("NewMap",9e9) then
+            local success, response = pcall(readfile,game.Workspace.Multiplayer:WaitForChild("Map",9e9).Settings.MapName.Value .. ".json")
             if not success then
                 clmain.newAlert("TAS file does not exist, Resetting!",Color3.fromRGB(230,76,0))
                 game.Players.LocalPlayer.Character.Humanoid.Health = 0
@@ -237,11 +237,9 @@ spawn(function()
                 wait(1)
                 game:GetService("ReplicatedStorage").Remote.AddedWaiting:FireServer(-game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer())
 		wait(.4)
-		for i,v in pairs(getconnections(game:GetService("Players").LocalPlayer.PlayerGui.GameGui.Waiting.UI.Content.Buttons.MapVote.MouseButton1Click)) do
-   		    v:Fire()
-		end
+   		getconnections(game:GetService("Players").LocalPlayer.PlayerGui.GameGui.Waiting.UI.Content.Buttons.MapVote.MouseButton1Click)[1]:Fire()
             else
-                getgenv().RunName = game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value
+                getgenv().RunName = game.Workspace.Multiplayer:WaitForChild("Map",9e9).Settings.MapName.Value
                 loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/41f9cf6e0d8f11903b531fa42ec20b6b/raw/44577cec7405ea15721aa65679ede3ae33746828/Tas%2520Run", true))()
             	game.Workspace.Multiplayer:WaitForChild("OldMap"):Destroy()
 	    end
