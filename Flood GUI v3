@@ -274,7 +274,7 @@ auto:NewButton("Get TAS files", "TAS files are required for auto-play.", functio
         else
             local s,r = pcall(function()
                 local tas = loadstring(game:HttpGet("https://raw.githubusercontent.com/ImMejor35/tas-files/main/" .. map))()
-                writefile(v .. ".json",game:GetService'HttpService':JSONEncode(tas))
+                writefile(v .. ".json",tas)
             end)
             if s then
                 print("Downloaded " .. v .. " TAS file succesfully!")
