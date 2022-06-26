@@ -261,6 +261,32 @@ end)
 auto:NewToggle("Auto-Vote", "Automatically votes for you!", function(t)
     getgenv().oof = t
 end)
+auto:NewButton("Get TAS files", "TAS files are required for auto-play.", function()
+    local maps = {"Lost Woods","Axiom","Castle Tides","Poisonous Valley","Marred Dreams","Buried Oasis","Forsaken Era","Eerie Peaks","Polar Industry","Infiltration","Cave System","Flood Island","Oriental Grove","Sky Sanctuary","Decrepit Seas","Mysterium","Forgotten Tombs","Construction Thrill","Fall Equinox","Northern Workshop","Lava Tower","Crystal Caverns","Snowy Peaks","Dark Sci-Forest","Graveyard Cliffside","Wild Savannah","Sedimentary Temple","Sunken Citadel","Relic Valley","Poisonous Forest","Abandoned Facility","Familiar Ruins","Lost Desert","Gloomy Manor","Sinking Ship","Dark Sci-Facility","Beneath The Ruins","Magmatic Mines","Fallen","Blue Moon","Poisonous Chasm"}
+    print("Starting downloads..")
+    wait()
+    for i,v in pairs(maps) do
+        print("-------------------------------------------------")
+        local map = string.gsub(v," ","%%20")
+        local su,re = pcall(readfile,v .. ".json")
+        if su then
+            print(v .. " TAS file already exists!")
+        else
+            local s,r = pcall(function()
+                local tas = loadstring(game:HttpGet("https://raw.githubusercontent.com/ImMejor35/tas-files/main/" .. map))()
+                writefile(v .. ".json",game:GetService'HttpService':JSONEncode(tas))
+            end)
+            if s then
+                print("Downloaded " .. v .. " TAS file succesfully!")
+            else
+                print("Failed to download " .. v .. " TAS file. :(")
+            end
+        end
+    end
+    wait()
+    print("-------------------------------------------------")
+    print("Finished Downloading TAS files")
+end)
 tas:NewButton("Rejoin","Rejoin game so you can create another TAS",function()
     game:GetService("TeleportService"):Teleport(game.PlaceId, game:GetService("Players").LocalPlayer)
 end)
