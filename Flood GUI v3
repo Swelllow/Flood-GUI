@@ -5,19 +5,10 @@ game:service'Players'.LocalPlayer.Idled:connect(function()
 bb:CaptureController()bb:ClickButton2(Vector2.new())
 end)
 if getgenv().wow==true then error("Already Executed!")end
-local gmt = getrawmetatable(game)
-setreadonly(gmt,false)
-local oldindex = gmt.__index
-game:GetService("Players").LocalPlayer.PlayerGui.GameGui.HUD.GameStats.Ingame.Info.Time.Count.Text = "RIPECHEESE"
-gmt.__index = newcclosure(function(self,b)
-    if b=="WalkSpeed" and tostring(self) == "Humanoid" then
-        return 
-    end
-    if b == "JumpPower" then
-       return 50 
-    end
-    return oldindex(self,b)
-end)
+-- new anticheat bypass all credits to altlexon
+game.ReplicatedStorage.Remote.ReqCharVars.OnClientInvoke = function()
+    return {}
+end
 getgenv().oof = false
 local votemap = game.Players.LocalPlayer.PlayerGui.GameGui.VoteMap
 local key = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
@@ -123,11 +114,13 @@ local l = Window:NewTab("Local-Player")
 local b = Window:NewTab("Blatant")
 local t = Window:NewTab("TAS")
 local k = Window:NewTab("Other")
+local c = Window:NewTab("Credits")
 local auto = a:NewSection("Auto")
 local loc = l:NewSection("Local Player")
 local blatant = b:NewSection("Blatant")
 local tas = t:NewSection("TAS")
 local other = k:NewSection("Other")
+local credits = c:NewSection("Credits")
 getgenv().wow = true
 other:NewButton("Copy Discord Invite", "Copies discord invite to clipboard!", function()
     setclipboard("https://discord.gg/8N2M9fHJqa")
@@ -149,26 +142,6 @@ end)
 UIS.InputBegan:connect(function(UserInput)
     if UserInput.KeyCode == Enum.KeyCode[game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Options.Pages.Keybinds.SWIMJUMP.Status.Text] then
         lp.Character.HumanoidRootPart.SwimVel.Velocity = Vector3.new(0,20,0)
-    end
-end)
-UIS.InputEnded:connect(function(UserInput)
-    if UserInput.KeyCode == Enum.KeyCode[game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Options.Pages.Keybinds.SWIMJUMP.Status.Text] then
-        lp.Character.HumanoidRootPart.SwimVel.Velocity = Vector3.new(0,0,0)
-    end
-end)
-UIS.InputBegan:connect(function(UserInput)
-    if UserInput.KeyCode == Enum.KeyCode[game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Options.Pages.Keybinds.SWIMDIVE.Status.Text] then
-        lp.Character.HumanoidRootPart.SwimVel.Velocity = Vector3.new(0,-20,0)
-    end
-end)
-UIS.InputEnded:connect(function(UserInput)
-    if UserInput.KeyCode == Enum.KeyCode[game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Options.Pages.Keybinds.SWIMDIVE.Status.Text] then
-        lp.Character.HumanoidRootPart.SwimVel.Velocity = Vector3.new(0,0,0)
-    end
-end)
-UIS.InputBegan:connect(function(UserInput)
-    if UserInput.UserInputType == Enum.UserInputType.Keyboard and UserInput.KeyCode == Enum.KeyCode.Space and getgenv().infjump == true then
-        lp.Character.HumanoidRootPart.Velocity = Vector3.new(lp.Character.HumanoidRootPart.Velocity.X,50,lp.Character.HumanoidRootPart.Velocity.Z)
     end
 end)
 loc:NewSlider("JumpPower", "Change your jumppower!", 200,50,function(t)
@@ -344,6 +317,9 @@ end)
 tas:NewToggle("Anti-gabquishy", "Automatically leaves when player joins!", function(t)
     getgenv().autoleave = t
 end)
+credits:NewLabel("New Anti-Kick by AltLexon#6917")
+credits:NewLabel("TAS script by Voiz#5668")
+credits:NewLabel("Everything else by Tomato")
 wait(.1)
 clmain.newAlert("Flooded v3 Loaded!",Color3.fromRGB(0,255,100))
 --resets character to fix lag bug wow 
