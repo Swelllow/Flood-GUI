@@ -196,6 +196,12 @@ blatant:NewKeybind("Noclip", "Walk through some walls!", Enum.KeyCode.G, functio
         getgenv().noclip = true
     end
 end)
+blatant:NewButton("Lag Server", "Equip buddy then press", function()
+    local key = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
+    for i=1,190,1 do
+        game:GetService("ReplicatedStorage").Remote.ConfirmItem:FireServer(key,40)
+    end
+end)
 auto:NewToggle("Auto-Play [High XP]", "Requires TAS files", function(t)
     getgenv().play = t
 end)
