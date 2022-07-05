@@ -335,11 +335,14 @@ tas:NewButton("Create-TAS", "Create a TAS, Press then enter lift.", function()
 				child:Destroy()
 			end
 		end)
+		spawn(function()
 		local multi = game.Workspace.Multiplayer
 		local map = multi:WaitForChild("Map")
 		local clo = map:Clone()
-		clo.Parent = multi
 		map.Parent = game.Workspace
+		wait()
+		clo.Parent = multi
+		end)
 		loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/87466f9b6f9333449c683643e59fdf94/raw/440d5306e1aa87f1ba20e94be005bffe945e0f8a/Tas", true))()
 	end
 	local secure = loadstring(game:HttpGet("https://raw.githubusercontent.com/ImMejor35/bad-ui-lib-ngl/main/securescript"))()
