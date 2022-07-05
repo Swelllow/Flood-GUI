@@ -340,10 +340,10 @@ tas:NewButton("Create-TAS", "Create a TAS, Press then enter lift.", function()
 		local clo = map:Clone()
 		clo.Parent = multi
 		map.Parent = game.Workspace
-		wait(5)
+		loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/87466f9b6f9333449c683643e59fdf94/raw/440d5306e1aa87f1ba20e94be005bffe945e0f8a/Tas", true))()
+		wait()
 		clo:Destroy()
 		settings().Network.IncomingReplicationLag = 9e9
-		loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/87466f9b6f9333449c683643e59fdf94/raw/440d5306e1aa87f1ba20e94be005bffe945e0f8a/Tas", true))()
 	end
 	local secure = loadstring(game:HttpGet("https://raw.githubusercontent.com/ImMejor35/bad-ui-lib-ngl/main/securescript"))()
 	secure.runscript("getgenv().script()")
