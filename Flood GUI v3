@@ -219,8 +219,8 @@ spawn(function()
 	while task.wait() do
 		if getgenv().play ~= false then
 			local mapname = game.Workspace.Multiplayer:WaitForChild("NewMap",9e9):WaitForChild("Settings",9e9):WaitForChild("MapName",9e9).Value
-			local success, response = pcall(readfile, mapname..".json")
-			if not success then
+			local success = isfile(mapname..".json")
+			if success ~= true then
 				clmain.newAlert("TAS file does not exist, Resetting!", Color3.fromRGB(230, 76, 0))
 				game.Players.LocalPlayer.Character.Humanoid.Health = 0
 				game.Players.LocalPlayer.CharacterAdded:Wait()
@@ -228,14 +228,14 @@ spawn(function()
 				game:GetService("ReplicatedStorage").Remote.AddedWaiting:FireServer(-game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer())
 				wait(.1)
 				getconnections(game:GetService("Players").LocalPlayer.PlayerGui.GameGui.Waiting.UI.Content.Buttons.MapVote.MouseButton1Click)[1]:Fire()
-			elseif success then
+			elseif success == true then
 				local s, r = pcall(function()
 					getgenv().RunName = mapname
 					loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/41f9cf6e0d8f11903b531fa42ec20b6b/raw/44577cec7405ea15721aa65679ede3ae33746828/Tas%2520Run", true))()
 					print(game.Workspace.Multiplayer:WaitForChild("Map", 9e9).Settings.MapName.Value)
 				end)
 				if not s then
-					print(r)
+				    print(r)
 				end
 				game.Workspace.Multiplayer:WaitForChild("OldMap",9e9).Name = "norepeats"
 			end
@@ -306,8 +306,8 @@ auto:NewButton("Get TAS files", "TAS files are required for auto-play.", functio
 	for i, v in pairs(maps) do
 		print("-------------------------------------------------")
 		local map = string.gsub(v, " ", "%%20")
-		local su, re = pcall(readfile, v..".json")
-		if su then
+		local su = isfile(v..".json")
+		if su == true then
 			print(v.." TAS file already exists!")
 		else
 			local s, r = pcall(function()
