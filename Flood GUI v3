@@ -396,7 +396,7 @@ wait(.1)
 clmain.newAlert("Flooded v3 Loaded!", Color3.fromRGB(0, 255, 100))
 --resets character to fix lag bug wow
 game.Players.LocalPlayer.CharacterAdded:Connect(function(char)
-    wait(2)
+    wait(5)
     char:WaitForChild("PlrInfo"):Destroy()
 end)
 game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Health = 0
