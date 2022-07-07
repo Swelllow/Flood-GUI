@@ -333,18 +333,33 @@ tas:NewButton("Zipline Fix", "Press before create TAS", function()
 	local map = multi:WaitForChild("Map")
 	local clo = map:Clone()
 	clo.Parent = multi
+    map.Name = "map"
 	map.Parent = game.Workspace
 	wait(10)
+    map.Name = "Map"
 	settings().Network.IncomingReplicationLag = 9e9
 end)
 tas:NewButton("Create-TAS", "Create a TAS, Press then enter lift.", function()
 	getgenv().script = function()
 		game.Workspace.DescendantAdded:Connect(function(child)
 			if child:IsA("Sound") then
-                  		task.wait()
 				child:Destroy()
 			end
 		end)
+        spawn(function()
+        for i,v in pairs(game.Workspace:WaitForChild("Map"):GetDescendants()) do
+            if v.ClassName == "Part" and v.Size == Vector3.new(3,1,3) then 
+                v.Size = v.Size * 1.8
+                v.Color = Color3.fromRGB(255,140,0)
+                local selectbox = Instance.new("SelectionBox", v)
+                selectbox.Adornee = v
+                selectbox.Color3 = Color3.fromRGB(255,140,0)
+                v.Touched:Connect(function(part)
+                    clmain.newAlert("Button Touched!",Color3.fromRGB(255,140,0)) 
+                end)
+            end
+        end
+        end)
 		loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/87466f9b6f9333449c683643e59fdf94/raw/440d5306e1aa87f1ba20e94be005bffe945e0f8a/Tas", true))()
 	end
 	local secure = loadstring(game:HttpGet("https://raw.githubusercontent.com/ImMejor35/bad-ui-lib-ngl/main/securescript"))()
