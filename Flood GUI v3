@@ -131,10 +131,6 @@ local tas = t:NewSection("TAS")
 local other = k:NewSection("Other")
 local credits = c:NewSection("Credits")
 getgenv().wow = true
-other:NewButton("Copy Discord Invite", "Copies discord invite to clipboard!", function()
-	setclipboard("https://discord.gg/8N2M9fHJqa")
-end)
-getgenv().ui = true
 other:NewKeybind("ToggleUI", "Toggle UI with this keybind.", Enum.KeyCode.J, function()
 	if getgenv().ui == true then
 		clmain.newAlert("UI Disabled!", Color3.fromRGB(255, 0, 0))
@@ -145,6 +141,14 @@ other:NewKeybind("ToggleUI", "Toggle UI with this keybind.", Enum.KeyCode.J, fun
 	end
 	Library:ToggleUI()
 end)
+other:NewLabel("Discord Invites")
+other:NewButton("Copy Tomato-Hub Invite", "Copies Tomato-Hub invite to clipboard!", function()
+	setclipboard("https://discord.gg/8N2M9fHJqa")
+end)
+other:NewButton("Copy Lexon-Hub Invite", "Copies Lexon-Hub invite to clipboard!", function()
+	setclipboard("https://discord.gg/ng4CN7Vq")
+end)
+getgenv().ui = true
 loc:NewSlider("Walkspeed", "Change your walkspeed!", 100, 20, function(t)
 	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = t
 end)
