@@ -358,8 +358,14 @@ tas:NewButton("Create-TAS", "Create a TAS, Press then enter lift.", function()
                 local selectbox = Instance.new("SelectionBox", v)
                 selectbox.Adornee = v
                 selectbox.Color3 = Color3.fromRGB(255,140,0)
+		getgenv().delay = false
                 v.Touched:Connect(function(part)
-                    clmain.newAlert("Button Touched!",Color3.fromRGB(255,140,0)) 
+		    if delay == false then
+                    	clmain.newAlert("Button Touched!",Color3.fromRGB(255,140,0))
+			delay = true
+			wait(1)
+			delay = false
+		    end
                 end)
             end
         end
