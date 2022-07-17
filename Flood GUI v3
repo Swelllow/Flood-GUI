@@ -252,7 +252,7 @@ end)
 getgenv().infjump = false
 UIS.InputBegan:connect(function(UserInput)
 	if UserInput.UserInputType == Enum.UserInputType.Keyboard and UserInput.KeyCode == Enum.KeyCode.Space and getgenv().infjump == true then
-		lp.Character.HumanoidRootPart.Velocity = Vector3.new(lp.Character.HumanoidRootPart.Velocity.X, 50, lp.Character.HumanoidRootPart.Velocity.Z)
+		lp.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 	end
 end)
 auto:NewToggle("Auto-Farm [Low XP]", "Automatically wins for you!", function(t)
