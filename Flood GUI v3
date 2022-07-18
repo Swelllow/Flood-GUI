@@ -410,7 +410,14 @@ tas:NewKeybind("Toggle Swim", "Only works while creating TAS.", Enum.KeyCode.T, 
 		getgenv().swim = true
 	end
 end)
-tas:NewToggle("Anti-gabquishy", "Automatically leaves when player joins!", function(t)
+tas:NewButton("Remove Water (TAS)", "Removes water in tas creator", function()
+    for i,v in pairs(game.Workspace:GetDescendants()) do
+        if string.match(string.lower(v.Name),"water") then
+            v:Destroy()
+        end
+    end
+end)
+tas:NewToggle("Auto-Leave", "Automatically leaves when player joins!", function(t)
 	getgenv().autoleave = t
 end)
 credits:NewLabel("New Anti-Kick by AltLexon#6917")
