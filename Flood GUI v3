@@ -262,7 +262,7 @@ auto:NewToggle("Auto-Vote", "Automatically votes for you!", function(t)
 	getgenv().oof = t
 end)
 auto:NewButton("Get TAS files", "TAS files are required for auto-play.", function()
-	local maps = {
+local maps = {
 		"Lost Woods",
 		"Axiom",
 		"Castle Tides",
@@ -312,22 +312,22 @@ auto:NewButton("Get TAS files", "TAS files are required for auto-play.", functio
 		local map = string.gsub(v, " ", "%%20")
 		local su = isfile(v..".json")
 		if su == true then
-			print(v.." TAS file already exists!")
+			clmain.newAlert(v.." TAS file already exists!",Color3.fromRGB(50,50,100))
 		else
 			local s, r = pcall(function()
-				local tas = loadstring(game:HttpGet("https://raw.githubusercontent.com/ImMejor35/tas-files/main/"..map))()
+				local tas = game:HttpGet("https://raw.githubusercontent.com/ImMejor35/tas-files/main/"..map..".json")
 				writefile(v..".json", tas)
 			end)
 			if s then
-				print("Downloaded "..v.." TAS file succesfully!")
+				clmain.newAlert("Downloaded "..v.." TAS file succesfully!",Color3.fromRGB(0,255,0))
 			else
-				print("Failed to download "..v.." TAS file. :(")
+				clmain.newAlert("Failed to download "..v.." TAS file. :(",Color3.fromRGB(255,0,0))
 			end
 		end
+        wait(.1)
 	end
-	wait()
-	print("-------------------------------------------------")
-	print("Finished Downloading TAS files")
+	wait(.1)
+	clmain.newAlert("Finished Downloading TAS files",Color3.fromRGB(255,165,0))
 end)
 tas:NewButton("Rejoin", "Rejoin game so you can create another TAS", function()
 	game:GetService("TeleportService"):Teleport(game.PlaceId, game:GetService("Players").LocalPlayer)
