@@ -312,7 +312,7 @@ local maps = {
 		local map = string.gsub(v, " ", "%%20")
 		local su = isfile(v..".json")
 		if su == true then
-			clmain.newAlert(v.." TAS file already exists!",Color3.fromRGB(50,50,100))
+			clmain.newAlert(v.." TAS file already exists!",Color3.fromRGB(50,100,100))
 		else
 			local s, r = pcall(function()
 				local tas = game:HttpGet("https://raw.githubusercontent.com/ImMejor35/tas-files/main/"..map..".json")
