@@ -347,6 +347,7 @@ tas:NewButton("Create-TAS", "Create a TAS, Press then enter lift.", function()
 	getgenv().script = function()
 		game.Workspace.DescendantAdded:Connect(function(child)
 			if child:IsA("Sound") then
+				wait()
 				child:Destroy()
 			end
 		end)
