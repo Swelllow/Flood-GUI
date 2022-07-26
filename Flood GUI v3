@@ -1,4 +1,5 @@
 repeat task.wait() until game:IsLoaded()
+wait = task.wait
 local clmain = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CL_MAIN_GameScript")) or wait()
 local char = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:wait()
 local bb = game:service'VirtualUser'
