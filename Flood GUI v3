@@ -152,11 +152,6 @@ getgenv().ui = true
 loc:NewSlider("Walkspeed", "Change your walkspeed!", 100, 20, function(t)
 	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = t
 end)
-UIS.InputBegan:connect(function(UserInput)
-	if UserInput.KeyCode == Enum.KeyCode[game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Options.Pages.Keybinds.SWIMJUMP.Status.Text] then
-		lp.Character.HumanoidRootPart.SwimVel.Velocity = Vector3.new(0, 20, 0)
-	end
-end)
 loc:NewSlider("JumpPower", "Change your jumppower!", 200, 50, function(t)
 	game.Players.LocalPlayer.Character.Humanoid.JumpPower = t
 end)
@@ -208,7 +203,7 @@ auto:NewToggle("Auto-Play [High XP]", "Requires TAS files", function(t)
 end)
 getgenv().play = false
 spawn(function()
-	while task.wait(.1) do
+	while task.wait(1) do
 		if getgenv().play ~= false then
 			local mapname = game.Workspace.Multiplayer:WaitForChild("NewMap",9e9):WaitForChild("Settings",9e9):WaitForChild("MapName",9e9).Value
 			local success = isfile(mapname..".json")
@@ -318,34 +313,33 @@ local maps = {
 	clmain.newAlert("Finished Downloading TAS files",Color3.fromRGB(255,165,0))
 end)
 tas:NewButton("Rejoin", "Rejoin game so you can create another TAS", function()
-	game:GetService("TeleportService"):Teleport(game.PlaceId, game:GetService("Players").LocalPlayer)
+	game:GetService("TeleportService"):Teleport(game:GetService("Players").LocalPlayer)
 end)
 tas:NewButton("Create-TAS", "Create a TAS, Press then enter lift.", function()
 		game.Workspace.DescendantAdded:Connect(function(child)
 			if child.ClassName == "Sound" then
-				wait()
 				child:Destroy()
 			end
 		end)
-        spawn(function()
-        for i,v in pairs(game.Workspace:WaitForChild("Map"):GetDescendants()) do
-            if v.ClassName == "Part" and v.Size == Vector3.new(3,1,3) then 
-                v.Size = v.Size * 1.8
-                v.Color = Color3.fromRGB(255,140,0)
-                local selectbox = Instance.new("SelectionBox", v)
-                selectbox.Adornee = v
-                selectbox.Color3 = Color3.fromRGB(255,140,0)
-		getgenv().delay = false
-                v.Touched:Connect(function(part)
-		    if delay == false then
-                    	clmain.newAlert("Button Touched!",Color3.fromRGB(255,140,0))
-			delay = true
-			wait(1)
-			delay = false
-		    end
-                end)
+        task.spawn(function()
+            for i,v in pairs(game.Workspace:WaitForChild("Map"):GetDescendants()) do
+                if v.ClassName == "Part" and v.Size == Vector3.new(3,1,3) then 
+                    v.Size = v.Size * 1.8
+                    v.Color = Color3.fromRGB(255,140,0)
+                    local selectbox = Instance.new("SelectionBox", v)
+                    selectbox.Adornee = v
+                    selectbox.Color3 = Color3.fromRGB(255,140,0)
+                    getgenv().delayy = false
+                    v.Touched:Connect(function(part)
+                        if delayy == false then
+                            clmain.newAlert("Button Touched!",Color3.fromRGB(255,140,0))
+                            delayy = true
+                            wait(1)
+                            delayy = false
+                        end
+                    end)
+                end
             end
-        end
         end)
 	loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/87466f9b6f9333449c683643e59fdf94/raw/440d5306e1aa87f1ba20e94be005bffe945e0f8a/Tas", true))()
 end)
