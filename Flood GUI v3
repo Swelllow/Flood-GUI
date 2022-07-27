@@ -160,19 +160,6 @@ end)
 loc:NewSlider("JumpPower", "Change your jumppower!", 200, 50, function(t)
 	game.Players.LocalPlayer.Character.Humanoid.JumpPower = t
 end)
-spawn(function()
-	while game.Workspace.Multiplayer:WaitForChild("NewMap",9e9) do
-		for i, v in pairs(game.Workspace.Multiplayer:WaitForChild("Map",9e9):GetDescendants()) do
-			if v.Name == "WaterState" then
-				v.Value = "water"
-				v.Changed:Connect(function()
-					v.Value = "water"
-				end)
-			end
-		end
-	end
-	loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/87466f9b6f9333449c683643e59fdf94/raw/440d5306e1aa87f1ba20e94be005bffe945e0f8a/Tas", true))()
-end)
 
 local save = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir
 getgenv().godmode = false
@@ -180,6 +167,7 @@ spawn(function()
 	while wait(.04) do
 		if getgenv().godmode == true then
 			getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = function()
+				return 0
 			end
 		else
 			getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = save
@@ -220,7 +208,7 @@ auto:NewToggle("Auto-Play [High XP]", "Requires TAS files", function(t)
 end)
 getgenv().play = false
 spawn(function()
-	while task.wait() do
+	while task.wait(.1) do
 		if getgenv().play ~= false then
 			local mapname = game.Workspace.Multiplayer:WaitForChild("NewMap",9e9):WaitForChild("Settings",9e9):WaitForChild("MapName",9e9).Value
 			local success = isfile(mapname..".json")
