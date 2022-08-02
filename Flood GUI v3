@@ -234,7 +234,7 @@ blatant:NewToggle("Infinite Jump", "Infinitely Jump!", function(t)
 end)
 getgenv().infjump = false
 UIS.InputBegan:connect(function(UserInput,Typed)
-	if UserInput.KeyCode == Enum.KeyCode.Space or UserInput.KeyCode == Enum.KeyCode.ButtonA and getgenv().infjump == true and not Typed then
+	if getgenv().infjump == true and UserInput.KeyCode == Enum.KeyCode.Space or UserInput.KeyCode == Enum.KeyCode.ButtonA and not Typed then
 		lp.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 	end
 end)
