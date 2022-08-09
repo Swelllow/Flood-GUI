@@ -43,7 +43,38 @@ getgenv''.maps = {
 		"Poisonous Chasm"
 	}
 wait = task.wait
+
 local clmain = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CL_MAIN_GameScript")) or wait()
+-- TAS file minifier 
+-- Starting from this line to ending line code was made by ian
+local HttpService = game:GetService("HttpService")
+local function round(x)
+    local factorOfTen = 10^(3)
+    return math.floor(x * factorOfTen + .5) / factorOfTen
+end
+local function minfile(file)
+    local tasFile = HttpService:JSONDecode(file)
+    local minTasFile = {}
+    for t,data in ipairs(tasFile) do
+        local minData = {}
+        for key,val in pairs(data) do
+            local minVal = nil
+            if type(val) == "table" then
+                minVal = {}
+                for f,x in ipairs(val) do
+                    if type(x) == "number" then table.insert(minVal, round(x))
+                    else table.insert(minVal, x) end    
+                end
+            else
+                minVal = round(val)
+            end
+            minData[key] = minVal
+        end
+        table.insert(minTasFile, minData)
+    end
+    return HttpService:JSONEncode(minTasFile)
+end
+-- ending line
 local char = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:wait()
 local bb = game:service'VirtualUser'
 game:service'Players'.LocalPlayer.Idled:connect(function()
@@ -99,7 +130,7 @@ end
 
 
 getgenv().active = false
-spawn(function()
+task.spawn(function()
 	while wait(1) do
 		local function oof()
 			print(game.Workspace.Multiplayer:WaitForChild("Map",9e9).Name)
@@ -245,7 +276,7 @@ auto:NewToggle("Auto-Play [High XP]", "Requires TAS files", function(t)
 	getgenv().play = t
 end)
 getgenv().play = false
-spawn(function()
+task.spawn(function()
 	while task.wait(1) do
 		if getgenv().play ~= false then
 			local mapname = game.Workspace.Multiplayer:WaitForChild("NewMap",9e9):WaitForChild("Settings",9e9):WaitForChild("MapName",9e9).Value
@@ -299,7 +330,7 @@ auto:NewButton("Get TAS files", "TAS files are required for auto-play.", functio
 		else
 			local s, r = pcall(function()
 				local tas = game:HttpGet("https://raw.githubusercontent.com/ImMejor35/tas-files/main/"..map..".json")
-				writefile(v..".json", tas)
+				writefile(v..".json", minfile(tas))
 			end)
 			if s then
 				clmain.newAlert("Downloaded "..v.." TAS file succesfully!",Color3.fromRGB(0,255,0))
@@ -395,40 +426,10 @@ credits:NewLabel("Everything else by Tomato")
 wait(.1)
 clmain.newAlert("Flooded v3 Loaded!", Color3.fromRGB(0, 255, 100))
 
--- TAS file minifier 
--- Starting from this line to ending line code was made by ian
-local HttpService = game:GetService("HttpService")
-local function round(x)
-    local factorOfTen = 10^(3)
-    return math.floor(x * factorOfTen + .5) / factorOfTen
-end
-local function minfile(file)
-    local tasFile = HttpService:JSONDecode(file)
-    local minTasFile = {}
-    for t,data in ipairs(tasFile) do
-        local minData = {}
-        for key,val in pairs(data) do
-            local minVal = nil
-            if type(val) == "table" then
-                minVal = {}
-                for f,x in ipairs(val) do
-                    if type(x) == "number" then table.insert(minVal, round(x))
-                    else table.insert(minVal, x) end    
-                end
-            else
-                minVal = round(val)
-            end
-            minData[key] = minVal
-        end
-        table.insert(minTasFile, minData)
-    end
-    return HttpService:JSONEncode(minTasFile)
-end
--- ending line
 local oldwrite; oldwrite = hookfunction(writefile,function(name,data)
     local Mn = string.gsub(name,'.json','')
     if table.find(maps,Mn) then
-        print("Minified the "..Mn.." TAS file!")
+        clmain.newAlert("Saved "..Mn.." TAS file!")
         oldwrite(name,minfile(data))
     end
 end)
