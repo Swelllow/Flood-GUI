@@ -424,12 +424,12 @@ credits:NewLabel("TAS script by Voiz#5668")
 credits:NewLabel("TAS File Minifier by iaan#8193")
 credits:NewLabel("Everything else by Tomato")
 wait(.1)
-clmain.newAlert("Flooded v3 Loaded!", Color3.fromRGB(0, 255, 100))
+clmain.newAlert("Flooded v3 Loaded!",nil,nil,"rainbow")
 
 local oldwrite; oldwrite = hookfunction(writefile,function(name,data)
     local Mn = string.gsub(name,'.json','')
     if table.find(maps,Mn) then
-        clmain.newAlert("Saved "..Mn.." TAS file!")
+        clmain.newAlert("Saved "..Mn.." TAS file!",nil,nil,"rainbow")
         oldwrite(name,minfile(data))
     end
 end)
