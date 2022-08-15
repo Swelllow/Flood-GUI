@@ -45,6 +45,12 @@ getgenv''.maps = {
 wait = task.wait
 
 local clmain = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CL_MAIN_GameScript")) or wait()
+if getrenv().wow then
+	clmain.newAlert('Already Executed!',Color3.new(1,0,0))
+    error('Already Executed')
+else
+    getrenv().wow=''
+end
 -- TAS file minifier 
 -- Starting from this line to ending line code was made by ian
 local HttpService = game:GetService("HttpService")
@@ -81,9 +87,6 @@ game:service'Players'.LocalPlayer.Idled:connect(function()
 	bb:CaptureController()
 	bb:ClickButton2(Vector2.new())
 end)
-if getgenv().wow == true then
-	error("Already Executed!")
-end
 -- new anticheat bypass all credits to altlexon
 game.ReplicatedStorage.Remote.ReqCharVars.OnClientInvoke = function()
 	return {}
@@ -326,11 +329,11 @@ auto:NewButton("Get TAS files", "TAS files are required for auto-play.", functio
 		local map = string.gsub(v, " ", "%%20")
 		local su = isfile(v..".json")
 		if su == true then
-			clmain.newAlert(v.." TAS file already exists!",Color3.fromRGB(50,100,100))
+			clmain.newAlert(v.." TAS file already exists!",Color3.fromRGB(50,100,255))
 		else
 			local s, r = pcall(function()
 				local tas = game:HttpGet("https://raw.githubusercontent.com/ImMejor35/tas-files/main/"..map..".json")
-				writefile(v..".json", minfile(tas))
+				writefile(v..".json", minfile(tas),true)
 			end)
 			if s then
 				clmain.newAlert("Downloaded "..v.." TAS file succesfully!",Color3.fromRGB(0,255,0))
@@ -338,10 +341,10 @@ auto:NewButton("Get TAS files", "TAS files are required for auto-play.", functio
 				clmain.newAlert("Failed to download "..v.." TAS file. :(",Color3.fromRGB(255,0,0))
 			end
 		end
-        wait(.1)
+        wait(.3)
 	end
 	wait(.1)
-	clmain.newAlert("Finished Downloading TAS files",Color3.fromRGB(255,165,0))
+	clmain.newAlert("Finished Downloading TAS files",nil,nil,"rainbow")
 end)
 tas:NewButton("Rejoin", "Rejoin game so you can create another TAS", function()
 	game:GetService("TeleportService"):Teleport(game:GetService("Players").LocalPlayer)
@@ -426,12 +429,15 @@ credits:NewLabel("Everything else by Tomato")
 wait(.1)
 clmain.newAlert("Flooded v3 Loaded!",nil,nil,"rainbow")
 
-local oldwrite; oldwrite = hookfunction(writefile,function(name,data)
-    local Mn = string.gsub(name,'.json','')
-    if table.find(maps,Mn) then
-        clmain.newAlert("Saved "..Mn.." TAS file!",nil,nil,"rainbow")
-        oldwrite(name,minfile(data))
+local oldwrite; oldwrite = hookfunction(writefile,function(name,data,bypass)
+    if bypass ~= true then
+        local Mn = string.gsub(name,'.json','')
+        if table.find(maps,Mn) then
+            clmain.newAlert("Saved "..Mn.." TAS file!",nil,nil,"rainbow")
+            return oldwrite(name,minfile(data))
+        end
     end
+    return oldwrite(name,data)
 end)
 
 
