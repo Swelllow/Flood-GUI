@@ -45,6 +45,10 @@ getgenv''.maps = {
 wait = task.wait
 
 local clmain = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CL_MAIN_GameScript")) or wait()
+local save = clmain.newAlert
+clmain.newAlert = function(text)
+    save(text,nil,nil,'rainbow')
+end
 if getrenv().wow then
 	clmain.newAlert('Already Executed!',Color3.new(1,0,0))
     error('Already Executed')
@@ -103,7 +107,7 @@ function vote()
 end
 game.Players.PlayerAdded:Connect(function()
 	if getgenv().autoleave == true then
-		game.Players.LocalPlayer:Kick("Anti-gabquishy is enabled. So you were kicked because a player joined.")	
+		game.Players.LocalPlayer:Kick("Auto-Leave is enabled. So you were kicked because a player joined.")	
 	end
 end)
 votemap.Changed:Connect(function(change)
@@ -284,16 +288,34 @@ task.spawn(function()
 		if getgenv().play ~= false then
 			local mapname = game.Workspace.Multiplayer:WaitForChild("NewMap",9e9):WaitForChild("Settings",9e9):WaitForChild("MapName",9e9).Value
 			local success = isfile(mapname..".json")
-			if success ~= true then
-				clmain.newAlert("TAS file does not exist, Resetting!", Color3.fromRGB(230, 76, 0))
-				game.Players.LocalPlayer.Character.Humanoid.Health = 0
-				game.Players.LocalPlayer.CharacterAdded:Wait()
-				wait(.1)
-				game:GetService("ReplicatedStorage").Remote.AddedWaiting:FireServer(-game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer())
-				wait(.1)
-				getconnections(game:GetService("Players").LocalPlayer.PlayerGui.GameGui.Waiting.UI.Content.Buttons.MapVote.MouseButton1Click)[1]:Fire()
-			elseif success == true then
+			if not success then
+                local testname = string.gsub(mapname,' ','_')..'.json'
+                if not isfile(testname) then
+                    clmain.newAlert("TAS file does not exist, Resetting!", Color3.fromRGB(230, 76, 0))
+                    game.Players.LocalPlayer.Character.Humanoid.Health = 0
+                    game.Players.LocalPlayer.CharacterAdded:Wait()
+                    wait(.2)
+                    game:GetService("ReplicatedStorage").Remote.AddedWaiting:FireServer(-game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer())
+                    wait(.3)
+                    getconnections(game:GetService("Players").LocalPlayer.PlayerGui.GameGui.Waiting.UI.Content.Buttons.MapVote.MouseButton1Click)[1]:Fire()
+                elseif isfile(testname) then
+                    local data = readfile(testname)
+                    delfile(testname)
+                    writefile(mapname..".json",minfile(data))
+                    local s, r = pcall(function()
+                        clmain.newAlert("Running "..mapname.." TAS!")
+                        getgenv().RunName = mapname
+                        loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/41f9cf6e0d8f11903b531fa42ec20b6b/raw/44577cec7405ea15721aa65679ede3ae33746828/Tas%2520Run", true))()
+                        print(game.Workspace.Multiplayer:WaitForChild("Map", 9e9).Settings.MapName.Value)
+                    end)
+                    if not s then
+                        print(r)
+                    end
+                    game.Workspace.Multiplayer:WaitForChild("OldMap",9e9).Name = "norepeats"
+                end
+			elseif success then
 				local s, r = pcall(function()
+                    clmain.newAlert("Running "..mapname.." TAS!")
 					getgenv().RunName = mapname
 					loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/41f9cf6e0d8f11903b531fa42ec20b6b/raw/44577cec7405ea15721aa65679ede3ae33746828/Tas%2520Run", true))()
 					print(game.Workspace.Multiplayer:WaitForChild("Map", 9e9).Settings.MapName.Value)
