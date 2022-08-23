@@ -95,8 +95,6 @@ end)
 game.ReplicatedStorage.Remote.ReqCharVars.OnClientInvoke = function()
 	return {}
 end
--- anti noclip bypass all credits to zxciaz
---removed for now
 getgenv().oof = false
 local votemap = game.Players.LocalPlayer.PlayerGui.GameGui.VoteMap
 local key = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
@@ -449,7 +447,6 @@ end)
 credits:NewLabel("New Anti-Kick by AltLexon#6917")
 credits:NewLabel("TAS script by Voiz#5668")
 credits:NewLabel("TAS File Minifier by iaan#8193")
-credits:NewLabel("Noclip Bypass by zxciaz/modified by Tomato")
 credits:NewLabel("Everything else by Tomato")
 wait(.1)
 clmain.newAlert("Flooded v3 Loaded!",nil,nil,"rainbow")
