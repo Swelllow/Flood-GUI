@@ -96,14 +96,7 @@ game.ReplicatedStorage.Remote.ReqCharVars.OnClientInvoke = function()
 	return {}
 end
 -- anti noclip bypass all credits to zxciaz
-local oldindex;oldindex = hookmetamethod(game,'__index',function(self,key)
-    if tostring(self) == "HumanoidRootPart" or tostring(self) == "Torso" then 
-        if key == 'CFrame' and self:IsDescendantOf(char) then 
-            return true
-        end
-    end
-    return oldindex()
-end)
+--removed for now
 getgenv().oof = false
 local votemap = game.Players.LocalPlayer.PlayerGui.GameGui.VoteMap
 local key = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
