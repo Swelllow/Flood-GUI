@@ -354,7 +354,7 @@ auto:NewButton("Get TAS files", "TAS files are required for auto-play.", functio
 			clmain.newAlert(v.." TAS file already exists!",Color3.fromRGB(50,100,255))
 		else
 			local s, r = pcall(function()
-				local tas = game:HttpGet("https://raw.githubusercontent.com/ImMejor35/tas-files/main/"..map..".json")
+				local tas = game:HttpGet("https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS%20FILES/"..map..".json")
 				writefile(v..".json", minfile(tas),true)
 			end)
 			if s then
