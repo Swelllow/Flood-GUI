@@ -343,13 +343,12 @@ end)
 auto:NewToggle("Auto-Vote", "Automatically votes for you!", function(t)
 	getgenv().oof = t
 end)
-auto:NewButton("Get TAS files", "TAS files are required for auto-play.", function()
+auto:NewButton("Get TAS files", "Downloads Required TAS files!", function()
 	print("Starting downloads..")
-	wait()
 	for i, v in pairs(maps) do
 		print("-------------------------------------------------")
 		local map = string.gsub(v, " ", "%%20")
-		local su = isfile(v..".json")
+		local su = false -- isfile(v..".json")
 		if su == true then
 			clmain.newAlert(v.." TAS file already exists!",Color3.fromRGB(50,100,255))
 		else
@@ -363,10 +362,9 @@ auto:NewButton("Get TAS files", "TAS files are required for auto-play.", functio
 				clmain.newAlert("Failed to download "..v.." TAS file. :(",Color3.fromRGB(255,0,0))
 			end
 		end
-        wait(.3)
+		task.wait()
 	end
-	wait(.1)
-	clmain.newAlert("Finished Downloading TAS files",nil,nil,"rainbow")
+	clmain.newAlert("Finished Downloading TAS files")
 end)
 tas:NewButton("Rejoin", "Rejoin game so you can create another TAS", function()
 	game:GetService("TeleportService"):Teleport(game:GetService("Players").LocalPlayer)
