@@ -40,7 +40,10 @@ getgenv''.maps = {
 		"Magmatic Mines",
 		"Fallen",
 		"Blue Moon",
-		"Poisonous Chasm"
+		"Poisonous Chasm",
+		"Ignis Peaks",
+		"Sandswept Ruins",
+		"Satomi Springs"
 	}
 wait = task.wait
 
