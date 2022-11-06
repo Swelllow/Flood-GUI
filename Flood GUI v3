@@ -331,12 +331,12 @@ task.spawn(function()
 		end
 	end
 end)
-blatant:NewToggle("Infinite Jump", "Infinitely Jump!", function(t)
-	getgenv().infjump = t
-end)
 getgenv().infjump = false
+blatant:NewKeybind("Infinite Jump", "Jump while freefalling!", Enum.KeyCode.M, function(t)
+	infjump = not infjump
+end)
 UIS.InputBegan:connect(function(UserInput,Typed)
-	if getgenv().infjump == true and UserInput.KeyCode == Enum.KeyCode.Space or UserInput.KeyCode == Enum.KeyCode.ButtonA and not Typed then
+	if infjump == true and UserInput.KeyCode == Enum.KeyCode.Space or UserInput.KeyCode == Enum.KeyCode.ButtonA and not Typed then
 		lp.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 	end
 end)
