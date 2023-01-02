@@ -1,0 +1,517 @@
+repeat task.wait() until game:IsLoaded() 
+getgenv''.maps = {
+		"Lost Woods",
+		"Axiom",
+		"Castle Tides",
+		"Poisonous Valley",
+		"Marred Dreams",
+		"Buried Oasis",
+		"Forsaken Era",
+		"Eerie Peaks",
+		"Polar Industry",
+		"Infiltration",
+		"Cave System",
+		"Flood Island",
+		"Oriental Grove",
+		"Sky Sanctuary",
+		"Decrepit Seas",
+		"Mysterium",
+		"Forgotten Tombs",
+		"Construction Thrill",
+		"Fall Equinox",
+		"Northern Workshop",
+		"Lava Tower",
+		"Crystal Caverns",
+		"Snowy Peaks",
+		"Dark Sci-Forest",
+		"Graveyard Cliffside",
+		"Wild Savannah",
+		"Sedimentary Temple",
+		"Sunken Citadel",
+		"Relic Valley",
+		"Poisonous Forest",
+		"Abandoned Facility",
+		"Familiar Ruins",
+		"Lost Desert",
+		"Gloomy Manor",
+		"Sinking Ship",
+		"Dark Sci-Facility",
+		"Beneath The Ruins",
+		"Magmatic Mines",
+		"Fallen",
+		"Blue Moon",
+		"Poisonous Chasm",
+		"Ignis Peaks",
+		"Sandswept Ruins",
+		"Satomi Springs"
+	}
+wait = task.wait
+
+local clmain = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CL_MAIN_GameScript")) or wait()
+local save = clmain.newAlert
+clmain.newAlert = function(text)
+	save(text,nil,nil,'rainbow')
+end
+if getrenv().wow then
+	clmain.newAlert('Already Executed!',Color3.new(1,0,0))
+	error('Already Executed')
+else
+	getrenv().wow=''
+end
+
+
+-- TAS file minifier 
+-- Starting from this line to ending line code was made by ian
+local HttpService = game:GetService("HttpService")
+local function round(x)
+	local factorOfTen = 10^(3)
+	return math.floor(x * factorOfTen + .5) / factorOfTen
+end
+local function minfile(file)
+	local tasFile = HttpService:JSONDecode(file)
+	local minTasFile = {}
+	for t,data in ipairs(tasFile) do
+		local minData = {}
+		for key,val in pairs(data) do
+			local minVal = nil
+			if type(val) == "table" then
+				minVal = {}
+				for f,x in ipairs(val) do
+					if type(x) == "number" then table.insert(minVal, round(x))
+					else table.insert(minVal, x) end    
+				end
+			else
+				minVal = round(val)
+			end
+			minData[key] = minVal
+		end
+		table.insert(minTasFile, minData)
+	end
+	return HttpService:JSONEncode(minTasFile)
+end
+
+
+-- ending line
+local char = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:wait()
+local bb = game:service'VirtualUser'
+game:service'Players'.LocalPlayer.Idled:connect(function()
+	bb:CaptureController()
+	bb:ClickButton2(Vector2.new())
+end)
+-- new anticheat bypass all credits to altlexon
+game.ReplicatedStorage.Remote.ReqCharVars.OnClientInvoke = function()
+	return {}
+end
+getgenv().oof = false
+local votemap = game.Players.LocalPlayer.PlayerGui.GameGui.VoteMap
+local key = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
+function vote()
+	wait(1)
+	game:GetService("ReplicatedStorage").Remote.UpdMapVote:FireServer(key, 8, 0)
+	if not game.Workspace.Multiplayer:WaitForChild("NewMap", 7) then
+		game:GetService("ReplicatedStorage").Remote.UpdMapVote:FireServer(key, 2, 0)
+	end
+end
+game.Players.PlayerAdded:Connect(function()
+	if getgenv().autoleave == true then
+		game.Players.LocalPlayer:Kick("Auto-Leave is enabled. So you were kicked because a player joined.")	
+	end
+
+
+end)
+votemap.Changed:Connect(function(change)
+	if change == "Visible" then
+		if votemap.Visible == true and getgenv().oof == true then
+			print("Voting..")
+			wait()
+			vote()
+		end
+	end
+end)
+
+
+print("Loaded!")
+local lp = game.Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+local TS = game:GetService("TweenService")
+local function Time(targetpos)
+	local tme = (targetpos - lp.Character.HumanoidRootPart.Position).Magnitude / math.random(16, 20)
+	return tme
+end
+local function tween(pos)
+	local toof = TS:Create(lp.Character.HumanoidRootPart, TweenInfo.new(Time(pos), Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {
+		CFrame = CFrame.new(pos)
+	})
+	toof:Play()
+	return toof
+end
+
+
+getgenv().active = false
+task.spawn(function()
+	while wait(1) do
+		local function oof()
+			print(game.Workspace.Multiplayer:WaitForChild("Map",9e9).Name)
+			wait()
+			Map = workspace.Multiplayer:WaitForChild("Map",9e9)
+			for i, v in pairs(Map:GetDescendants()) do
+				if v.Name == "Handle" then
+					v:Destroy()
+				end
+			end
+			if Map:FindFirstChild("Settings") ~= nil then
+				print(Map.Settings.MapName.Value)
+			end
+			if Map:FindFirstChild("ExitRegion", true) then
+				local oos = tween(Map:FindFirstChild("ExitRegion", true).Position, Map:FindFirstChild("ExitRegion", true).CFrame)
+				oos.Completed:wait()
+				wait()
+				Map:FindFirstChild("ExitRegion", true):Destroy()
+				if getgenv().active == true then
+					return
+				end
+			end
+			for i, v in pairs(Map:GetDescendants()) do
+				if v:IsA("Part") and v:FindFirstChild("TouchInterest") ~= nil and v.Parent ~= nil then
+					local toof = tween(v.Position, v.CFrame)
+					toof.Completed:wait()
+					wait()
+					v:Destroy()
+				end
+			end
+		end
+		if getgenv().active == true then
+			oof()
+			if Map:FindFirstChild("ExitRegion", true) == nil then
+				repeat
+					wait()
+				until game.Workspace.Multiplayer:WaitForChild("OldMap")
+				game.Players.LocalPlayer.Character.Humanoid.Health = 0
+				game.Players.LocalPlayer.CharacterAdded:Wait()
+				wait(.1)
+				game:GetService("ReplicatedStorage").Remote.AddedWaiting:FireServer(-game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer())
+				wait(.3)
+				for i, v in pairs(getconnections(game:GetService("Players").LocalPlayer.PlayerGui.GameGui.Waiting.UI.Content.Buttons.MapVote.MouseButton1Click)) do
+					v:Fire()
+				end
+			end
+		else
+			wait(1)
+		end
+	end
+end)	
+local UIS = game:GetService'UserInputService'
+
+--[Libary]
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/MidnightScriptz/Floodedv4-UI-/main/source"))()
+local venyx = library.new("Flood GUI v4 | Tomato Hub", colors)
+
+local colors = {
+	Background = Color3.fromRGB(24, 24, 24), 
+	Glow = Color3.fromRGB(0, 0, 0), 
+	Accent = Color3.fromRGB(10, 10, 10), 
+	LightContrast = Color3.fromRGB(20, 20, 20), 
+	DarkContrast = Color3.fromRGB(14, 14, 14),  
+	TextColor = Color3.fromRGB(255, 255, 255)
+}
+
+-- [Tabs/Sections]
+local a = venyx:addPage("Auto", 7044226690)
+local l = venyx:addPage("Local-Player", 5012544693)
+local b = venyx:addPage("Blatant", 7044284832)
+local t = venyx:addPage("TAS", 7294901968)
+local k = venyx:addPage("Other", 7040410130)
+local c = venyx:addPage("Credits", 7252023075)
+local auto = a:addSection("Auto")
+local loc = l:addSection("Local Player")
+local blatant = b:addSection("Blatant")
+local tas = t:addSection("Tas")
+local other = k:addSection("Other")
+local credits = c:addSection("Credits")
+
+other:addKeybind("Toggle UI", Enum.KeyCode.J, function()
+	venyx:toggle()
+end, function()
+end)
+
+other:addButton("Discord | Tomato-Hub Invite", function()
+	setclipboard("https://discord.gg/SPaW8nYJW5")
+print("Copied to Clipboard Now Go In a Website And Paste The Link To Enter The Server")
+clmain.newAlert("Copied To Clipboard Click F9 For More Instructions",nil,nil,"rainbow")
+end)
+
+other:addButton("Discord | Lexon Tas Tools", function()
+	setclipboard("https://discord.gg/DsmXdCGmA3")
+print("Copied to Clipboard Now Go In a Website And Paste The Link To Enter The Server")
+clmain.newAlert("Copied To Clipboard Click F9 For More Instructions",nil,nil,"rainbow")
+end)
+
+loc:addSlider("Walkspeed", 20, -1, 100, function(t)
+	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = t
+end)
+
+loc:addSlider("JumpPower", 50, -1, 200, function(t)
+	game.Players.LocalPlayer.Character.Humanoid.JumpPower = t
+end)
+
+blatant:addKeybind("Infinite Air", Enum.KeyCode.R, function()
+	if getgenv().godmode ~= false then
+		clmain.newAlert("Infinite Air Disabled!", Color3.fromRGB(255, 0, 0))
+		getgenv().godmode = false
+	else
+		clmain.newAlert("Infinite Air Enabled!", Color3.fromRGB(0, 255, 0))
+		getgenv().godmode = true
+	end
+
+	local save = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir
+getgenv().godmode = false
+spawn(function()
+	while wait(.04) do
+		if getgenv().godmode == true then
+			getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = function()
+				return 0
+			end
+		else
+			getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = save
+		end
+	end
+end)
+end)
+
+getgenv().noclip = false
+blatant:addKeybind("Noclip", Enum.KeyCode.G, function()
+	if getgenv().noclip ~= false then
+		lp.Character:WaitForChild("Torso").CanCollide = getgenv().noclip
+		lp.Character:WaitForChild("HumanoidRootPart").CanCollide = getgenv().noclip
+		clmain.newAlert("Noclip Disabled!", Color3.fromRGB(255, 0, 0))
+		getgenv().noclip = false
+	else
+		lp.Character:WaitForChild("Torso").CanCollide = getgenv().noclip
+		lp.Character:WaitForChild("HumanoidRootPart").CanCollide = getgenv().noclip
+		clmain.newAlert("Noclip Enabled!", Color3.fromRGB(0, 255, 0))
+		getgenv().noclip = true
+	end
+end)
+
+blatant:addButton("Lag Server", function()
+	local key = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
+	for i = 1, 190, 1 do
+		game:GetService("ReplicatedStorage").Remote.ConfirmItem:FireServer(key, 40)
+	end
+end)
+
+auto:addToggle("Auto-Play [High XP]", nil, function(t)
+	getgenv().play = t
+end)
+getgenv().play = false
+task.spawn(function()
+	while task.wait(1) do
+		if getgenv().play ~= false then
+			local mapname = game.Workspace.Multiplayer:WaitForChild("NewMap",9e9):WaitForChild("Settings",9e9):WaitForChild("MapName",9e9).Value
+			local success = isfile(mapname..".json")
+			if not success then
+				local testname = string.gsub(mapname,' ','_')..'.json'
+				if not isfile(testname) then
+					clmain.newAlert("TAS file does not exist, Resetting!", Color3.fromRGB(230, 76, 0))
+					game.Players.LocalPlayer.Character.Humanoid.Health = 0
+					game.Players.LocalPlayer.CharacterAdded:Wait()
+					wait(.2)
+					game:GetService("ReplicatedStorage").Remote.AddedWaiting:FireServer(-game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer())
+					wait(.3)
+					getconnections(game:GetService("Players").LocalPlayer.PlayerGui.GameGui.Waiting.UI.Content.Buttons.MapVote.MouseButton1Click)[1]:Fire()
+				elseif isfile(testname) then
+					local data = readfile(testname)
+					delfile(testname)
+					writefile(mapname..".json",minfile(data))
+					local s, r = pcall(function()
+						clmain.newAlert("Running "..mapname.." TAS!")
+						getgenv().RunName = mapname
+						loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/41f9cf6e0d8f11903b531fa42ec20b6b/raw/44577cec7405ea15721aa65679ede3ae33746828/Tas%2520Run", true))()
+						print(game.Workspace.Multiplayer:WaitForChild("Map", 9e9).Settings.MapName.Value)
+					end)
+					if not s then
+						print(r)
+					end
+					game.Workspace.Multiplayer:WaitForChild("OldMap",9e9).Name = "norepeats"
+				end
+			elseif success then
+				local s, r = pcall(function()
+					clmain.newAlert("Running "..mapname.." TAS!")
+					getgenv().RunName = mapname
+					loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/41f9cf6e0d8f11903b531fa42ec20b6b/raw/44577cec7405ea15721aa65679ede3ae33746828/Tas%2520Run", true))()
+					print(game.Workspace.Multiplayer:WaitForChild("Map", 9e9).Settings.MapName.Value)
+				end)
+				if not s then
+					print(r)
+				end
+				game.Workspace.Multiplayer:WaitForChild("OldMap",9e9).Name = "norepeats"
+			end
+		end
+	end
+end)
+
+getgenv().infjump = false
+blatant:addKeybind("Toggle Keybind", Enum.KeyCode.M, function()
+	infjump = not infjump
+end)
+UIS.InputBegan:connect(function(UserInput,Typed)
+	if infjump == true and UserInput.KeyCode == Enum.KeyCode.Space or UserInput.KeyCode == Enum.KeyCode.ButtonA and not Typed then
+		lp.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+	end
+end)
+
+auto:addToggle("Auto-Farm [Low XP]", nil, function(t)
+	getgenv().active = t
+end)
+
+auto:addToggle("Auto-Vote", nil, function(t)
+	getgenv().oof = t
+end)
+
+auto:addButton("Get TAS files", function()
+	print("Starting downloads..")
+	for i, v in pairs(maps) do
+		print("-------------------------------------------------")
+		local map = string.gsub(v, " ", "%%20")
+		local su = false -- isfile(v..".json")
+		if su == true then
+			clmain.newAlert(v.." TAS file already exists!",Color3.fromRGB(50,100,255))
+		else
+			local s, r = pcall(function()
+				local tas = game:HttpGet("https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS%20FILES/"..map..".json")
+				writefile(v..".json", minfile(tas),true)
+			end)
+			if s then
+				clmain.newAlert("Downloaded "..v.." TAS file succesfully!",Color3.fromRGB(0,255,0))
+			else
+				clmain.newAlert("Failed to download "..v.." TAS file. :(",Color3.fromRGB(255,0,0))
+			end
+		end
+		task.wait()
+	end
+	clmain.newAlert("Finished Downloading TAS files")
+end)
+
+tas:addButton("Rejoin", function()
+	game:GetService("TeleportService"):Teleport(game:GetService("Players").LocalPlayer)
+end)
+
+
+
+tas:addButton("Create-Tas", function()
+	game.Workspace.DescendantAdded:Connect(function(child)
+		if child.ClassName == "Sound" then
+			child:Destroy()
+		end
+	end)
+	task.spawn(function()
+		for i,v in pairs(game.Workspace:WaitForChild("Map"):GetDescendants()) do
+			if v.ClassName == "Part" and v.Size == Vector3.new(3,1,3) then 
+				v.Size = v.Size * 1.8
+				v.Color = Color3.fromRGB(255,140,0)
+				local selectbox = Instance.new("SelectionBox", v)
+				selectbox.Adornee = v
+				selectbox.Color3 = Color3.fromRGB(255,140,0)
+				getgenv().delayy = false
+				v.Touched:Connect(function(part)
+					if delayy == false then
+						clmain.newAlert("Button Touched!",Color3.fromRGB(255,140,0))
+						delayy = true
+						wait(1)
+						delayy = false
+					end
+				end)
+			end
+		end
+	end)
+loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/87466f9b6f9333449c683643e59fdf94/raw/440d5306e1aa87f1ba20e94be005bffe945e0f8a/Tas", true))()
+end)
+
+tas:addButton('Fix TAS ( Press it before load map )', function()
+  loadstring(game:HttpGet('https://raw.githubusercontent.com/AltLexon/Fix-Voiz-TAS/main/Script.lua'))()
+end)
+
+tas:addButton("Run-Tas", function()
+	print("Loading TAS for: "..game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value)
+	local success, response = pcall(readfile, game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value..".json")
+	if not success then
+		clmain.newAlert("TAS file does not exist, Resetting!", Color3.fromRGB(230, 76, 0))
+		game.Players.LocalPlayer.Humanoid.Health = 0
+	else
+		getgenv().RunName = game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value
+		loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/41f9cf6e0d8f11903b531fa42ec20b6b/raw/44577cec7405ea15721aa65679ede3ae33746828/Tas%2520Run", true))()
+	end
+	repeat
+		wait()
+	until game.Workspace.Multiplayer:WaitForChild("OldMap")
+	print("TAS completed.")
+end)
+
+local oldindex
+oldindex = hookmetamethod(game, "__index", function(self, b)
+	if tostring(self) == "HumanoidRootPart" and b == "Position" and not checkcaller() then
+		if getgenv().swim == true then
+			return Vector3.new(-23, -153, 0) -- position of lobby water
+		else
+			return oldindex(self, b) -- normal player position
+		end
+	end
+	return oldindex(self, b)
+end)
+
+tas:addKeybind("Toggle Swim", Enum.KeyCode.T, function()
+	if getgenv().swim == true then
+		getgenv().swim = false
+	else
+		getgenv().swim = true
+	end
+end)
+
+tas:addButton("Remove Water", function()
+	for i,v in pairs(game.Workspace:GetDescendants()) do
+		if string.match(string.lower(v.Name),"water") then
+			v:Destroy()
+		end
+	end
+end)
+
+tas:addToggle("Auto-Leave", nil, function(value)
+	getgenv().autoleave = t
+end)
+
+credits:addButton("New Anti-Kick and Updated by AltLexon#6917", function()
+	print("Clicked")
+end)
+
+
+credits:addButton("TAS scripts by Voiz#5668", function()
+	print("Clicked")
+end)
+
+credits:addButton("TAS File Minifier by iaan#8193", function()
+	print("Clicked")
+end)
+
+credits:addButton("UI Work By Midnight#8159", function()
+	print("Clicked")
+end)
+
+credits:addButton("Everything else by Tomato", function()
+	print("Clicked")
+end)
+wait(.1)
+clmain.newAlert("Flooded v5 Loaded!",nil,nil,"rainbow")
+
+local oldwrite; oldwrite = hookfunction(writefile,function(name,data,bypass)
+	if bypass ~= true then
+		local Mn = string.gsub(name,'.json','')
+		if table.find(maps,Mn) then
+			clmain.newAlert("Saved "..Mn.." TAS file!",nil,nil,"rainbow")
+			return oldwrite(name,minfile(data))
+		end
+	end
+	return oldwrite(name,data)
+end)
+
+--resets character to fix lag bug wow
+game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Health = 0
