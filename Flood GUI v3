@@ -282,16 +282,21 @@ blatant:NewButton("Lag Server", "Equip buddy then press", function()
 		game:GetService("ReplicatedStorage").Remote.ConfirmItem:FireServer(key, 40)
 	end
 end)
-auto:NewToggle("Auto-Play [High XP]", "Requires TAS files", function(t)
+auto:NewToggle("Auto-Play [Working]", "Requires TAS files", function(t)
 	getgenv().play = t
 end)
 getgenv().play = false
 task.spawn(function()
-	while task.wait(1) do
-		if getgenv().play ~= false then
-			loadstring(game:HttpGet('https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS/TAS%20Player'))
-			"TAS Player Fixed By Tomato with help from Epix"
+	local S,r = pcall(function()
+		while task.wait(1) do
+			if getgenv().play ~= false then
+				loadstring(game:HttpGet('https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS/TAS%20Player'))
+				"TAS Player Fixed By Tomato with help from Epix"
+			end
 		end
+	end)
+	if S == true do
+		print('AutoPlay Started')
 	end
 end)
 getgenv().infjump = false
@@ -303,7 +308,7 @@ UIS.InputBegan:connect(function(UserInput,Typed)
 		lp.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 	end
 end)
-auto:NewToggle("Auto-Farm [Low XP]", "Automatically wins for you!", function(t)
+auto:NewToggle("Auto-Farm [DISCONTINUED]", "Automatically wins for you!", function(t)
 	getgenv().active = t
 end)
 auto:NewToggle("Auto-Vote", "Automatically votes for you!", function(t)
