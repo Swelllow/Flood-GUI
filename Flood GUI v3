@@ -289,45 +289,8 @@ getgenv().play = false
 task.spawn(function()
 	while task.wait(1) do
 		if getgenv().play ~= false then
-			local mapname = game.Workspace.Multiplayer:WaitForChild("NewMap",9e9):WaitForChild("Settings",9e9):WaitForChild("MapName",9e9).Value
-			local success = isfile(mapname..".json")
-			if not success then
-                local testname = string.gsub(mapname,' ','_')..'.json'
-                if not isfile(testname) then
-                    clmain.newAlert("TAS file does not exist, Resetting!", Color3.fromRGB(230, 76, 0))
-                    game.Players.LocalPlayer.Character.Humanoid.Health = 0
-                    game.Players.LocalPlayer.CharacterAdded:Wait()
-                    wait(.2)
-                    game:GetService("ReplicatedStorage").Remote.AddedWaiting:FireServer(-game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer())
-                    wait(.3)
-                    getconnections(game:GetService("Players").LocalPlayer.PlayerGui.GameGui.Waiting.UI.Content.Buttons.MapVote.MouseButton1Click)[1]:Fire()
-                elseif isfile(testname) then
-                    local data = readfile(testname)
-                    delfile(testname)
-                    writefile(mapname..".json",minfile(data))
-                    local s, r = pcall(function()
-                        clmain.newAlert("Running "..mapname.." TAS!")
-                        getgenv().RunName = mapname
-                        loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/41f9cf6e0d8f11903b531fa42ec20b6b/raw/44577cec7405ea15721aa65679ede3ae33746828/Tas%2520Run", true))()
-                        print(game.Workspace.Multiplayer:WaitForChild("Map", 9e9).Settings.MapName.Value)
-                    end)
-                    if not s then
-                        print(r)
-                    end
-                    game.Workspace.Multiplayer:WaitForChild("OldMap",9e9).Name = "norepeats"
-                end
-			elseif success then
-				local s, r = pcall(function()
-                    clmain.newAlert("Running "..mapname.." TAS!")
-					getgenv().RunName = mapname
-					loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/41f9cf6e0d8f11903b531fa42ec20b6b/raw/44577cec7405ea15721aa65679ede3ae33746828/Tas%2520Run", true))()
-					print(game.Workspace.Multiplayer:WaitForChild("Map", 9e9).Settings.MapName.Value)
-				end)
-				if not s then
-				    print(r)
-				end
-				game.Workspace.Multiplayer:WaitForChild("OldMap",9e9).Name = "norepeats"
-			end
+			loadstring(game:HttpGet('https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS/TAS%20Player'))
+			"TAS Player Fixed By Tomato with help from Epix"
 		end
 	end
 end)
@@ -401,19 +364,8 @@ tas:NewButton("Create-TAS", "Create a TAS, Press then enter lift.", function()
 	loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/87466f9b6f9333449c683643e59fdf94/raw/440d5306e1aa87f1ba20e94be005bffe945e0f8a/Tas", true))()
 end)
 tas:NewButton("Run-TAS", "Press then enter lift!", function()
-	print("Loading TAS for: "..game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value)
-	local success, response = pcall(readfile, game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value..".json")
-	if not success then
-		clmain.newAlert("TAS file does not exist, Resetting!", Color3.fromRGB(230, 76, 0))
-		game.Players.LocalPlayer.Humanoid.Health = 0
-	else
-		getgenv().RunName = game.Workspace.Multiplayer:WaitForChild("Map").Settings.MapName.Value
-		loadstring(game:HttpGet("https://gist.githubusercontent.com/ExploitOnYt/41f9cf6e0d8f11903b531fa42ec20b6b/raw/44577cec7405ea15721aa65679ede3ae33746828/Tas%2520Run", true))()
-	end
-	repeat
-		wait()
-	until game.Workspace.Multiplayer:WaitForChild("OldMap")
-	print("TAS completed.")
+	loadstring(game:HttpGet('https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS/TAS%20Player'))
+	"TAS Player Fixed By Tomato with help from Epix"
 end)
 
 
