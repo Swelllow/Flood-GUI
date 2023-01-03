@@ -1,0 +1,144 @@
+getgenv().Mirrored = false
+local NewV = Vector3.new
+local NewC = CFrame.new
+local AngC = CFrame.fromEulerAnglesXYZ
+local LP = game.Players.LocalPlayer
+local Alert = getsenv(LP.PlayerScripts.CL_MAIN_GameScript).newAlert
+local Multi = Workspace.Multiplayer
+local RS = game:GetService('RunService')
+local wait = task.wait
+
+--IMPORTANT
+local CLMAIN = getsenv(LP.PlayerScripts.CL_MAIN_GameScript)
+CLMAIN.newAlert("TAS Player Started.")
+local Animate = getsenv(LP.Character.Animate)
+local RunName = Multi:WaitForChild('NewMap'):WaitForChild('Settings'):WaitForChild('MapName').Value
+local TAS = game:GetService("HttpService"):JSONDecode(readfile(RunName .. ".json"))
+CLMAIN.newAlert("TAS Loaded!")
+local Map = Multi:WaitForChild("Map")
+if Map:WaitForChild('Settings'):FindFirstChild("_MirrorMap") then
+    CLMAIN.newAlert('Map is not Mirrored.')
+else
+    CLMAIN.newAlert('Map is mirrored, TAS will be played mirrored!')
+    Mirrored = true
+end
+local Spawn = (function() 
+        local Workspace = game:GetService("Workspace")
+        local character = LP.Character
+        local characterPosition = character.HumanoidRootPart.Position -- only need to evaluate this once
+    
+        -- Get parts that have the character above them
+    
+        -- Part that's supposed to represent the character's "feet"
+        local dummyPart = Instance.new("Part")
+        dummyPart.Size = Vector3.one
+        dummyPart.Position = characterPosition - (Vector3.yAxis * 2)
+        dummyPart.Anchored = true
+        dummyPart.CanCollide = false
+        dummyPart.Parent = Workspace
+    
+        local overlapParams = OverlapParams.new()
+        overlapParams.FilterDescendantsInstances = {dummyPart} -- Only checking if bounding area intersects with "feet"
+        overlapParams.FilterType = Enum.RaycastFilterType.Whitelist
+    
+        local spawnCandidates = table.create(10)
+        for _, item in Map:GetDescendants() do
+            if not item:IsA("BasePart") or (item.Position - characterPosition).Magnitude > 10 then
+                continue
+            end
+    
+            -- If the part is flipped upside down, that is a problem, thus there is a check here
+            local facingUpVector = if item.CFrame.UpVector:Dot(Vector3.yAxis) >= 0 then item.CFrame.UpVector else -item.CFrame.UpVector
+            local candidatesInArea = Workspace:GetPartBoundsInBox(
+                item.CFrame + (facingUpVector * (item.Size.Y/2 + 0.25)),
+                Vector3.new(item.Size.X, 0.5, item.Size.Z),
+                overlapParams
+            )
+            for _, candidate in candidatesInArea do
+                if candidate == dummyPart then
+                    table.insert(spawnCandidates, item :: BasePart)
+                end
+            end
+        end
+    
+        dummyPart:Destroy()
+    
+        if #spawnCandidates >= 1 then
+            -- Prioritize invisible spawn parts parented to the map
+            for _, spawnCandidate in spawnCandidates do
+                if spawnCandidate.CanCollide and (spawnCandidate.Transparency >= 0.8 or spawnCandidate.Parent == map) then
+                    return spawnCandidate
+                end
+            end
+            -- Second pass: only needs to be CanCollide
+            for _, spawnCandidate in spawnCandidates do
+                if spawnCandidate.CanCollide then
+                    return spawnCandidate
+                end
+            end
+            -- Fall back to first in list
+            return spawnCandidates[1]
+        else
+            error("Failed to find spawn part!")
+        end
+end)()
+LP.Character.HumanoidRootPart.CFrame = NewC(TAS[3].CCFrame[1], TAS[3].CCFrame[2], TAS[3].CCFrame[3]) * AngC(TAS[3].CCFrame[4], TAS[3].CCFrame[5], TAS[3].CCFrame[6]) + NewV(Spawn.Position.X, Spawn.Position.Y - 1000, Spawn.Position.Z)
+LP.Character.HumanoidRootPart.Velocity = NewV(TAS[3].VVelocity[1], TAS[3].VVelocity[2], TAS[3].VVelocity[3])
+Workspace.CurrentCamera.CFrame = NewC(TAS[3].CCameraCFrame[1], TAS[3].CCameraCFrame[2], TAS[3].CCameraCFrame[3]) * AngC(TAS[3].CCameraCFrame[4], TAS[3].CCameraCFrame[5], TAS[3].CCameraCFrame[6]) + NewV(Spawn.Position.X, Spawn.Position.Y - 1000, Spawn.Position.Z)
+
+game:GetService("ReplicatedStorage").Remote.StartClientMapTimer.OnClientEvent:Wait()
+CLMAIN.newAlert('TAS Running..')
+PlayAnim = Animate.playAnimation
+Animate.playAnimation = function()end
+
+for i, v in pairs(Map:GetDescendants()) do
+   if v:IsA("TouchTransmitter") and v.Parent.Parent.ClassName == "Model" then
+      v.Parent.Size = NewV(6, 6, 6)
+   end
+end
+
+
+local Offset = Spawn.Position - NewV(0, 1000, 0)
+local DiffAnim = 0
+local TimeStart = os.clock()
+local OldFrame = 3
+local Loop
+Loop = RS.Heartbeat:connect(function()
+    for i = OldFrame, #TAS do
+        if (os.clock() - TimeStart) < TAS[i].time then
+            continue
+        elseif i >= #TAS then
+            Loop:Disconnect()
+            Animate.playAnimation = PlayAnim
+            CLMAIN.newAlert('TAS Run Finished!',Color3.new(0,1,0))
+            CLMAIN.newAlert('TAS Player By Tomato',Color3.new(0,1,0))
+        elseif (os.clock() - TimeStart) >= TAS[i].time then
+            OldFrame = i
+            local CF = TAS[i].CCFrame
+            if Mirrored == true then
+                local nCF = CF
+                CF[1] = nCF[3]
+                CF[3] = nCF[1]
+                CF[4] = nCF[6]
+                CF[6] = nCF[4]
+            end
+            local VV = TAS[i].VVelocity
+            local CCF = TAS[i].CCameraCFrame
+            local CA = TAS[i].AAnimation
+            LP.Character.HumanoidRootPart.CFrame = NewC(CF[1], CF[2], CF[3]) * AngC(CF[4], CF[5], CF[6]) + Offset
+            LP.Character.HumanoidRootPart.Velocity = NewV(VV[1], VV[2], VV[3])
+            Workspace.CurrentCamera.CFrame = NewC(CCF[1], CCF[2], CCF[3]) * AngC(CCF[4], CCF[5], CCF[6]) + Offset
+            if TAS[i].AAnimationChanged > DiffAnim then
+                if Anim == "walk" then
+                    PlayAnim(CA[1], CA[2], LP.Character.Humanoid)
+                    DiffAnim = TAS[i].AAnimationChanged
+                    Animate.setAnimationSpeed(0.76)
+                elseif Anim == "climb" then
+                else
+                    PlayAnim(CA[1], CA[2], LP.Character.Humanoid)
+                    DiffAnim = TAS[i].AAnimationChanged
+                end
+            end
+        end
+    end
+end)
