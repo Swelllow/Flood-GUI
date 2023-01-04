@@ -295,7 +295,7 @@ task.spawn(function()
 			end
 		end
 	end)
-	if S == true do
+	if S == true then
 		print('AutoPlay Started')
 	end
 end)
