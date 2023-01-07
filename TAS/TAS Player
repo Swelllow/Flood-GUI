@@ -98,7 +98,7 @@ for _, v in next, Map:GetDescendants() do
         if buttonPart ~= nil then
             buttonPart.Size = Vector3.new(6,6,6)
             if debugmode == true then
-                buttonPart.Color = Color3.new(0,1,0)
+                buttonPart.Color = Color3.new(0,0,1)
                 buttonPart.Transparency = 0
             end
         end
@@ -111,12 +111,9 @@ local OldFrame = 3
 local Loop
 Loop = RS.Heartbeat:connect(function(DeltaTime)
     local NewFrame = #TAS
-    local Divider = OldFrame + math.floor(1/DeltaTime)
+    local Divider = OldFrame + 60
     if Divider < NewFrame then
         NewFrame = Divider
-    end
-    if debugmode == true then
-        CLMAIN.newAlert(tostring(OldFrame).." - "..tostring(NewFrame),Color3.new(0,0,1))
     end
     for i = OldFrame, NewFrame do
         if (os.clock() - TimeStart) < TAS[i].time then
