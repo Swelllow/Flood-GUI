@@ -113,7 +113,7 @@ Loop = RS.Heartbeat:connect(function(DeltaTime)
     local NewFrame = #TAS
     local Divider = OldFrame + math.floor(1/DeltaTime)
     if Divider < NewFrame then
-        NewFrames = Divider
+        NewFrame = Divider
     end
     if debugmode == true then
         CLMAIN.newAlert(tostring(OldFrame).." - "..tostring(NewFrame),Color3.new(0,0,1))
