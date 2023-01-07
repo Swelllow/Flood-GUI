@@ -52,7 +52,7 @@ local save = clmain.newAlert
 clmain.newAlert = function(text)
     save(text,nil,nil,'rainbow')
 end
-if getrenv().wow then
+if getrenv().wow and debugmode == false then
 	clmain.newAlert('Already Executed!',Color3.new(1,0,0))
     error('Already Executed')
 else
@@ -287,19 +287,19 @@ auto:NewToggle("Auto-Play [Working]", "Requires TAS files", function(t)
 end)
 getgenv().play = false
 task.spawn(function()
-	local S,r = pcall(function()
 		while task.wait(1) do
-			if getgenv().play ~= false then
-				loadstring(game:HttpGet('https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS/TAS%20Player'))
-				"TAS Player Fixed By Tomato with help from Epix"
+			local S,r = pcall(function()
+				if getgenv().play ~= false then
+					loadstring(game:HttpGet('https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS/TAS%20Player'))
+					"TAS Player Fixed By Tomato with help from Epix"
+				end
+			end)
+			if S == true then
+				print('Round started.')
+			else
+				print(r)
 			end
 		end
-	end)
-	if S == true then
-		print('AutoPlay Started')
-	else
-		print(r)
-	end
 end)
 getgenv().infjump = false
 blatant:NewKeybind("Infinite Jump", "Jump while freefalling!", Enum.KeyCode.M, function(t)
@@ -409,7 +409,7 @@ credits:NewLabel("TAS script by Voiz#5668")
 credits:NewLabel("TAS File Minifier by iaan#8193")
 credits:NewLabel("Everything else by Tomato")
 wait()
-if debugmode == true do
+if debugmode == true then
 	clmain.newAlert("Flood GUI v3 loaded in Debug Mode!")
 else
 	clmain.newAlert("Flood GUI v3 Loaded!",nil,nil,"rainbow")
