@@ -410,7 +410,7 @@ credits:NewLabel("TAS File Minifier by iaan#8193")
 credits:NewLabel("Everything else by Tomato")
 wait()
 if debugmode == true then
-	clmain.newAlert("Flood GUI v3 loaded in Debug Mode!")
+	clmain.newAlert("Flood GUI v3 loaded in Debug Mode!",Color3.new(0,0,1))
 else
 	clmain.newAlert("Flood GUI v3 Loaded!",nil,nil,"rainbow")
 end
