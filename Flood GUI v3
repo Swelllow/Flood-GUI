@@ -408,9 +408,12 @@ credits:NewLabel("New Anti-Kick by AltLexon#6917")
 credits:NewLabel("TAS script by Voiz#5668")
 credits:NewLabel("TAS File Minifier by iaan#8193")
 credits:NewLabel("Everything else by Tomato")
-wait(.1)
-clmain.newAlert("Flooded v3 Loaded!",nil,nil,"rainbow")
-
+wait()
+if debugmode == true do
+	clmain.newAlert("Flood GUI v3 loaded in Debug Mode!")
+else
+	clmain.newAlert("Flood GUI v3 Loaded!",nil,nil,"rainbow")
+end
 local oldwrite; oldwrite = hookfunction(writefile,function(name,data,bypass)
     if bypass ~= true then
         local Mn = string.gsub(name,'.json','')
