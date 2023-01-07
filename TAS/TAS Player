@@ -123,10 +123,10 @@ Loop = RS.Heartbeat:connect(function()
             local CF = TAS[i].CCFrame
             if Mirrored == true then
                 local nCF = CF
-                CF[1] = nCF[3]
-                CF[3] = nCF[1]
-                CF[4] = nCF[6]
-                CF[6] = nCF[4]
+                CF[1] = -nCF[1]
+                CF[3] = nCF[3]
+                CF[4] = -nCF[4]
+                CF[6] = nCF[6]
             end
             local VV = TAS[i].VVelocity
             local CCF = TAS[i].CCameraCFrame
