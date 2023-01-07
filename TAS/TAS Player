@@ -91,12 +91,18 @@ CLMAIN.newAlert('TAS Running..')
 PlayAnim = Animate.playAnimation
 Animate.playAnimation = function()end
 
-for i, v in pairs(Map:GetDescendants()) do
-   if v.Name == "TouchInterest" then
-      v.Parent.Size = NewV(6, 6, 6)
-   end
+for _, v in next, Map:GetDescendants() do
+    if v.Name == 'ButtonIcon' then
+        local buttonPart = v.Parent.Parent:FindFirstChildOfClass('Part')
+        if buttonPart ~= nil then
+            buttonPart.Size = Vector3.new(6,6,6)
+            if debugmode == true then
+                buttonPart.Color = Color3.new(0,1,0)
+                buttonPart.Transparency = 0
+            end
+        end
+    end
 end
-
 
 local Offset = Spawn.Position - NewV(0, 1000, 0)
 local DiffAnim = 0
@@ -129,11 +135,11 @@ Loop = RS.Heartbeat:connect(function()
             LP.Character.HumanoidRootPart.Velocity = NewV(VV[1], VV[2], VV[3])
             Workspace.CurrentCamera.CFrame = NewC(CCF[1], CCF[2], CCF[3]) * AngC(CCF[4], CCF[5], CCF[6]) + Offset
             if TAS[i].AAnimationChanged > DiffAnim then
-                if Anim == "walk" then
+                if CA[1] == "walk" then
                     PlayAnim(CA[1], CA[2], LP.Character.Humanoid)
                     DiffAnim = TAS[i].AAnimationChanged
                     Animate.setAnimationSpeed(0.76)
-                elseif Anim == "climb" then
+                elseif CA[1] == "climb" then
                 else
                     PlayAnim(CA[1], CA[2], LP.Character.Humanoid)
                     DiffAnim = TAS[i].AAnimationChanged
