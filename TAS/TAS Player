@@ -92,7 +92,7 @@ PlayAnim = Animate.playAnimation
 Animate.playAnimation = function()end
 
 for i, v in pairs(Map:GetDescendants()) do
-   if v:IsA("TouchTransmitter") and v.Parent.Parent.ClassName == "Model" then
+   if v.Name == "TouchInterest" then
       v.Parent.Size = NewV(6, 6, 6)
    end
 end
