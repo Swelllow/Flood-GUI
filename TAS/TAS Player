@@ -110,12 +110,15 @@ local DiffAnim = 0
 local OldFrame = 3
 local Loop
 Loop = RS.Heartbeat:connect(function(DeltaTime)
-    local NewFrames = #TAS
+    local NewFrame = #TAS
     local Divider = OldFrame + math.floor(1/DeltaTime)
-    if Divider < NewFrames then
+    if Divider < NewFrame then
         NewFrames = Divider
     end
-    for i = OldFrame, NewFrames do
+    if debugmode == true then
+        CLMAIN.newAlert(tostring(OldFrame).." - "..tostring(NewFrame),Color3.new(0,0,1))
+    end
+    for i = OldFrame, NewFrame do
         if (os.clock() - TimeStart) < TAS[i].time then
             continue
         elseif i >= #TAS then
