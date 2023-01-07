@@ -87,6 +87,7 @@ LP.Character.HumanoidRootPart.Velocity = NewV(TAS[3].VVelocity[1], TAS[3].VVeloc
 Workspace.CurrentCamera.CFrame = NewC(TAS[3].CCameraCFrame[1], TAS[3].CCameraCFrame[2], TAS[3].CCameraCFrame[3]) * AngC(TAS[3].CCameraCFrame[4], TAS[3].CCameraCFrame[5], TAS[3].CCameraCFrame[6]) + NewV(Spawn.Position.X, Spawn.Position.Y - 1000, Spawn.Position.Z)
 
 game:GetService("ReplicatedStorage").Remote.StartClientMapTimer.OnClientEvent:Wait()
+local TimeStart = os.clock()
 CLMAIN.newAlert('TAS Running..')
 PlayAnim = Animate.playAnimation
 Animate.playAnimation = function()end
@@ -106,7 +107,6 @@ end
 
 local Offset = Spawn.Position - NewV(0, 1000, 0)
 local DiffAnim = 0
-local TimeStart = os.clock()
 local OldFrame = 3
 local Loop
 Loop = RS.Heartbeat:connect(function()
@@ -147,4 +147,8 @@ Loop = RS.Heartbeat:connect(function()
             end
         end
     end
+end)
+LP.Character.Humanoid.Died:Connect(function()
+    Loop:Disconnect()
+    CLMAIN.newAlert('Player Died.',Color3.new(1,0,0))
 end)
