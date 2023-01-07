@@ -297,6 +297,8 @@ task.spawn(function()
 	end)
 	if S == true then
 		print('AutoPlay Started')
+	else
+		print(r)
 	end
 end)
 getgenv().infjump = false
