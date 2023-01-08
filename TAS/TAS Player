@@ -138,9 +138,11 @@ Loop = RS.Heartbeat:connect(function(DeltaTime)
             if Mirrored == true then
                 local nCF = CF
                 CF[1] = nCF[1]
+                CF[2] = nCF[2]
                 CF[3] = -nCF[3]
                 CF[4] = nCF[4]
-                CF[6] = -nCF[6]
+                CF[5] = -nCF[5]
+                CF[6] = nCF[6]
             end
             local VV = TAS[i].VVelocity
             local CCF = TAS[i].CCameraCFrame
