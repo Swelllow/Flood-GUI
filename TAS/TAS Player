@@ -107,9 +107,39 @@ for _, v in next, Map:GetDescendants() do
     end
 end
 
+if debugmode == true then
+    local radius = 0.05
+    local function MakeRayVisible(ray,color)
+        local midpoint = ray.Origin + ray.Direction/2
+
+        local part = Instance.new("Part")
+        part.CanCollide = false
+        part.Parent = workspace
+        part.Anchored = true
+        part.CFrame = CFrame.new(midpoint, ray.Origin)
+        part.Size = Vector3.new(radius,radius, ray.Direction.Magnitude)
+
+        part.Material = Enum.Material.Neon
+        part.Color = color
+
+        return part
+    end
+end
+
 local Offset = Spawn.Position - NewV(0, 1000, 0)
 local DiffAnim = 0
 local OldFrame = 3
+
+if debugmode == true then
+    for i = 1, #TAS do
+        local function ToCFrame(CF)
+            return NewC(CF[1], CF[2], CF[3]) * AngC(CF[4], CF[5], CF[6]) + Offset
+        end
+        local origin = ToCFrame(TAS[i].CCFrame).Position
+        local ray = Ray.new(origin, ToCFrame(TAS[i+1].CCFrame).Position - origin)
+        MakeRayVisible(ray)
+    end
+end
 local Loop
 local Death
 Death = LP.Character.Humanoid.Died:Connect(function()
