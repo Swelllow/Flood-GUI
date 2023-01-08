@@ -294,9 +294,7 @@ task.spawn(function()
 					"TAS Player Fixed By Tomato with help from Epix"
 				end
 			end)
-			if S == true then
-				print('Round started.')
-			else
+			if S ~= true then
 				print(r)
 			end
 		end
