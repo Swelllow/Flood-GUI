@@ -136,11 +136,13 @@ local OldFrame = 3
 
 local Loop
 local Death
-Death = LP.Character.Humanoid.Died:Connect(function()
-    Death:Disconnect()
-    Loop:Disconnect()
-    RayParts:Destroy()
-    CLMAIN.newAlert('Player Died.',Color3.new(1,0,0))
+Death = LP.Character.Humanoid.Changed:Connect(function(Change)
+    if Change == "Health" and LP.Character.Humanoid.Health == 0 then
+        Death:Disconnect()
+        Loop:Disconnect()
+        RayParts:Destroy()
+        CLMAIN.newAlert('Player Died.',Color3.new(1,0,0))
+    end
 end)
 Loop = RS.Heartbeat:connect(function(DeltaTime)
     local NewFrame = #TAS
@@ -178,7 +180,7 @@ Loop = RS.Heartbeat:connect(function(DeltaTime)
             LP.Character.HumanoidRootPart.CFrame = NewC(CF[1], CF[2], CF[3]) * AngC(CF[4], CF[5], CF[6]) + Offset
             LP.Character.HumanoidRootPart.Velocity = NewV(VV[1], VV[2], VV[3])
             Workspace.CurrentCamera.CFrame = NewC(CCF[1], CCF[2], CCF[3]) * AngC(CCF[4], CCF[5], CCF[6]) + Offset
-            if TAS[i].AAnimationChanged > DiffAnim then
+            --if TAS[i].AAnimationChanged > DiffAnim then
                 if CA[1] == "walk" then
                     PlayAnim(CA[1], CA[2], LP.Character.Humanoid)
                     DiffAnim = TAS[i].AAnimationChanged
@@ -188,7 +190,7 @@ Loop = RS.Heartbeat:connect(function(DeltaTime)
                     PlayAnim(CA[1], CA[2], LP.Character.Humanoid)
                     DiffAnim = TAS[i].AAnimationChanged
                 end
-            end
+            --end
         end
     end
 end)
