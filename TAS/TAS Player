@@ -197,11 +197,11 @@ Loop = RS.Heartbeat:connect(function(DeltaTime)
 end)
 
 if debugmode == true then
-    for i = 1, #TAS do
+    for i = 1, (#TAS * 2) / 4 do
         local function ToCFrame(CF)
             return NewC(CF[1], CF[2], CF[3]) * AngC(CF[4], CF[5], CF[6]) + Offset
         end
-        local origin = ToCFrame(TAS[i].CCFrame).Position
+        local origin = ToCFrame(TAS[i*4].CCFrame).Position
         local ray = Ray.new(origin, ToCFrame(TAS[i].CCFrame).Position - origin)
         MakeRayVisible(ray,Color3.new(1,0,0))
     end
