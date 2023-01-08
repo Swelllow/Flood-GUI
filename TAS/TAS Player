@@ -116,6 +116,7 @@ RayParts.Parent = Workspace
 
         local part = Instance.new("Part")
         part.CanCollide = false
+        part.CanTouch = false
         part.Parent = RayParts
         part.Anchored = true
         part.CFrame = CFrame.new(midpoint, ray.Origin)
@@ -201,7 +202,7 @@ if debugmode == true then
             return NewC(CF[1], CF[2], CF[3]) * AngC(CF[4], CF[5], CF[6]) + Offset
         end
         local origin = ToCFrame(TAS[i].CCFrame).Position
-        local ray = Ray.new(origin, ToCFrame(TAS[i+5].CCFrame).Position - origin)
+        local ray = Ray.new(origin, ToCFrame(TAS[i].CCFrame).Position - origin)
         MakeRayVisible(ray,Color3.new(1,0,0))
     end
 end
