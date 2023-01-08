@@ -107,14 +107,16 @@ for _, v in next, Map:GetDescendants() do
     end
 end
 
-
+local RayParts = Instance.new('Model')
+RayParts.Name = "RayParts"
+RayParts.Parent = Workspace
     local radius = 0.05
     local function MakeRayVisible(ray,color)
         local midpoint = ray.Origin + ray.Direction/2
 
         local part = Instance.new("Part")
         part.CanCollide = false
-        part.Parent = workspace
+        part.Parent = RayParts
         part.Anchored = true
         part.CFrame = CFrame.new(midpoint, ray.Origin)
         part.Size = Vector3.new(radius,radius, ray.Direction.Magnitude)
@@ -130,13 +132,15 @@ local Offset = Spawn.Position - NewV(0, 1000, 0)
 local DiffAnim = 0
 local OldFrame = 3
 
+
+
 if debugmode == true then
     for i = 1, #TAS do
         local function ToCFrame(CF)
             return NewC(CF[1], CF[2], CF[3]) * AngC(CF[4], CF[5], CF[6]) + Offset
         end
         local origin = ToCFrame(TAS[i].CCFrame).Position
-        local ray = Ray.new(origin, ToCFrame(TAS[i+1].CCFrame).Position - origin)
+        local ray = Ray.new(origin, ToCFrame(TAS[i+5].CCFrame).Position - origin)
         MakeRayVisible(ray,Color3.new(1,0,0))
     end
 end
@@ -145,6 +149,7 @@ local Death
 Death = LP.Character.Humanoid.Died:Connect(function()
     Death:Disconnect()
     Loop:Disconnect()
+    RayParts:Destroy()
     CLMAIN.newAlert('Player Died.',Color3.new(1,0,0))
 end)
 Loop = RS.Heartbeat:connect(function(DeltaTime)
@@ -159,6 +164,7 @@ Loop = RS.Heartbeat:connect(function(DeltaTime)
         elseif i >= #TAS then
             Death:Disconnect()
             Loop:Disconnect()
+            RayParts:Destroy()
             Animate.playAnimation = PlayAnim
             CLMAIN.newAlert('TAS Run Finished!',Color3.new(0,1,0))
             CLMAIN.newAlert('TAS Player By Tomato',Color3.new(0,1,0))
