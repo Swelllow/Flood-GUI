@@ -107,7 +107,7 @@ for _, v in next, Map:GetDescendants() do
     end
 end
 
-if debugmode == true then
+
     local radius = 0.05
     local function MakeRayVisible(ray,color)
         local midpoint = ray.Origin + ray.Direction/2
@@ -124,7 +124,7 @@ if debugmode == true then
 
         return part
     end
-end
+
 
 local Offset = Spawn.Position - NewV(0, 1000, 0)
 local DiffAnim = 0
@@ -137,7 +137,7 @@ if debugmode == true then
         end
         local origin = ToCFrame(TAS[i].CCFrame).Position
         local ray = Ray.new(origin, ToCFrame(TAS[i+1].CCFrame).Position - origin)
-        MakeRayVisible(ray)
+        MakeRayVisible(ray,Color3.new(1,0,0))
     end
 end
 local Loop
