@@ -291,7 +291,7 @@ task.spawn(function()
 			local S,r = pcall(function()
 				if getgenv().play ~= false then
 					loadstring(game:HttpGet('https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS/TAS%20Player'))
-					"TAS Player Fixed By Tomato with help from Epix"
+					print("TAS Player Fixed By Tomato with help from Epix")
 				end
 			end)
 			if S ~= true then
