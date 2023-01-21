@@ -341,6 +341,7 @@ tas:NewButton("Rejoin", "Rejoin game so you can create another TAS", function()
 	game:GetService("TeleportService"):Teleport(game:GetService("Players").LocalPlayer)
 end)
 tas:NewButton("Create-TAS", "Create a TAS, Press then enter lift.", function()
+		loadstring(game:HttpGet('https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS/TAS%20Record%20Fix'))()
 		game.Workspace.DescendantAdded:Connect(function(child)
 			if child.ClassName == "Sound" then
 				child:Destroy()
