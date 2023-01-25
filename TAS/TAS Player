@@ -165,24 +165,24 @@ Loop = RS.Heartbeat:connect(function(DeltaTime)
         elseif (os.clock() - TimeStart) >= TAS[i].time then
             OldFrame = i
             local CF = TAS[i].CCFrame
+            local CCF = TAS[i].CCameraCFrame
+            local VV = TAS[i].VVelocity
             if Mirrored == true then
                 local nCF = CF
                 CF[1] = nCF[1]
                 CF[2] = nCF[2]
                 CF[3] = -nCF[3]
-                CF[4] = -nCF[4]
-                CF[5] = -nCF[5]
+                CF[4] = nCF[4]
+                CF[5] = nCF[5]
                 CF[6] = -nCF[6]
+                VV[3] = -VV[3]
+                CCF[3] = -CCF[3]
             end
-            local VV = TAS[i].VVelocity
-            VV[3] = -VV[3]
-            local CCF = TAS[i].CCameraCFrame
-            CCF[3] = -CCF[3]
             local CA = TAS[i].AAnimation
             LP.Character.HumanoidRootPart.CFrame = NewC(CF[1], CF[2], CF[3]) * AngC(CF[4], CF[5], CF[6]) + Offset
             LP.Character.HumanoidRootPart.Velocity = NewV(VV[1], VV[2], VV[3])
             Workspace.CurrentCamera.CFrame = NewC(CCF[1], CCF[2], CCF[3]) * AngC(CCF[4], CCF[5], CCF[6]) + Offset
-            --if TAS[i].AAnimationChanged > DiffAnim then
+            if TAS[i].AAnimationChanged > DiffAnim then
                 if CA[1] == "walk" then
                     PlayAnim(CA[1], CA[2], LP.Character.Humanoid)
                     DiffAnim = TAS[i].AAnimationChanged
@@ -192,7 +192,7 @@ Loop = RS.Heartbeat:connect(function(DeltaTime)
                     PlayAnim(CA[1], CA[2], LP.Character.Humanoid)
                     DiffAnim = TAS[i].AAnimationChanged
                 end
-            --end
+            end
         end
     end
 end)
