@@ -340,6 +340,79 @@ end)
 tas:NewButton("Rejoin", "Rejoin game so you can create another TAS", function()
 	game:GetService("TeleportService"):Teleport(game:GetService("Players").LocalPlayer)
 end)
+
+tas:NewButton('Fix Create-TAS', 'Fix', function()
+    local Workspace = game:GetService('Workspace')
+    local LP = game.Players.LocalPlayer
+    if Workspace.Multiplayer:FindFirstChild('Map') then
+        Workspace.Multiplayer.Map:Destroy()
+    end
+    local Map = Workspace.Multiplayer:WaitForChild('Map')
+    local Spawn = (function() -- this whole function was made by Epix
+            local Workspace = game:GetService("Workspace")
+            local character = LP.Character
+            local characterPosition = character.HumanoidRootPart.Position -- only need to evaluate this once
+    
+            -- Get parts that have the character above them
+    
+            -- Part that's supposed to represent the character's "feet"
+            local dummyPart = Instance.new("Part")
+            dummyPart.Size = Vector3.one
+            dummyPart.Position = characterPosition - (Vector3.yAxis * 2)
+            dummyPart.Anchored = true
+            dummyPart.CanCollide = false
+            dummyPart.Parent = Workspace
+    
+            local overlapParams = OverlapParams.new()
+            overlapParams.FilterDescendantsInstances = {dummyPart} -- Only checking if bounding area intersects with "feet"
+            overlapParams.FilterType = Enum.RaycastFilterType.Whitelist
+    
+            local spawnCandidates = table.create(10)
+            for _, item in next, Map:GetDescendants() do
+                if not item:IsA("BasePart") or (item.Position - characterPosition).Magnitude > 10 then
+                    continue
+                end
+    
+                -- If the part is flipped upside down, that is a problem, thus there is a check here
+                local facingUpVector
+                if item.CFrame.UpVector:Dot(Vector3.yAxis) >= 0 then facingUpVector = item.CFrame.UpVector else facingUpVector = -item.CFrame.UpVector end
+                local candidatesInArea = Workspace:GetPartBoundsInBox(
+                    item.CFrame + (facingUpVector * (item.Size.Y/2 + 0.25)),
+                    Vector3.new(item.Size.X, 0.5, item.Size.Z),
+                    overlapParams
+                )
+                for _, candidate in next, candidatesInArea do
+                    if candidate == dummyPart then
+                        table.insert(spawnCandidates, item)
+                    end
+                end
+            end
+    
+            dummyPart:Destroy()
+    
+            if #spawnCandidates >= 1 then
+                -- Prioritize invisible spawn parts parented to the map
+                for _, spawnCandidate in next, spawnCandidates do
+                    if spawnCandidate.CanCollide and (spawnCandidate.Transparency >= 0.8 or spawnCandidate.Parent == map) then
+                        return spawnCandidate
+                    end
+                end
+                -- Second pass: only needs to be CanCollide
+                for _, spawnCandidate in next, spawnCandidates do
+                    if spawnCandidate.CanCollide then
+                        return spawnCandidate
+                    end
+                end
+                -- Fall back to first in list
+                return spawnCandidates[1]
+            else
+                error("Failed to find spawn part!")
+            end
+    end)()
+    
+Spawn.Name = "Spawn"
+end)
+
 tas:NewButton("Create-TAS", "Create a TAS, Press then enter lift.", function()
 	game.Workspace.DescendantAdded:Connect(function(child)
 		if child.ClassName == "Sound" then
@@ -371,7 +444,6 @@ tas:NewButton("Create-TAS", "Create a TAS, Press then enter lift.", function()
         end)
 	Fix()
 	ButtonStuff()
-	loadstring(game:HttpGet('https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS/TAS%20Record%20Fix'))()
 end)
 tas:NewButton("Run-TAS", "Press then enter lift!", function()
 	loadstring(game:HttpGet('https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS/TAS%20Player'))
