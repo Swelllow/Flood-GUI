@@ -16,7 +16,7 @@ local RunName = Multi:WaitForChild('NewMap'):WaitForChild('Settings'):WaitForChi
 local TAS = game:GetService("HttpService"):JSONDecode(readfile(RunName .. ".json"))
 CLMAIN.newAlert("TAS Loaded!")
 local Map = Multi:WaitForChild("Map")
-if Map:WaitForChild('Settings'):FindFirstChild("_MirrorMap") then
+if not Map:WaitForChild('Settings'):FindFirstChild("_MirrorMap") then
     CLMAIN.newAlert('Map is not Mirrored.')
     Mirrored = false
 else
