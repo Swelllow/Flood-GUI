@@ -47,10 +47,11 @@ getgenv''.maps = {
 	}
 wait = task.wait
 
-local clmain = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CL_MAIN_GameScript")) or wait()
-local save = clmain.newAlert
+local clmain = {}  --getsenv(game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CL_MAIN_GameScript")) or wait()
+--local save = clmain.newAlert
 clmain.newAlert = function(text)
-    save(text,nil,nil,'rainbow')
+    --save(text,nil,nil,'rainbow')
+    print(text)
 end
 if getrenv().wow and debugmode == false then
 	clmain.newAlert('Already Executed!',Color3.new(1,0,0))
