@@ -1,4 +1,7 @@
-repeat task.wait() until game:IsLoaded() 
+repeat wait() until game:IsLoaded() or game.Loaded:wait()
+--anticheat bypass all credits to altlexon
+game:GetService("ReplicatedStorage").Remote.ReqCharVars.OnClientInvoke = function()return{}end
+
 getgenv''.maps = {
 		"Lost Woods",
 		"Axiom",
@@ -53,11 +56,11 @@ clmain.newAlert = function(text)
     --save(text,nil,nil,'rainbow')
     print(text)
 end
-if getrenv().wow and debugmode == false then
+if getgenv().wow and debugmode == false then
 	clmain.newAlert('Already Executed!',Color3.new(1,0,0))
     error('Already Executed')
 else
-    getrenv().wow=''
+    getgenv().wow=''
 end
 -- TAS file minifier 
 -- Starting from this line to ending line code was made by ian
@@ -95,10 +98,16 @@ game:service'Players'.LocalPlayer.Idled:connect(function()
 	bb:CaptureController()
 	bb:ClickButton2(Vector2.new())
 end)
--- new anticheat bypass all credits to altlexon
-game.ReplicatedStorage.Remote.ReqCharVars.OnClientInvoke = function()
-	return {}
+
+-- new anticheat bypass basicly just disables the script
+
+for i,v in ipairs(getnilinstances()) do
+	if v.Name == "CL_AntiExploit" then
+		print('AntiCheat Disabled.')
+		v:Destroy()
+	end
 end
+
 getgenv().oof = false
 local votemap = game.Players.LocalPlayer.PlayerGui.GameGui.VoteMap
 local key = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
