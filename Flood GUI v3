@@ -159,7 +159,7 @@ task.spawn(function()
 	end
 end)
 local UIS = game:GetService'UserInputService'
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Library = loadstring(game:HttpGet("https://pastebin.com/raw/vff1bQ9F"))()
 local colors = {
 	SchemeColor = Color3.fromRGB(0, 100, 255),
 	Background = Color3.fromRGB(40, 40, 40),
