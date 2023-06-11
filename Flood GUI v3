@@ -2,52 +2,12 @@ repeat wait() until game:IsLoaded() or game.Loaded:wait()
 --anticheat bypass all credits to altlexon
 game:GetService("ReplicatedStorage").Remote.ReqCharVars.OnClientInvoke = function()return{}end
 
-getgenv''.maps = {
-		"Lost Woods",
-		"Axiom",
-		"Castle Tides",
-		"Poisonous Valley",
-		"Marred Dreams",
-		"Buried Oasis",
-		"Forsaken Era",
-		"Eerie Peaks",
-		"Polar Industry",
-		"Infiltration",
-		"Cave System",
-		"Flood Island",
-		"Oriental Grove",
-		"Sky Sanctuary",
-		"Decrepit Seas",
-		"Mysterium",
-		"Forgotten Tombs",
-		"Construction Thrill",
-		"Fall Equinox",
-		"Northern Workshop",
-		"Lava Tower",
-		"Crystal Caverns",
-		"Snowy Peaks",
-		"Dark Sci-Forest",
-		"Graveyard Cliffside",
-		"Wild Savannah",
-		"Sedimentary Temple",
-		"Sunken Citadel",
-		"Relic Valley",
-		"Poisonous Forest",
-		"Abandoned Facility",
-		"Familiar Ruins",
-		"Lost Desert",
-		"Gloomy Manor",
-		"Sinking Ship",
-		"Dark Sci-Facility",
-		"Beneath The Ruins",
-		"Magmatic Mines",
-		"Fallen",
-		"Blue Moon",
-		"Poisonous Chasm",
-		"Ignis Peaks",
-		"Sandswept Ruins",
-		"Satomi Springs"
-	}
+-- map list extractor
+getgenv().maps = {}
+local script = require(game.ReplicatedStorage.SharedModules.FE2Library)
+for i,v in pairs(script.getOfficialMapData()) do
+	table.insert(maps,v.mapName)
+end
 wait = task.wait
 
 local clmain = {}  --getsenv(game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CL_MAIN_GameScript")) or wait()
