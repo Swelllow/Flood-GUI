@@ -10,12 +10,8 @@ for i,v in pairs(script.getOfficialMapData()) do
 end
 wait = task.wait
 
-local clmain = {}  --getsenv(game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CL_MAIN_GameScript")) or wait()
---local save = clmain.newAlert
-clmain.newAlert = function(text)
-    --save(text,nil,nil,'rainbow')
-    print(text)
-end
+local clmain = getsenv( game.Players.LocalPlayer.PlayerScripts["CL_MAIN_GameScript"] )
+local save = clmain.newAlert
 if getgenv().wow and debugmode == false then
 	clmain.newAlert('Already Executed!',Color3.new(1,0,0))
     error('Already Executed')
@@ -59,7 +55,7 @@ game:service'Players'.LocalPlayer.Idled:connect(function()
 	bb:ClickButton2(Vector2.new())
 end)
 
--- new anticheat bypass basicly just disables the script
+-- anticheat bypass aid? basicly just disables the script
 
 for i,v in ipairs(getnilinstances()) do
 	if v.Name == "CL_AntiExploit" then
@@ -261,7 +257,7 @@ task.spawn(function()
 			local S,r = pcall(function()
 				if getgenv().play ~= false then
 					loadstring(game:HttpGet('https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS/TAS%20Player'))
-					"TAS Player Fixed By Tomato with help from Epix"
+					"TAS Player Fixed & Optimized By Tomato with help from Epix"
 				end
 			end)
 			if S ~= true then
