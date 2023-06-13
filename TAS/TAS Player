@@ -136,14 +136,12 @@ Loop = RS.Heartbeat:connect(function(DeltaTime)
             local VV = TAS[i].VVelocity
             if Mirrored == true then
                 local nCF = CF
-                CF[1] = nCF[1]
-                CF[2] = nCF[2]
                 CF[3] = -nCF[3]
-                CF[4] = nCF[4]
-                CF[5] = nCF[5]
                 CF[6] = -nCF[6]
                 VV[3] = -VV[3]
+                VV[6] = -VV[6]
                 CCF[3] = -CCF[3]
+                CCF[6] = -CCF[6]
             end
             local CA = TAS[i].AAnimation
             LP.Character.HumanoidRootPart.CFrame = NewC(CF[1], CF[2], CF[3]) * AngC(CF[4], CF[5], CF[6]) + Offset
