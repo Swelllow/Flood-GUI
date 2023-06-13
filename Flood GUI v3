@@ -281,11 +281,9 @@ auto:NewToggle("Auto-Vote", "Automatically votes for you!", function(t)
 	getgenv().oof = t
 end)
 auto:NewButton("Get TAS files", "Downloads Required TAS files!", function()
-	print("Starting downloads..")
 	for i, v in pairs(maps) do
-		print("-------------------------------------------------")
 		local map = string.gsub(v, " ", "%%20")
-		local su = false -- isfile(v..".json")
+		local su = isfile(v..".json")
 		if su == true then
 			clmain.newAlert(v.." TAS file already exists!",Color3.fromRGB(50,100,255))
 		else
@@ -383,17 +381,6 @@ if debugmode == true then
 else
 	clmain.newAlert("Flood GUI v3 Loaded!",nil,nil,"rainbow")
 end
-local oldwrite; oldwrite = hookfunction(writefile,function(name,data,bypass)
-    if bypass ~= true then
-        local Mn = string.gsub(name,'.json','')
-        if table.find(maps,Mn) then
-            clmain.newAlert("Saved "..Mn.." TAS file!",nil,nil,"rainbow")
-            return oldwrite(name,minfile(data))
-        end
-    end
-    return oldwrite(name,data)
-end)
-
 
 --resets character to fix lag bug wow
 game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Health = 0
