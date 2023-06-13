@@ -90,74 +90,6 @@ votemap.Changed:Connect(function(change)
 end)
 print("Loaded!")
 local lp = game.Players.LocalPlayer
-local TweenService = game:GetService("TweenService")
-local TS = game:GetService("TweenService")
-local function Time(targetpos)
-	local tme = (targetpos - lp.Character.HumanoidRootPart.Position).Magnitude / math.random(16, 20)
-	return tme
-end
-local function tween(pos)
-	local toof = TS:Create(lp.Character.HumanoidRootPart, TweenInfo.new(Time(pos), Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {
-		CFrame = CFrame.new(pos)
-	})
-	toof:Play()
-	return toof
-end
-
-
-getgenv().active = false
-task.spawn(function()
-	while wait(1) do
-		local function oof()
-			print(game.Workspace.Multiplayer:WaitForChild("Map",9e9).Name)
-			wait()
-			Map = workspace.Multiplayer:WaitForChild("Map",9e9)
-			for i, v in pairs(Map:GetDescendants()) do
-				if v.Name == "Handle" then
-					v:Destroy()
-				end
-			end
-			if Map:FindFirstChild("Settings") ~= nil then
-				print(Map.Settings.MapName.Value)
-			end
-			if Map:FindFirstChild("ExitRegion", true) then
-				local oos = tween(Map:FindFirstChild("ExitRegion", true).Position, Map:FindFirstChild("ExitRegion", true).CFrame)
-				oos.Completed:wait()
-				wait()
-				Map:FindFirstChild("ExitRegion", true):Destroy()
-				if getgenv().active == true then
-					return
-				end
-			end
-			for i, v in pairs(Map:GetDescendants()) do
-				if v:IsA("Part") and v:FindFirstChild("TouchInterest") ~= nil and v.Parent ~= nil then
-					local toof = tween(v.Position, v.CFrame)
-					toof.Completed:wait()
-					wait()
-					v:Destroy()
-				end
-			end
-		end
-		if getgenv().active == true then
-			oof()
-			if Map:FindFirstChild("ExitRegion", true) == nil then
-				repeat
-					wait()
-				until game.Workspace.Multiplayer:WaitForChild("OldMap")
-				game.Players.LocalPlayer.Character.Humanoid.Health = 0
-				game.Players.LocalPlayer.CharacterAdded:Wait()
-				wait(.1)
-				game:GetService("ReplicatedStorage").Remote.AddedWaiting:FireServer(-game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer())
-				wait(.3)
-				for i, v in pairs(getconnections(game:GetService("Players").LocalPlayer.PlayerGui.GameGui.Waiting.UI.Content.Buttons.MapVote.MouseButton1Click)) do
-					v:Fire()
-				end
-			end
-		else
-			wait(1)
-		end
-	end
-end)
 local UIS = game:GetService'UserInputService'
 local Library = loadstring(game:HttpGet("https://pastebin.com/raw/vff1bQ9F"))()
 local colors = {
@@ -257,7 +189,7 @@ task.spawn(function()
 			local S,r = pcall(function()
 				if getgenv().play ~= false then
 					loadstring(game:HttpGet('https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS/TAS%20Player'))
-					"TAS Player Fixed & Optimized By Tomato with help from Epix"
+					"TAS Player Fixed & Optimized By Tomato with help from Epix and Voiz"
 				end
 			end)
 			if S ~= true then
@@ -275,21 +207,20 @@ UIS.InputBegan:connect(function(UserInput,Typed)
 	end
 end)
 auto:NewToggle("Auto-Farm [DISCONTINUED]", "Automatically wins for you!", function(t)
-	getgenv().active = t
 end)
-auto:NewToggle("Auto-Vote", "Automatically votes for you!", function(t)
+--[[auto:NewToggle("Auto-Vote", "Automatically votes for you!", function(t)
 	getgenv().oof = t
-end)
+end)]]
 auto:NewButton("Get TAS files", "Downloads Required TAS files!", function()
 	for i, v in pairs(maps) do
-		local map = string.gsub(v, " ", "%%20")
+		local map = HttpService:UrlEncode(v)
 		local su = isfile(v..".json")
 		if su == true then
 			clmain.newAlert(v.." TAS file already exists!",Color3.fromRGB(50,100,255))
 		else
 			local s, r = pcall(function()
 				local tas = game:HttpGet("https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS%20FILES/"..map..".json")
-				writefile(v..".json", minfile(tas),true)
+				writefile(v..".json", tas,true) -- minfile(tas) removed
 			end)
 			if s then
 				clmain.newAlert("Downloaded "..v.." TAS file succesfully!",Color3.fromRGB(0,255,0))
@@ -372,7 +303,7 @@ tas:NewToggle("Auto-Leave", "Automatically leaves when player joins!", function(
 	getgenv().autoleave = t
 end)
 credits:NewLabel("New Anti-Kick by AltLexon#6917")
-credits:NewLabel("TAS script by Voiz#5668")
+credits:NewLabel("TAS script by Voiz#5668 | Reverse Engineered by Tomato")
 credits:NewLabel("TAS File Minifier by iaan#8193")
 credits:NewLabel("Everything else by Tomato")
 wait()
