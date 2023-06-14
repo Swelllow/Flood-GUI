@@ -29,7 +29,7 @@ end
 
 local Spawn = (function() -- Replaced Epix function with Voiz because size
     local CharacterParts = {}
-    local Character = LocalPlayer.Character
+    local Character = LP.Character
     local Ray = Ray.new(Character.HumanoidRootPart.Position,Vector3.new(0,-10,0))
     if game.Workspace.CurrentCamera:FindFirstChild("ShadowPt") then
         table.insert(CharacterParts,game.Workspace.CurrentCamera.ShadowPt)
