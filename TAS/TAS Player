@@ -10,7 +10,7 @@ local wait = task.wait
 
 --IMPORTANT
 local CLMAIN = getsenv(LP.PlayerScripts.CL_MAIN_GameScript)
-CLMAIN.newAlert("TAS Player Started.")
+CLMAIN.newAlert("TAS Player v1.0.0 Started.")
 local Animate = getsenv(LP.Character.Animate)
 local RunName = Multi:WaitForChild('NewMap'):WaitForChild('Settings'):WaitForChild('MapName').Value
 local TAS = game:GetService("HttpService"):JSONDecode(readfile(RunName .. ".json"))
