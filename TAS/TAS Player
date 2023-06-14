@@ -15,7 +15,8 @@ local Animate = getsenv(LP.Character.Animate)
 local RunName = Multi:WaitForChild('NewMap'):WaitForChild('Settings'):WaitForChild('MapName').Value
 local TAS = game:GetService("HttpService"):JSONDecode(readfile(RunName .. ".json"))
 CLMAIN.newAlert("TAS Loaded!")
-local Map = Multi:WaitForChild("Map")
+local Map = Multi:WaitForChild("NewMap")
+Map:GetPropertyChangedSignal("Name"):Wait()
 --[[
 if Map:WaitForChild('Settings'):FindFirstChild("_MirrorMap") then
     CLMAIN.newAlert('Map is not Mirrored.')
@@ -26,7 +27,7 @@ else
 end
 --]]
 
-local Spawn = function() -- Replaced Epix function with Voiz because size
+local Spawn = (function() -- Replaced Epix function with Voiz because size
     local CharacterParts = {}
     local Character = LocalPlayer.Character
     local Ray = Ray.new(Character.HumanoidRootPart.Position,Vector3.new(0,-10,0))
@@ -50,7 +51,7 @@ local Spawn = function() -- Replaced Epix function with Voiz because size
             table.insert(CharacterParts,hit)
         end
     end
-end
+end)()
 LP.Character.HumanoidRootPart.CFrame = NewC(TAS[3].CCFrame[1], TAS[3].CCFrame[2], TAS[3].CCFrame[3]) * AngC(TAS[3].CCFrame[4], TAS[3].CCFrame[5], TAS[3].CCFrame[6]) + NewV(Spawn.Position.X, Spawn.Position.Y - 1000, Spawn.Position.Z)
 LP.Character.HumanoidRootPart.Velocity = NewV(TAS[3].VVelocity[1], TAS[3].VVelocity[2], TAS[3].VVelocity[3])
 Workspace.CurrentCamera.CFrame = NewC(TAS[3].CCameraCFrame[1], TAS[3].CCameraCFrame[2], TAS[3].CCameraCFrame[3]) * AngC(TAS[3].CCameraCFrame[4], TAS[3].CCameraCFrame[5], TAS[3].CCameraCFrame[6]) + NewV(Spawn.Position.X, Spawn.Position.Y - 1000, Spawn.Position.Z)
