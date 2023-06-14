@@ -1,4 +1,4 @@
-    getgenv().Mirrored = false
+getgenv().Mirrored = false
 local NewV = Vector3.new
 local NewC = CFrame.new
 local AngC = CFrame.fromEulerAnglesXYZ
@@ -10,14 +10,14 @@ local wait = task.wait
 
 --IMPORTANT
 local CLMAIN = getsenv(LP.PlayerScripts.CL_MAIN_GameScript)
-CLMAIN.newAlert("TAS Player v1.0.1 Started.")
+CLMAIN.newAlert("TAS Player v1.0.2 Started.")
 local Animate = getsenv(LP.Character.Animate)
 local RunName = Multi:WaitForChild('NewMap'):WaitForChild('Settings'):WaitForChild('MapName').Value
 local TAS = game:GetService("HttpService"):JSONDecode(readfile(RunName .. ".json"))
 CLMAIN.newAlert("TAS Loaded!")
 local Map = Multi:WaitForChild("NewMap")
 Map:GetPropertyChangedSignal("Name"):Wait()
---[[
+
 if Map:WaitForChild('Settings'):FindFirstChild("_MirrorMap") then
     CLMAIN.newAlert('Map is not Mirrored.')
     Mirrored = false
@@ -25,7 +25,6 @@ else
     CLMAIN.newAlert('Map is mirrored, TAS will be played mirrored!')
     Mirrored = true
 end
---]]
 
 local Spawn = (function() -- Replaced Epix function with Voiz because size
     local CharacterParts = {}
@@ -163,12 +162,13 @@ Loop = RS.Heartbeat:connect(function(DeltaTime)
 end)
 
 if debugmode == true then
-    for i = 1, #TAS do
+    for i = 1, #TAS, 24 do
         local function ToCFrame(CF)
             return NewC(CF[1], CF[2], CF[3]) * AngC(CF[4], CF[5], CF[6]) + Offset
         end
         local origin = ToCFrame(TAS[i].CCFrame).Position
         local ray = Ray.new(origin, ToCFrame(TAS[i].CCFrame).Position - origin)
         MakeRayVisible(ray,Color3.new(1,0,0))
+        task.wait()
     end
 end
