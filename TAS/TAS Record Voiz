@@ -16,11 +16,11 @@ local TimeStart
 local TimeText
 local function ReturnPlayerInfo()
     return {
-            CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame,
-            CameraCFrame = game.Workspace.CurrentCamera.CFrame,
-            Velocity = game.Players.LocalPlayer.Character.HumanoidRootPart.Velocity,
+            CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame,
+            CameraCFrame = Workspace.CurrentCamera.CFrame,
+            Velocity = LocalPlayer.Character.HumanoidRootPart.Velocity,
             Animation = AnimationState,
-            Time = os.clock() - TimeStart - TimePaused,
+            Time = tick() - TimeStart - TimePaused,
     }
 end
 local function SetPrimaryPart()
@@ -50,14 +50,14 @@ local function SetPrimaryPart()
     end
 end
 local function SetUpGui()
-    for i,v in pairs(LocalPlayer.PlayerGui.GameGui.HUD.GameStats:GetChildren()) do
+    for i,v in pairs(LocalPlayer.PlayerGui.GameGui.HUD.Main.GameStats:GetChildren()) do
         if v:IsA("Frame") then
             v.Visible = false
         end
     end
     TimeText = Instance.new("TextLabel")
     TimeText.Name = "TimeText"
-    TimeText.Parent = LocalPlayer.PlayerGui.GameGui.HUD.GameStats
+    TimeText.Parent = LocalPlayer.PlayerGui.GameGui.HUD.Main.GameStats
     TimeText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     TimeText.BackgroundTransparency = 1.000
     TimeText.Position = UDim2.new(0.030, 0, 0.35, 0)
@@ -102,8 +102,8 @@ local function SetUpMap()
     SetUpGui()
     SenvAnimation = getsenv(game.Players.LocalPlayer.Character.Animate)
     PlayAnimation = SenvAnimation.playAnimation
-    TimePauseHolder = os.clock()
-    TimeStart = os.clock()
+    TimePauseHolder = tick()
+    TimeStart = tick()
     function SenvAnimation.playAnimation(a,b)
         if not Pause then
             AnimationState = {a,b}
@@ -112,7 +112,7 @@ local function SetUpMap()
     end
 end
 local function SetTimeGui()
-    local TimePlayed = os.clock() - TimeStart - TimePaused
+    local TimePlayed = tick() - TimeStart - TimePaused
     local m = math.floor(TimePlayed / 60)
     local s = math.floor(TimePlayed % 60)
     local ms = math.floor((TimePlayed * 1000) % 1000)
@@ -128,11 +128,11 @@ local function UserPause()
     if Pause then
         LocalPlayer.Character.HumanoidRootPart.Anchored = true
         TimeText.TextColor3 = Color3.fromRGB(255, 255, 0)
-        TimePauseHolder = os.clock()
+        TimePauseHolder = tick()
     else
         LocalPlayer.Character.HumanoidRootPart.Anchored = false
         TimeText.TextColor3 = Color3.fromRGB(255,255,255)
-        TimePaused = TimePaused + os.clock() - TimePauseHolder
+        TimePaused = TimePaused + tick() - TimePauseHolder
     end
 end
 local function BackSavestate()
@@ -144,8 +144,8 @@ local function BackSavestate()
     LocalPlayer.Character.HumanoidRootPart.CFrame = InfoState.CFrame
     LocalPlayer.Character.HumanoidRootPart.Velocity = InfoState.Velocity
     game.Workspace.CurrentCamera.CFrame = InfoState.CameraCFrame
-    TimePauseHolder = os.clock()
-    TimeStart = os.clock() - InfoState.Time
+    TimePauseHolder = tick()
+    TimeStart = tick() - InfoState.Time
     TimePaused = 0
     PlayAnimation(InfoState.Animation[1],InfoState.Animation[2],LocalPlayer.Character.Humanoid)
     if InfoState.Animation[1] == "walk" then
