@@ -1,2 +1,2 @@
 local Branch = ...
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ImMejor35/Flood-GUI/"..Branch.."/Flood%20GUI%20v3"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ImMejor35/Flood-GUI/"..Branch.."/Flood%20GUI%20v3"))(Branch)
