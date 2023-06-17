@@ -105,9 +105,9 @@ local Spawn = (function() -- this whole function was made by Epix
 		    end
 		    while true do
 		        local hit,pos = game.Workspace:FindPartOnRayWithIgnoreList(Ray,CharacterParts)
-		        if hit:IsA("Part") and math.floor(hit.Size.X) == math.floor(hit.Size.Z) then
+		        if hit and hit:IsA("Part") and math.floor(hit.Size.X) == math.floor(hit.Size.Z) then
 		            return hit
-		        else
+		        elseif hit then
 		            table.insert(CharacterParts,hit)
 		        end
 		    end
