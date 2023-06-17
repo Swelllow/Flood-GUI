@@ -227,7 +227,7 @@ auto:NewButton("Get TAS files", "Downloads Required TAS files!", function()
 				clmain.newAlert("Failed to download "..v.." TAS file. :(",Color3.fromRGB(255,0,0))
 			end
 		end
-		wait(0.5)
+		wait()
 	end
 	clmain.newAlert("Finished Downloading TAS files")
 end)
