@@ -149,8 +149,8 @@ Loop = RunService.Heartbeat:connect(function(DeltaTime)
 	if Divider < NewFrame then
 		NewFrame = Divider
 	end
-	local Time
 	for i = OldFrame, NewFrame do
+		local Time
 		if TAS[i].time ~= nil then
 		    Time = TAS[i].time
 		else
