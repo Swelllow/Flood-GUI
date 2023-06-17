@@ -38,7 +38,7 @@ else
 	newAlert('Map is mirrored, TAS will be played mirrored!')
 	Mirrored = true
 end
-
+ReplicatedStorage.Remote.StartClientMapTimer.OnClientEvent:Wait()
 local Spawn = (function() -- this whole function was made by Epix
 	local characterPosition = HumanoidRootPart.Position
 	local dummyPart = Instance.new("Part")
@@ -114,7 +114,6 @@ local Spawn = (function() -- this whole function was made by Epix
 	end
 end)()
 
-ReplicatedStorage.Remote.StartClientMapTimer.OnClientEvent:Wait()
 local TimeStart = os.clock()
 newAlert('TAS Running..')
 PlayAnim = Animate.playAnimation
