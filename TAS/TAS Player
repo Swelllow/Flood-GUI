@@ -11,7 +11,7 @@ local CLMAIN = getsenv(LocalPlayer.PlayerScripts.CL_MAIN_GameScript) -- FE2 Noti
 local newAlert = CLMAIN.newAlert
 
 if not Ran then
-	newAlert("TAS Player v1.3.0 Started.",Color3.new(0,1,0))
+    newAlert("TAS Player v1.3.0 Started.",Color3.new(0,1,0))
 else
     newAlert("Ready for next map",Color3.new(0,1,0.5))
 end
@@ -149,8 +149,9 @@ Loop = RunService.Heartbeat:connect(function(DeltaTime)
 	if Divider < NewFrame then
 		NewFrame = Divider
 	end
+	local Time = TAS[i].time or TAS[i].Time
 	for i = OldFrame, NewFrame do
-		if (os.clock() - TimeStart) < TAS[i].time then
+		if (os.clock() - TimeStart) < Time then
 			continue
 		elseif i >= #TAS then
 			Death:Disconnect()
@@ -158,7 +159,7 @@ Loop = RunService.Heartbeat:connect(function(DeltaTime)
 			Animate.playAnimation = PlayAnim
 			newAlert('TAS Run Finished!', Color3.new(0, 1, 0))
 			newAlert('TAS Player By Tomato', Color3.new(0, 1, 0))
-		elseif (os.clock() - TimeStart) >= TAS[i].time then
+		elseif (os.clock() - TimeStart) >= Time then
 			OldFrame = i
             local CCFrame, CCameraCFrame, VVelocity, AAnimation
             if not DiffFormat then
@@ -196,4 +197,4 @@ Loop = RunService.Heartbeat:connect(function(DeltaTime)
 			end
 		end
 	end
-end) --what
+end)
