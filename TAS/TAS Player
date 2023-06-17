@@ -88,7 +88,29 @@ local Spawn = (function() -- this whole function was made by Epix
 		end
 		return spawnCandidates[1]
 	else
-		error("Failed to find spawn part!")
+	            local CharacterParts = {}
+		    local Character = character
+		    local Ray = Ray.new(Character.HumanoidRootPart.Position + Vector3.one,Vector3.new(0,-20,0))
+		    if game.Workspace.CurrentCamera:FindFirstChild("ShadowPt") then
+		        table.insert(CharacterParts,game.Workspace.CurrentCamera.ShadowPt)
+		    end
+		    for i,v in pairs(game.Players:GetPlayers()) do
+		        pcall(function()
+		            for j,k in pairs(v.Character:GetChildren()) do
+		                if k:IsA("Part") then
+		                    table.insert(CharacterParts,k)
+		                end
+		            end
+		        end) 
+		    end
+		    while true do
+		        local hit,pos = game.Workspace:FindPartOnRayWithIgnoreList(Ray,CharacterParts)
+		        if hit:IsA("Part") and math.floor(hit.Size.X) == math.floor(hit.Size.Z) then
+		            return hit
+		        else
+		            table.insert(CharacterParts,hit)
+		        end
+		    end
 	end
 end)()
 
