@@ -150,12 +150,12 @@ Loop = RunService.Heartbeat:connect(function(DeltaTime)
 		NewFrame = Divider
 	end
 	local Time
-	if TAS[i].time ~= nil then
-		Time = TAS[i].time
-	else
-		Time = TAS[i].Time
-	end
 	for i = OldFrame, NewFrame do
+		if TAS[i].time ~= nil then
+		    Time = TAS[i].time
+		else
+		    Time = TAS[i].Time
+		end
 		if (os.clock() - TimeStart) < Time then
 			continue
 		elseif i >= #TAS then
