@@ -1,5 +1,5 @@
-local Branch = {...}[1]
 repeat wait() until game:IsLoaded() or game.Loaded:wait()
+local Branch = {...}[1]
 --anticheat bypass all credits to altlexon
 game:GetService("ReplicatedStorage").Remote.ReqCharVars.OnClientInvoke = function()return{}end
 
