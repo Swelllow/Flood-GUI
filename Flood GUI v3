@@ -99,7 +99,7 @@ local colors = {
 	TextColor = Color3.fromRGB(255, 255, 255),
 	ElementColor = Color3.fromRGB(60, 60, 60)
 }
-local Window = Library.CreateLib("Flood GUI v3 | By Tomato", colors)
+local Window = Library.CreateLib("Flood GUI v3 TESTING | By Tomato", colors)
 local a = Window:NewTab("Auto")
 local l = Window:NewTab("Local-Player")
 local b = Window:NewTab("Blatant")
@@ -307,9 +307,9 @@ credits:NewLabel("TAS File Minifier by iaan#8193")
 credits:NewLabel("Everything else by Tomato")
 wait()
 if debugmode == true then
-	clmain.newAlert("Flood GUI v3 loaded in Debug Mode!",Color3.new(0,0,1))
+	clmain.newAlert("Flood GUI v3 TESTING loaded in Debug Mode!",Color3.new(0,0,1))
 else
-	clmain.newAlert("Flood GUI v3 Loaded!",nil,nil,"rainbow")
+	clmain.newAlert("Flood GUI v3 TESTING Loaded!",nil,nil,"rainbow")
 end
 
 --resets character to fix lag bug wow
