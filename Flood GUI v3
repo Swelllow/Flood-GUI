@@ -1,9 +1,8 @@
-local Branch = ({...})[1]
+local Branch = ({...})[1];
 repeat wait() until game:IsLoaded() or game.Loaded:wait()
 --anticheat bypass all credits to altlexon
 game:GetService("ReplicatedStorage").Remote.ReqCharVars.OnClientInvoke = function()return{}end
 
--- map list extractor
 getgenv().maps = {}
 local script = require(game.ReplicatedStorage.SharedModules.FE2Library)
 for i,v in pairs(script.getOfficialMapData()) do
@@ -55,8 +54,6 @@ game:service'Players'.LocalPlayer.Idled:connect(function()
 	bb:CaptureController()
 	bb:ClickButton2(Vector2.new())
 end)
-
--- anticheat bypass aid? basicly just disables the script
 
 for i,v in ipairs(getnilinstances()) do
 	if v.Name == "CL_AntiExploit" then
