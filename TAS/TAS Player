@@ -177,7 +177,7 @@ Loop = RunService.Heartbeat:connect(function(DeltaTime)
             else
                 CCFrame = TAS[i].CFrame
                 CCameraCFrame = TAS[i].CameraCFrame
-                VVelocity = TAS[i].Velocity
+                VVelocity = Vector3.zero
                 AAnimation = TAS[i].Animation
             end
 			if Mirrored == true then
