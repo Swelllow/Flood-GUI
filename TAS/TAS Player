@@ -90,7 +90,7 @@ local Spawn = (function() -- this whole function was made by Epix
 	else
 	            local CharacterParts = {}
 		    local Character = character
-		    local Ray = Ray.new(Character.HumanoidRootPart.Position + Vector3.one,Vector3.new(0,-20,0))
+		    local ray = Ray.new(Character.HumanoidRootPart.Position + Vector3.one,Vector3.new(0,-20,0))
 		    if game.Workspace.CurrentCamera:FindFirstChild("ShadowPt") then
 		        table.insert(CharacterParts,game.Workspace.CurrentCamera.ShadowPt)
 		    end
@@ -105,8 +105,8 @@ local Spawn = (function() -- this whole function was made by Epix
 		    end
 		    for i = 1,25 do
 			wait()
-			Ray = Ray.new(Character.HumanoidRootPart.Position,Vector3.new(0,-20,0))
-		        local hit,pos = game.Workspace:FindPartOnRayWithIgnoreList(Ray,CharacterParts)
+			ray = Ray.new(Character.HumanoidRootPart.Position,Vector3.new(0,-20,0))
+		        local hit,pos = game.Workspace:FindPartOnRayWithIgnoreList(ray,CharacterParts)
 		        if hit and hit:IsA("Part") and math.floor(hit.Size.X) == math.floor(hit.Size.Z) then
 		            return hit
 		        elseif hit then
