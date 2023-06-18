@@ -1,4 +1,4 @@
-getgenv().Mirrored = false
+local Mirrored = false
 local NewV = Vector3.new
 local NewC = CFrame.new
 local AngC = CFrame.fromEulerAnglesXYZ
@@ -10,14 +10,12 @@ local wait = task.wait
 
 --IMPORTANT
 local CLMAIN = getsenv(LP.PlayerScripts.CL_MAIN_GameScript)
-CLMAIN.newAlert("TAS Player v1.0.2 Started.")
+CLMAIN.newAlert("TAS Player Started.")
 local Animate = getsenv(LP.Character.Animate)
 local RunName = Multi:WaitForChild('NewMap'):WaitForChild('Settings'):WaitForChild('MapName').Value
 local TAS = game:GetService("HttpService"):JSONDecode(readfile(RunName .. ".json"))
 CLMAIN.newAlert("TAS Loaded!")
-local Map = Multi:WaitForChild("NewMap")
-Map:GetPropertyChangedSignal("Name"):Wait()
-
+local Map = Multi:WaitForChild("Map")
 if Map:WaitForChild('Settings'):FindFirstChild("_MirrorMap") then
     CLMAIN.newAlert('Map is not Mirrored.')
     Mirrored = false
@@ -45,46 +43,56 @@ local Spawn = (function() -- this whole function was made by Epix
         overlapParams.FilterDescendantsInstances = {dummyPart} -- Only checking if bounding area intersects with "feet"
         overlapParams.FilterType = Enum.RaycastFilterType.Whitelist
 
-        local spawnCandidates = table.create(10)
-        for _, item in next, Map:GetDescendants() do
-            if not item:IsA("BasePart") or (item.Position - characterPosition).Magnitude > 10 then
-                continue
-            end
+        local spawnCandidates = table.create(10) -- create an empty table with size 10
+        local numCandidates = 0 -- track the number of candidates added to the table
 
-            -- If the part is flipped upside down, that is a problem, thus there is a check here
-            local facingUpVector
-            if item.CFrame.UpVector:Dot(Vector3.yAxis) >= 0 then facingUpVector = item.CFrame.UpVector else facingUpVector = -item.CFrame.UpVector end
-            local candidatesInArea = Workspace:GetPartBoundsInBox(
-                item.CFrame + (facingUpVector * (item.Size.Y/2 + 0.25)),
-                Vector3.new(item.Size.X, 0.5, item.Size.Z),
-                overlapParams
-            )
-            for _, candidate in next, candidatesInArea do
-                if candidate == dummyPart then
-                    table.insert(spawnCandidates, item)
-                end
-            end
+        -- loop over the parts to find spawn candidates
+        for _, item in next, Map:GetDescendants() do
+          -- check if the item is a valid spawn candidate
+          if item:IsA("BasePart") and (item.Position - characterPosition).Magnitude <= 10 then
+             -- check if the part is flipped upside down
+                local facingUpVector = item.CFrame.UpVector:Dot(Vector3.yAxis) >= 0 and item.CFrame.UpVector or -item.CFrame.UpVector
+
+               -- get the candidates in the area around the part
+               local candidatesInArea = Workspace:GetPartBoundsInBox(
+            item.CFrame + (facingUpVector * (item.Size.Y/2 + 0.25)),
+                   Vector3.new(item.Size.X, 0.5, item.Size.Z),
+                 overlapParams
+               )
+
+              -- add any valid candidates to the table
+             for _, candidate in next, candidatesInArea do
+                    if candidate == dummyPart then
+                        numCandidates = numCandidates + 1
+                      spawnCandidates[numCandidates] = item
+                     break
+                  end
+               end
+           end
         end
 
-        dummyPart:Destroy()
+        -- get the spawn candidate from the table
+        if numCandidates >= 1 then
+           -- prioritize invisible spawn parts parented to the map
+           for i = 1, numCandidates do
+               local spawnCandidate = spawnCandidates[i]
+              if spawnCandidate.CanCollide and (spawnCandidate.Transparency >= 0.8 or spawnCandidate.Parent == Map) then
+                  return spawnCandidate
+               end
+          end
 
-        if #spawnCandidates >= 1 then
-            -- Prioritize invisible spawn parts parented to the map
-            for _, spawnCandidate in next, spawnCandidates do
-                if spawnCandidate.CanCollide and (spawnCandidate.Transparency >= 0.8 or spawnCandidate.Parent == map) then
-                    return spawnCandidate
-                end
-            end
-            -- Second pass: only needs to be CanCollide
-            for _, spawnCandidate in next, spawnCandidates do
-                if spawnCandidate.CanCollide then
-                    return spawnCandidate
-                end
-            end
-            -- Fall back to first in list
-            return spawnCandidates[1]
+           -- second pass: only needs to be CanCollide
+           for i = 1, numCandidates do
+             local spawnCandidate = spawnCandidates[i]
+             if spawnCandidate.CanCollide then
+                 return spawnCandidate
+             end
+         end
+
+         -- fall back to first in list
+           return spawnCandidates[1]
         else
-            error("Failed to find spawn part!")
+          error("Failed to find spawn part!")
         end
 end)()
 LP.Character.HumanoidRootPart.CFrame = NewC(TAS[3].CCFrame[1], TAS[3].CCFrame[2], TAS[3].CCFrame[3]) * AngC(TAS[3].CCFrame[4], TAS[3].CCFrame[5], TAS[3].CCFrame[6]) + NewV(Spawn.Position.X, Spawn.Position.Y - 1000, Spawn.Position.Z)
@@ -156,7 +164,7 @@ Loop = RS.Heartbeat:connect(function(DeltaTime)
     end
     for i = OldFrame, NewFrame do
         if (os.clock() - TimeStart) < TAS[i].time then
-            continue
+            break
         elseif i >= #TAS then
             Death:Disconnect()
             Loop:Disconnect()
@@ -171,13 +179,16 @@ Loop = RS.Heartbeat:connect(function(DeltaTime)
             local VV = TAS[i].VVelocity
             if Mirrored == true then
                 local nCF = CF
-                CF[3] = -nCF[3]
-                CF[6] = -nCF[6]
-                VV[3] = -VV[3]
-                VV[6] = -VV[6]
-                CCF[3] = -CCF[3]
-                CCF[6] = -CCF[6]
+                CF[1] = nCF[1]
+   		        CF[2] = nCF[2]
+    		    CF[3] = -nCF[3]
+    		    CF[4] = nCF[4]
+    		    CF[5] = nCF[5]
+    		    CF[6] = -nCF[6]
+    		    VV[3] = -VV[3]
+    		    CCF[3] = -CCF[3]
             end
+
             local CA = TAS[i].AAnimation
             LP.Character.HumanoidRootPart.CFrame = NewC(CF[1], CF[2], CF[3]) * AngC(CF[4], CF[5], CF[6]) + Offset
             LP.Character.HumanoidRootPart.Velocity = NewV(VV[1], VV[2], VV[3])
@@ -197,14 +208,4 @@ Loop = RS.Heartbeat:connect(function(DeltaTime)
     end
 end)
 
-if debugmode == true then
-    for i = 1, #TAS, 24 do
-        local function ToCFrame(CF)
-            return NewC(CF[1], CF[2], CF[3]) * AngC(CF[4], CF[5], CF[6]) + Offset
-        end
-        local origin = ToCFrame(TAS[i].CCFrame).Position
-        local ray = Ray.new(origin, ToCFrame(TAS[i].CCFrame).Position - origin)
-        MakeRayVisible(ray,Color3.new(1,0,0))
-        task.wait()
-    end
-end
+-- Fixed by Moz

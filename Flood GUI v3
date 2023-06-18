@@ -1,8 +1,8 @@
+local Branch = (...);
 repeat wait() until game:IsLoaded() or game.Loaded:wait()
 --anticheat bypass all credits to altlexon
 game:GetService("ReplicatedStorage").Remote.ReqCharVars.OnClientInvoke = function()return{}end
 
--- map list extractor
 getgenv().maps = {}
 local script = require(game.ReplicatedStorage.SharedModules.FE2Library)
 for i,v in pairs(script.getOfficialMapData()) do
@@ -54,8 +54,6 @@ game:service'Players'.LocalPlayer.Idled:connect(function()
 	bb:CaptureController()
 	bb:ClickButton2(Vector2.new())
 end)
-
--- anticheat bypass aid? basicly just disables the script
 
 for i,v in ipairs(getnilinstances()) do
 	if v.Name == "CL_AntiExploit" then
@@ -187,7 +185,7 @@ task.spawn(function()
 		while task.wait(1) do
 			local S,r = pcall(function()
 				if getgenv().play ~= false then
-					loadstring(game:HttpGet('https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS/TAS%20Player'))
+					loadstring(game:HttpGet("https://raw.githubusercontent.com/ImMejor35/Flood-GUI/"..Branch.."/TAS/TAS%20Player"))
 					"TAS Player Fixed & Optimized By Tomato with help from Epix and Voiz"
 				end
 			end)
@@ -210,7 +208,7 @@ end)
 --[[auto:NewToggle("Auto-Vote", "Automatically votes for you!", function(t)
 	getgenv().oof = t
 end)]]
-auto:NewButton("Get TAS files", "Downloads Required TAS files!", function()
+auto:NewButton("Download TAS files", "Downloads Required TAS files!", function()
 	for i, v in pairs(maps) do
 		local map = HttpService:UrlEncode(v)
 		local su = isfile(v..".json")
@@ -218,7 +216,8 @@ auto:NewButton("Get TAS files", "Downloads Required TAS files!", function()
 			clmain.newAlert(v.." TAS file already exists!",Color3.fromRGB(50,100,255))
 		else
 			local s, r = pcall(function()
-				local tas = game:HttpGet("https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS%20FILES/"..map..".json")
+				local tas = game:HttpGet("https://raw.githubusercontent.com/ImMejor35/Flood-GUI/"..Branch.."/TAS%20FILES/"..map..".json")
+				if not string.find(tas, "CFrame") then error('file not exist') end
 				writefile(v..".json", tas,true) -- minfile(tas) removed
 			end)
 			if s then
@@ -227,7 +226,7 @@ auto:NewButton("Get TAS files", "Downloads Required TAS files!", function()
 				clmain.newAlert("Failed to download "..v.." TAS file. :(",Color3.fromRGB(255,0,0))
 			end
 		end
-		wait(0.5)
+		wait()
 	end
 	clmain.newAlert("Finished Downloading TAS files")
 end)
@@ -242,7 +241,7 @@ tas:NewButton("Create-TAS", "Create a TAS, Press then enter lift.", function()
 		end
 	end)
 	local Fix = coroutine.wrap(function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS/TAS%20Record%20Voiz", true))()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/ImMejor35/Flood-GUI/"..Branch.."/TAS/TAS%20Record%20Voiz", true))()
 	end)
         local ButtonStuff = coroutine.wrap(function()
             for i,v in pairs(game.Workspace:WaitForChild("Map"):GetDescendants()) do
@@ -268,7 +267,7 @@ tas:NewButton("Create-TAS", "Create a TAS, Press then enter lift.", function()
 	ButtonStuff()
 end)
 tas:NewButton("Run-TAS", "Press then enter lift!", function()
-	loadstring(game:HttpGet('https://raw.githubusercontent.com/ImMejor35/Flood-GUI/main/TAS/TAS%20Player'))
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/ImMejor35/Flood-GUI/"..Branch.."/TAS/TAS%20Player"))
 	"TAS Player Fixed By Tomato with help from Epix"
 end)
 
