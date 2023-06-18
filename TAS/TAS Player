@@ -1,207 +1,211 @@
-getgenv().Mirrored = false
-local LocalPlayer = game.Players.LocalPlayer
-local character = LocalPlayer.Character
-local HumanoidRootPart = character.HumanoidRootPart
-local Multiplayer = Workspace.Multiplayer
-local RunService = game:GetService('RunService')
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Mirrored = false
+local NewV = Vector3.new
+local NewC = CFrame.new
+local AngC = CFrame.fromEulerAnglesXYZ
+local LP = game.Players.LocalPlayer
+local Alert = getsenv(LP.PlayerScripts.CL_MAIN_GameScript).newAlert
+local Multi = Workspace.Multiplayer
+local RS = game:GetService('RunService')
 local wait = task.wait
 
-local CLMAIN = getsenv(LocalPlayer.PlayerScripts.CL_MAIN_GameScript) -- FE2 Notifications
-local newAlert = CLMAIN.newAlert
-
-if not Ran then
-    newAlert("TAS Player v1.3.0 Started.",Color3.new(0,1,0))
-else
-    newAlert("Ready for next map",Color3.new(0,1,0.5))
-end
-getgenv().Ran = true
-
-local Animate = getsenv(character.Animate)
-local RunName = Multiplayer:WaitForChild('NewMap'):WaitForChild('Settings'):WaitForChild('MapName').Value
-local TAS
-if isfile(RunName .. ".json") then
-    TAS = game:GetService("HttpService"):JSONDecode(readfile(RunName .. ".json"))
-else
-    newAlert(RunName .. ".json".." Does not exist!", Color3.new(1,0,0))
-    warn(RunName .. ".json".." Does not exist!")
-end
-
-newAlert("TAS Loaded!")
-local Map = Multiplayer:WaitForChild("NewMap")
-Map:GetPropertyChangedSignal("Name"):Wait()
-
+--IMPORTANT
+local CLMAIN = getsenv(LP.PlayerScripts.CL_MAIN_GameScript)
+CLMAIN.newAlert("TAS Player Started.")
+local Animate = getsenv(LP.Character.Animate)
+local RunName = Multi:WaitForChild('NewMap'):WaitForChild('Settings'):WaitForChild('MapName').Value
+local TAS = game:GetService("HttpService"):JSONDecode(readfile(RunName .. ".json"))
+CLMAIN.newAlert("TAS Loaded!")
+local Map = Multi:WaitForChild("Map")
 if Map:WaitForChild('Settings'):FindFirstChild("_MirrorMap") then
-	newAlert('Map is not Mirrored.')
-	Mirrored = false
+    CLMAIN.newAlert('Map is not Mirrored.')
+    Mirrored = false
 else
-	newAlert('Map is mirrored, TAS will be played mirrored!')
-	Mirrored = true
+    CLMAIN.newAlert('Map is mirrored, TAS will be played mirrored!')
+    Mirrored = true
 end
-ReplicatedStorage.Remote.StartClientMapTimer.OnClientEvent:Wait()
-local Spawn = (function() -- this whole function was made by Epix
-	local characterPosition = HumanoidRootPart.Position
-	local dummyPart = Instance.new("Part")
-	dummyPart.Size = Vector3.one
-	dummyPart.Position = characterPosition - (Vector3.yAxis * 2)
-	dummyPart.Anchored = true
-	dummyPart.CanCollide = false
-	dummyPart.Parent = Workspace
-	local overlapParams = OverlapParams.new()
-	overlapParams.FilterDescendantsInstances = {
-		dummyPart
-	}
-	overlapParams.FilterType = Enum.RaycastFilterType.Whitelist
-	local spawnCandidates = table.create(10)
-	for _, item in next, Map:GetDescendants() do
-		if not item:IsA("BasePart") or (item.Position - characterPosition).Magnitude > 10 then
-			continue
-		end
-		local facingUpVector
-		if item.CFrame.UpVector:Dot(Vector3.yAxis) >= 0 then
-			facingUpVector = item.CFrame.UpVector
-		else
-			facingUpVector = -item.CFrame.UpVector
-		end
-		local candidatesInArea = Workspace:GetPartBoundsInBox(
-                item.CFrame + (facingUpVector * (item.Size.Y / 2 + 0.25)),
-                Vector3.new(item.Size.X, 0.5, item.Size.Z),
-                overlapParams
-            )
-		for _, candidate in next, candidatesInArea do
-			if candidate == dummyPart then
-				table.insert(spawnCandidates, item)
-			end
-		end
-	end
-	dummyPart:Destroy()
-	if #spawnCandidates >= 1 then
-		for _, spawnCandidate in next, spawnCandidates do
-			if (spawnCandidate.Transparency >= 0.8 or spawnCandidate.Parent == map) then
-				return spawnCandidate
-			end
-		end
-		for _, spawnCandidate in next, spawnCandidates do
-			if spawnCandidate.CanCollide then
-				return spawnCandidate
-			end
-		end
-		return spawnCandidates[1]
-	else
-	            local CharacterParts = {}
-		    local Character = character
-		    local ray = Ray.new(Character.HumanoidRootPart.Position + Vector3.one,Vector3.new(0,-20,0))
-		    if game.Workspace.CurrentCamera:FindFirstChild("ShadowPt") then
-		        table.insert(CharacterParts,game.Workspace.CurrentCamera.ShadowPt)
-		    end
-		    for i,v in pairs(game.Players:GetPlayers()) do
-		        pcall(function()
-		            for j,k in pairs(v.Character:GetChildren()) do
-		                if k:IsA("Part") then
-		                    table.insert(CharacterParts,k)
-		                end
-		            end
-		        end) 
-		    end
-		    for i = 1,25 do
-			wait()
-			ray = Ray.new(Character.HumanoidRootPart.Position,Vector3.new(0,-20,0))
-		        local hit,pos = game.Workspace:FindPartOnRayWithIgnoreList(ray,CharacterParts)
-		        if hit and hit:IsA("Part") and math.floor(hit.Size.X) == math.floor(hit.Size.Z) then
-		            return hit
-		        elseif hit then
-		            table.insert(CharacterParts,hit)
-		        end
-		    end
-	end
-end)()
 
+local Spawn = (function() -- this whole function was made by Epix
+        local Workspace = game:GetService("Workspace")
+        local character = LP.Character
+        local characterPosition = character.HumanoidRootPart.Position -- only need to evaluate this once
+
+        -- Get parts that have the character above them
+
+        -- Part that's supposed to represent the character's "feet"
+        local dummyPart = Instance.new("Part")
+        dummyPart.Size = Vector3.one
+        dummyPart.Position = characterPosition - (Vector3.yAxis * 2)
+        dummyPart.Anchored = true
+        dummyPart.CanCollide = false
+        dummyPart.Parent = Workspace
+
+        local overlapParams = OverlapParams.new()
+        overlapParams.FilterDescendantsInstances = {dummyPart} -- Only checking if bounding area intersects with "feet"
+        overlapParams.FilterType = Enum.RaycastFilterType.Whitelist
+
+        local spawnCandidates = table.create(10) -- create an empty table with size 10
+        local numCandidates = 0 -- track the number of candidates added to the table
+
+        -- loop over the parts to find spawn candidates
+        for _, item in next, Map:GetDescendants() do
+          -- check if the item is a valid spawn candidate
+          if item:IsA("BasePart") and (item.Position - characterPosition).Magnitude <= 10 then
+             -- check if the part is flipped upside down
+                local facingUpVector = item.CFrame.UpVector:Dot(Vector3.yAxis) >= 0 and item.CFrame.UpVector or -item.CFrame.UpVector
+
+               -- get the candidates in the area around the part
+               local candidatesInArea = Workspace:GetPartBoundsInBox(
+            item.CFrame + (facingUpVector * (item.Size.Y/2 + 0.25)),
+                   Vector3.new(item.Size.X, 0.5, item.Size.Z),
+                 overlapParams
+               )
+
+              -- add any valid candidates to the table
+             for _, candidate in next, candidatesInArea do
+                    if candidate == dummyPart then
+                        numCandidates = numCandidates + 1
+                      spawnCandidates[numCandidates] = item
+                     break
+                  end
+               end
+           end
+        end
+
+        -- get the spawn candidate from the table
+        if numCandidates >= 1 then
+           -- prioritize invisible spawn parts parented to the map
+           for i = 1, numCandidates do
+               local spawnCandidate = spawnCandidates[i]
+              if spawnCandidate.CanCollide and (spawnCandidate.Transparency >= 0.8 or spawnCandidate.Parent == Map) then
+                  return spawnCandidate
+               end
+          end
+
+           -- second pass: only needs to be CanCollide
+           for i = 1, numCandidates do
+             local spawnCandidate = spawnCandidates[i]
+             if spawnCandidate.CanCollide then
+                 return spawnCandidate
+             end
+         end
+
+         -- fall back to first in list
+           return spawnCandidates[1]
+        else
+          error("Failed to find spawn part!")
+        end
+end)()
+LP.Character.HumanoidRootPart.CFrame = NewC(TAS[3].CCFrame[1], TAS[3].CCFrame[2], TAS[3].CCFrame[3]) * AngC(TAS[3].CCFrame[4], TAS[3].CCFrame[5], TAS[3].CCFrame[6]) + NewV(Spawn.Position.X, Spawn.Position.Y - 1000, Spawn.Position.Z)
+LP.Character.HumanoidRootPart.Velocity = NewV(TAS[3].VVelocity[1], TAS[3].VVelocity[2], TAS[3].VVelocity[3])
+Workspace.CurrentCamera.CFrame = NewC(TAS[3].CCameraCFrame[1], TAS[3].CCameraCFrame[2], TAS[3].CCameraCFrame[3]) * AngC(TAS[3].CCameraCFrame[4], TAS[3].CCameraCFrame[5], TAS[3].CCameraCFrame[6]) + NewV(Spawn.Position.X, Spawn.Position.Y - 1000, Spawn.Position.Z)
+
+game:GetService("ReplicatedStorage").Remote.StartClientMapTimer.OnClientEvent:Wait()
 local TimeStart = os.clock()
-newAlert('TAS Running..')
+CLMAIN.newAlert('TAS Running..')
 PlayAnim = Animate.playAnimation
-Animate.playAnimation = function()
-end
+Animate.playAnimation = function()end
 
 for _, v in next, Map:GetDescendants() do
-	if v.Name == 'ButtonIcon' then
-		local buttonPart = v.Parent.Parent:FindFirstChildOfClass('Part')
-		if buttonPart ~= nil then
-			buttonPart.Size = Vector3.new(6, 6, 6)
-		end
-	end
+    if v.Name == 'ButtonIcon' then
+        local buttonPart = v.Parent.Parent:FindFirstChildOfClass('Part')
+        if buttonPart ~= nil then
+            buttonPart.Size = Vector3.new(6,6,6)
+            if debugmode == true then
+                buttonPart.Color = Color3.new(0,0,1)
+                buttonPart.Transparency = 0
+            end
+        end
+    end
 end
 
-local Offset = Spawn.Position - Vector3.new(0, 1000, 0)
+local RayParts = Instance.new('Model')
+RayParts.Name = "RayParts"
+RayParts.Parent = Workspace
+    local radius = 0.05
+    local function MakeRayVisible(ray,color)
+        local midpoint = ray.Origin + ray.Direction/2
+
+        local part = Instance.new("Part")
+        part.CanCollide = false
+        part.CanTouch = false
+        part.Parent = RayParts
+        part.Anchored = true
+        part.CFrame = CFrame.new(midpoint, ray.Origin)
+        part.Size = Vector3.new(radius,radius, ray.Direction.Magnitude)
+
+        part.Material = Enum.Material.Neon
+        part.Color = color
+
+        return part
+    end
+
+
+local Offset = Spawn.Position - NewV(0, 1000, 0)
 local DiffAnim = 0
 local OldFrame = 3
 
-local DiffFormat = TAS[4].CFrame ~= nil
+
 
 local Loop
 local Death
-Death = character.Humanoid.Died:Connect(function(Change)
-    Death:Disconnect()
-	Loop:Disconnect()
-	Animate.playAnimation = PlayAnim
-	newAlert('Player Died.', Color3.new(1, 0, 0))
+Death = LP.Character.Humanoid.Changed:Connect(function(Change)
+    if Change == "Health" and LP.Character.Humanoid.Health == 0 then
+        Death:Disconnect()
+        Loop:Disconnect()
+        RayParts:Destroy()
+        CLMAIN.newAlert('Player Died.',Color3.new(1,0,0))
+    end
 end)
-Loop = RunService.Heartbeat:connect(function(DeltaTime)
-	local NewFrame = #TAS
-	local Divider = OldFrame + 60
-	if Divider < NewFrame then
-		NewFrame = Divider
-	end
-	for i = OldFrame, NewFrame do
-		local Time
-		if TAS[i].time ~= nil then
-		    Time = TAS[i].time
-		else
-		    Time = TAS[i].Time
-		end
-		if (os.clock() - TimeStart) < Time then
-			continue
-		elseif i >= #TAS then
-			Death:Disconnect()
-			Loop:Disconnect()
-			Animate.playAnimation = PlayAnim
-			newAlert('TAS Run Finished!', Color3.new(0, 1, 0))
-			newAlert('TAS Player By Tomato', Color3.new(0, 1, 0))
-		elseif (os.clock() - TimeStart) >= Time then
-			OldFrame = i
-            local CCFrame, CCameraCFrame, VVelocity, AAnimation
-            if not DiffFormat then
-			    CCFrame = TAS[i].CCFrame
-			    CCameraCFrame = TAS[i].CCameraCFrame
-			    VVelocity = TAS[i].VVelocity
-			    AAnimation = TAS[i].AAnimation
-            else
-                CCFrame = TAS[i].CFrame
-                CCameraCFrame = TAS[i].CameraCFrame
-                VVelocity = Vector3.zero
-                AAnimation = TAS[i].Animation
+Loop = RS.Heartbeat:connect(function(DeltaTime)
+    local NewFrame = #TAS
+    local Divider = OldFrame + 60
+    if Divider < NewFrame then
+        NewFrame = Divider
+    end
+    for i = OldFrame, NewFrame do
+        if (os.clock() - TimeStart) < TAS[i].time then
+            break
+        elseif i >= #TAS then
+            Death:Disconnect()
+            Loop:Disconnect()
+            RayParts:Destroy()
+            Animate.playAnimation = PlayAnim
+            CLMAIN.newAlert('TAS Run Finished!',Color3.new(0,1,0))
+            CLMAIN.newAlert('TAS Player By Tomato',Color3.new(0,1,0))
+        elseif (os.clock() - TimeStart) >= TAS[i].time then
+            OldFrame = i
+            local CF = TAS[i].CCFrame
+            local CCF = TAS[i].CCameraCFrame
+            local VV = TAS[i].VVelocity
+            if Mirrored == true then
+                local nCF = CF
+                CF[1] = nCF[1]
+   		        CF[2] = nCF[2]
+    		    CF[3] = -nCF[3]
+    		    CF[4] = nCF[4]
+    		    CF[5] = nCF[5]
+    		    CF[6] = -nCF[6]
+    		    VV[3] = -VV[3]
+    		    CCF[3] = -CCF[3]
             end
-			if Mirrored == true then
-				CCFrame[3] = -CCFrame[3]
-				CCFrame[6] = -CCFrame[5]
-				VVelocity[1] = -VVelocity[1]
-                VVelocity[3] = -VVelocity[3]
-				CCameraCFrame[3] = CCameraCFrame[3]
-				CCameraCFrame[6] = CCameraCFrame[6]
-			end
-			HumanoidRootPart.CFrame = CFrame.new(CCFrame[1], CCFrame[2], CCFrame[3]) * CFrame.fromEulerAnglesXYZ(CCFrame[4], CCFrame[5], CCFrame[6]) + Offset
-			HumanoidRootPart.Velocity = Vector3.new(VVelocity[1], VVelocity[2], VVelocity[3])
-			Workspace.CurrentCamera.CFrame = CFrame.new(CCameraCFrame[1], CCameraCFrame[2], CCameraCFrame[3]) * CFrame.fromEulerAnglesXYZ(CCameraCFrame[4], CCameraCFrame[5], CCameraCFrame[6]) + Offset
-			if 1 == 1 then -- TAS[i].AAnimationChanged > DiffAnim
-				if AAnimation[1] == "walk" then
-					PlayAnim(AAnimation[1], AAnimation[2], character.Humanoid)
-					DiffAnim = TAS[i].AAnimationChanged
-					Animate.setAnimationSpeed(0.76)
-				elseif AAnimation[1] == "climb" then
-				else
-					PlayAnim(AAnimation[1], AAnimation[2], character.Humanoid)
-					DiffAnim = TAS[i].AAnimationChanged
-				end
-			end
-		end
-	end
+
+            local CA = TAS[i].AAnimation
+            LP.Character.HumanoidRootPart.CFrame = NewC(CF[1], CF[2], CF[3]) * AngC(CF[4], CF[5], CF[6]) + Offset
+            LP.Character.HumanoidRootPart.Velocity = NewV(VV[1], VV[2], VV[3])
+            Workspace.CurrentCamera.CFrame = NewC(CCF[1], CCF[2], CCF[3]) * AngC(CCF[4], CCF[5], CCF[6]) + Offset
+            if 1==1 then -- TAS[i].AAnimation and TAS[i].AAnimationChanged and TAS[i].AAnimationChanged > DiffAnim
+                if CA[1] == "walk" then
+                    PlayAnim(CA[1], CA[2], LP.Character.Humanoid)
+                    DiffAnim = TAS[i].AAnimationChanged
+                    Animate.setAnimationSpeed(0.76)
+                elseif CA[1] == "climb" then
+                else
+                    PlayAnim(CA[1], CA[2], LP.Character.Humanoid)
+                    DiffAnim = TAS[i].AAnimationChanged
+                end
+            end
+        end
+    end
 end)
+
+-- Fixed by Moz
