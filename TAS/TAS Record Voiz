@@ -1,3 +1,5 @@
+-- Fixed format to match Tas player Moz
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -178,36 +180,42 @@ local function CollisionToggler()
 end
 local function SaveRun()
     local AllPlayerInfo = {}
-    for i=2,#Savestates do
-        for j=1,#Savestates[i] do
+    for i = 2, #Savestates do
+        for j = 1, #Savestates[i] do
             local InfoFromSavestates = Savestates[i][j]
             local InfoAddingToAllPlayerInfo = {}
-            local a,b,c = InfoFromSavestates.CFrame:ToEulerAnglesXYZ()
-            local d,e,f  = InfoFromSavestates.CameraCFrame:ToEulerAnglesXYZ()
-            InfoAddingToAllPlayerInfo.CFrame = {InfoFromSavestates.CFrame.X, InfoFromSavestates.CFrame.Y, InfoFromSavestates.CFrame.Z, a, b, c}
-            InfoAddingToAllPlayerInfo.Animation = InfoFromSavestates.Animation
-            InfoAddingToAllPlayerInfo.CameraCFrame = {InfoFromSavestates.CameraCFrame.X, InfoFromSavestates.CameraCFrame.Y, InfoFromSavestates.CameraCFrame.Z, d, e, f}
-            InfoAddingToAllPlayerInfo.Time = InfoFromSavestates.Time
-            table.insert(AllPlayerInfo,InfoAddingToAllPlayerInfo)
+            InfoAddingToAllPlayerInfo.AAnimationChanged = InfoFromSavestates.Animation[2]
+            InfoAddingToAllPlayerInfo.VVelocity = {InfoFromSavestates.Velocity.X, InfoFromSavestates.Velocity.Y, InfoFromSavestates.Velocity.Z}
+            InfoAddingToAllPlayerInfo.CCameraCFrame = {InfoFromSavestates.CameraCFrame.X, InfoFromSavestates.CameraCFrame.Y, InfoFromSavestates.CameraCFrame.Z, InfoFromSavestates.CameraCFrame:ToEulerAnglesXYZ()}
+            InfoAddingToAllPlayerInfo.CCFrame = {InfoFromSavestates.CFrame.X, InfoFromSavestates.CFrame.Y, InfoFromSavestates.CFrame.Z, InfoFromSavestates.CFrame:ToEulerAnglesXYZ()}
+            InfoAddingToAllPlayerInfo.time = InfoFromSavestates.Time
+            table.insert(AllPlayerInfo, InfoAddingToAllPlayerInfo)
         end
     end
     local i = -1
-    repeat i = i + 1 until not isfile("tas/" .. game.Workspace.Map.Settings.MapName.Value .. tostring(i) .. ".json")
+    repeat
+        i = i + 1
+    until not isfile("tas/" .. game.Workspace.Map.Settings.MapName.Value .. tostring(i) .. ".json")
     writefile("tas/" .. game.Workspace.Map.Settings.MapName.Value .. tostring(i) .. ".json", game:GetService("HttpService"):JSONEncode(AllPlayerInfo))
-    Alert("Saved",Color3.fromRGB(0,255,0),1)
+    Alert("Saved", Color3.fromRGB(0, 255, 0), 1)
 end
+
 ReplicatedStorage.Remote.StartClientMapTimer.OnClientEvent:Wait()
 task.wait(1)
 SetUpMap()
+
 if not isfolder("tas") then
     makefolder("tas")
 end
+
 RunService.Heartbeat:Connect(function()
     if not Pause then
         SetTimeGui()
-        table.insert(PlayerInfo,ReturnPlayerInfo())
+        table.insert(PlayerInfo, ReturnPlayerInfo())
     end
 end)
+
+SaveRun()
 UserInputService.InputBegan:Connect(function(Key,Typing)
     if not Typing then
         Key = Key.KeyCode.Name
