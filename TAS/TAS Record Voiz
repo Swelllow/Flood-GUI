@@ -1,5 +1,5 @@
 -- Fixed format to match Tas player Moz
-
+print("Start bro")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
