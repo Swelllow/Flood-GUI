@@ -1,5 +1,5 @@
 -- Fixed format to match Tas player Moz
-print("Start bro")
+print("Started!!!!!1")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -26,8 +26,8 @@ local function ReturnPlayerInfo()
     }
 end
 local function SetPrimaryPart() -- new spawn finder by "_tomato." on discord
+    local Map = game.Multiplayer.Map
     local Spawn = nil
-
     local connections = {}
     for i,v in ipairs(Map:GetChildren()) do
         if v.Name == "Part" then
@@ -40,7 +40,7 @@ local function SetPrimaryPart() -- new spawn finder by "_tomato." on discord
         end
     end
     repeat task.wait() until Spawn
-    game.Multiplayer.Map.PrimaryPart = Spawn
+    Map.PrimaryPart = Spawn
 end
 local function SetUpGui()
     for i,v in pairs(LocalPlayer.PlayerGui.GameGui.HUD.Main.GameStats:GetChildren()) do
