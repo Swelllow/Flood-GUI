@@ -25,31 +25,22 @@ local function ReturnPlayerInfo()
             Time = tick() - TimeStart - TimePaused,
     }
 end
-local function SetPrimaryPart()
-    local CharacterParts = {}
-    local Character = LocalPlayer.Character
-    local Ray = Ray.new(Character.HumanoidRootPart.Position,Vector3.new(0,-10,0))
-    if game.Workspace.CurrentCamera:FindFirstChild("ShadowPt") then
-        table.insert(CharacterParts,game.Workspace.CurrentCamera.ShadowPt)
-    end
-    for i,v in pairs(game.Players:GetPlayers()) do
-        pcall(function()
-            for j,k in pairs(v.Character:GetChildren()) do
-                if k:IsA("Part") then
-                    table.insert(CharacterParts,k)
+local function SetPrimaryPart() -- new spawn finder by "_tomato." on discord
+    local Spawn = nil
+
+    local connections = {}
+    for i,v in ipairs(Map:GetChildren()) do
+        if v.Name == "Part" then
+            table.insert(connections, v:GetPropertyChangedSignal("Rotation"):Connect(function()
+                Spawn = v
+                for i,v in ipairs(connections) do
+                    v:Disconnect()
                 end
-            end
-        end) 
-    end
-    while true do
-        local hit,pos = game.Workspace:FindPartOnRayWithIgnoreList(Ray,CharacterParts)
-        if hit:IsA("Part") and math.floor(hit.Size.X) == math.floor(hit.Size.Z) then
-            game.Workspace.Multiplayer.Map.PrimaryPart = hit
-            break
-        else
-            table.insert(CharacterParts,hit)
+            end))
         end
     end
+    repeat task.wait() until Spawn
+    game.Multiplayer.Map.PrimaryPart = Spawn
 end
 local function SetUpGui()
     for i,v in pairs(LocalPlayer.PlayerGui.GameGui.HUD.Main.GameStats:GetChildren()) do
