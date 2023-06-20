@@ -160,15 +160,15 @@ blatant:NewKeybind("Infinite Air", "Infinite Air/God Mode", Enum.KeyCode.R, func
 end)
 getgenv().noclip = false
 blatant:NewKeybind("Noclip", "Walk through some walls!", Enum.KeyCode.G, function()
-	lp.Character:WaitForChild("Torso").CanCollide = noclip
-	lp.Character:WaitForChild("HumanoidRootPart").CanCollide = noclip
-	lp.Character:WaitForChild("BoundingBox").CanCollide = noclip
+	lp.Character:WaitForChild("Torso").CanCollide = getgenv().noclip
+	lp.Character:WaitForChild("HumanoidRootPart").CanCollide = getgenv().noclip
+	lp.Character:WaitForChild("BoundingBox").CanCollide = getgenv().noclip
 	if getgenv().noclip ~= false then
 		clmain.newAlert("Noclip Disabled!", Color3.fromRGB(255, 0, 0))
-		noclip = false
+		getgenv().noclip = false
 	else
 		clmain.newAlert("Noclip Enabled!", Color3.fromRGB(0, 255, 0))
-		noclip = true
+		getgenv().noclip = true
 	end
 end)
 blatant:NewButton("Lag Server", "Equip buddy then press", function()
