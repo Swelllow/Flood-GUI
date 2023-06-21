@@ -27,11 +27,11 @@ CLMAIN.newAlert("TAS Loaded!")
 local Map = Multi:WaitForChild("Map")
 
 if not MapSettings:FindFirstChild("_MirrorMap") and MapSettings:FindFirstChild("FE2_ID") then
-    CLMAIN.newAlert('Map is mirrored, TAS will be played mirrored!')
-    Mirrored = true
-else
     CLMAIN.newAlert('Map is not Mirrored.')
     Mirrored = false
+else
+    CLMAIN.newAlert('Map is mirrored, TAS will be played mirrored!')
+    Mirrored = true
 end
 
 local Spawn = (function() -- new spawn finder by "_tomato." on discord
