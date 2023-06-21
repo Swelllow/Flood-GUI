@@ -1,5 +1,5 @@
 -- Fixed format to match Tas player Moz
-
+print("Started!!!!!1")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -25,31 +25,22 @@ local function ReturnPlayerInfo()
             Time = tick() - TimeStart - TimePaused,
     }
 end
-local function SetPrimaryPart()
-    local CharacterParts = {}
-    local Character = LocalPlayer.Character
-    local Ray = Ray.new(Character.HumanoidRootPart.Position,Vector3.new(0,-10,0))
-    if game.Workspace.CurrentCamera:FindFirstChild("ShadowPt") then
-        table.insert(CharacterParts,game.Workspace.CurrentCamera.ShadowPt)
-    end
-    for i,v in pairs(game.Players:GetPlayers()) do
-        pcall(function()
-            for j,k in pairs(v.Character:GetChildren()) do
-                if k:IsA("Part") then
-                    table.insert(CharacterParts,k)
+local function SetPrimaryPart() -- new spawn finder by "_tomato." on discord
+    local Map = game.Workspace.Multiplayer:WaitForChild("Map")
+    local Spawn = nil
+    local connections = {}
+    for i,v in ipairs(Map:GetChildren()) do
+        if v.Name == "Part" then
+            table.insert(connections, v:GetPropertyChangedSignal("Rotation"):Connect(function()
+                Spawn = v
+                for i,v in ipairs(connections) do
+                    v:Disconnect()
                 end
-            end
-        end) 
-    end
-    while true do
-        local hit,pos = game.Workspace:FindPartOnRayWithIgnoreList(Ray,CharacterParts)
-        if hit:IsA("Part") and math.floor(hit.Size.X) == math.floor(hit.Size.Z) then
-            game.Workspace.Multiplayer.Map.PrimaryPart = hit
-            break
-        else
-            table.insert(CharacterParts,hit)
+            end))
         end
     end
+    repeat task.wait() until Spawn
+    Map.PrimaryPart = Spawn
 end
 local function SetUpGui()
     for i,v in pairs(LocalPlayer.PlayerGui.GameGui.HUD.Main.GameStats:GetChildren()) do
@@ -111,6 +102,12 @@ local function SetUpMap()
             AnimationState = {a,b}
             PlayAnimation(AnimationState[1],AnimationState[2], LocalPlayer.Character.Humanoid)
         end
+    end
+    for i,v in ipairs(Map.Interactives:GetDescendants()) do
+    	if v:IsA('BasePart') and not v.ClassName == "Model" then
+    		v.Transparency = 0
+    		v.CanCollide = not v.CanCollide
+    	end
     end
 end
 local function SetTimeGui()
@@ -195,8 +192,8 @@ local function SaveRun()
     local i = -1
     repeat
         i = i + 1
-    until not isfile("tas/" .. game.Workspace.Map.Settings.MapName.Value .. tostring(i) .. ".json")
-    writefile("tas/" .. game.Workspace.Map.Settings.MapName.Value .. tostring(i) .. ".json", game:GetService("HttpService"):JSONEncode(AllPlayerInfo))
+    until not isfile(game.Workspace.Map.Settings.MapName.Value..".json")
+    writefile(game.Workspace.Map.Settings.MapName.Value..".json", game:GetService("HttpService"):JSONEncode(AllPlayerInfo))
     Alert("Saved", Color3.fromRGB(0, 255, 0), 1)
 end
 
@@ -208,10 +205,16 @@ if not isfolder("tas") then
     makefolder("tas")
 end
 
+local FrameCount = 0
 RunService.Heartbeat:Connect(function()
     if not Pause then
         SetTimeGui()
         table.insert(PlayerInfo, ReturnPlayerInfo())
+        FrameCount += 1
+        if FrameCount >= 120 then
+        	AddSavestate()
+        	FrameCount = 0
+        end
     end
 end)
 
