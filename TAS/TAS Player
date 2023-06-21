@@ -18,13 +18,15 @@ else
 end
 getgenv().tasplayeractive = true
 
-local RunName = Multi:WaitForChild('NewMap'):WaitForChild('Settings'):WaitForChild('MapName').Value
+
+local MapSettings = Multi:WaitForChild('NewMap'):WaitForChild('Settings')
+local RunName = MapSettings:WaitForChild('MapName').Value
 local TAS = game:GetService("HttpService"):JSONDecode(readfile(RunName .. ".json"))
 
 CLMAIN.newAlert("TAS Loaded!")
 local Map = Multi:WaitForChild("Map")
 
-if Map:WaitForChild('Settings'):FindFirstChild("_MirrorMap") then
+if MapSettings:FindFirstChild("_MirrorMap") and not MapSettings:FindFirstChild("FE2_ID") then
     CLMAIN.newAlert('Map is not Mirrored.')
     Mirrored = false
 else
