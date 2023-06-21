@@ -199,10 +199,15 @@ if not isfolder("tas") then
     makefolder("tas")
 end
 
+local FrameCount = 0
 RunService.Heartbeat:Connect(function()
+    FrameCount += 1
     if not Pause then
         SetTimeGui()
         table.insert(PlayerInfo, ReturnPlayerInfo())
+    elseif FrameCount == 60 then
+        AddSavestate()
+        FrameCount = 0
     end
 end)
 
