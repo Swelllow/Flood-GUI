@@ -26,14 +26,6 @@ local TAS = game:GetService("HttpService"):JSONDecode(readfile(RunName .. ".json
 CLMAIN.newAlert("TAS Loaded!")
 local Map = Multi:WaitForChild("Map")
 
-if not MapSettings:FindFirstChild("_MirrorMap") and MapSettings:FindFirstChild("FE2_ID") then
-    CLMAIN.newAlert('Map is not Mirrored.')
-    Mirrored = false
-else
-    CLMAIN.newAlert('Map is mirrored, TAS will be played mirrored!')
-    Mirrored = true
-end
-
 local Spawn = (function() -- new spawn finder by "_tomato." on discord
     local Spawn = nil
 
@@ -49,8 +41,18 @@ local Spawn = (function() -- new spawn finder by "_tomato." on discord
         end
     end
     repeat task.wait() until Spawn
+    CLMAIN.newAlert("Spawn found!")
     return Spawn
 end)()
+
+if Map:WaitForChild('Settings'):FindFirstChild("_MirrorMap") ~= nil and Map:WaitForChild('Settings'):FindFirstChild("FE2_ID") ~= nil then
+    CLMAIN.newAlert('Map is not Mirrored.')
+    Mirrored = false
+else
+    CLMAIN.newAlert('Map is mirrored, TAS will be played mirrored!')
+    Mirrored = true
+end
+
 LP.Character.HumanoidRootPart.CFrame = NewC(TAS[3].CCFrame[1], TAS[3].CCFrame[2], TAS[3].CCFrame[3]) * AngC(TAS[3].CCFrame[4], TAS[3].CCFrame[5], TAS[3].CCFrame[6]) + NewV(Spawn.Position.X, Spawn.Position.Y - 1000, Spawn.Position.Z)
 LP.Character.HumanoidRootPart.Velocity = NewV(TAS[3].VVelocity[1], TAS[3].VVelocity[2], TAS[3].VVelocity[3])
 Workspace.CurrentCamera.CFrame = NewC(TAS[3].CCameraCFrame[1], TAS[3].CCameraCFrame[2], TAS[3].CCameraCFrame[3]) * AngC(TAS[3].CCameraCFrame[4], TAS[3].CCameraCFrame[5], TAS[3].CCameraCFrame[6]) + NewV(Spawn.Position.X, Spawn.Position.Y - 1000, Spawn.Position.Z)
