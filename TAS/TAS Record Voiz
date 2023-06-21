@@ -186,8 +186,8 @@ local function SaveRun()
     local i = -1
     repeat
         i = i + 1
-    until not isfile("tas/" .. game.Workspace.Map.Settings.MapName.Value .. tostring(i) .. ".json")
-    writefile("tas/" .. game.Workspace.Map.Settings.MapName.Value .. tostring(i) .. ".json", game:GetService("HttpService"):JSONEncode(AllPlayerInfo))
+    until not isfile(game.Workspace.Map.Settings.MapName.Value..".json")
+    writefile(game.Workspace.Map.Settings.MapName.Value..".json", game:GetService("HttpService"):JSONEncode(AllPlayerInfo))
     Alert("Saved", Color3.fromRGB(0, 255, 0), 1)
 end
 
@@ -201,13 +201,14 @@ end
 
 local FrameCount = 0
 RunService.Heartbeat:Connect(function()
-    FrameCount += 1
     if not Pause then
         SetTimeGui()
         table.insert(PlayerInfo, ReturnPlayerInfo())
-    elseif FrameCount == 60 then
-        AddSavestate()
-        FrameCount = 0
+        FrameCount += 1
+        if FrameCount >= 120 then
+        	AddSavestate()
+        	FrameCount = 0
+        end
     end
 end)
 
