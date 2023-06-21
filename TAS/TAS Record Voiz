@@ -103,6 +103,12 @@ local function SetUpMap()
             PlayAnimation(AnimationState[1],AnimationState[2], LocalPlayer.Character.Humanoid)
         end
     end
+    for i,v in ipairs(Map.Interactives:GetDescendants()) do
+    	if v:IsA('BasePart') and not v.ClassName == "Model" then
+    		v.Transparency = 0
+    		v.CanCollide = not v.CanCollide
+    	end
+    end
 end
 local function SetTimeGui()
     local TimePlayed = tick() - TimeStart - TimePaused
