@@ -120,7 +120,6 @@ Loop = RS.Heartbeat:connect(function(DeltaTime)
                     PlayAnim(CA[1], CA[2], LP.Character.Humanoid)
                     DiffAnim = TAS[i].AAnimationChanged
                     Animate.setAnimationSpeed(0.76)
-                elseif CA[1] == "climb" then
                 else
                     PlayAnim(CA[1], CA[2], LP.Character.Humanoid)
                     DiffAnim = TAS[i].AAnimationChanged
