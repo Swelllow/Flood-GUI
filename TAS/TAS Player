@@ -47,12 +47,12 @@ if isfile(RunName .. ".json") then
 	    return Spawn
 	end)()
 	
-	if Map:WaitForChild('Settings'):FindFirstChild("_MirrorMap") ~= nil and Map:WaitForChild('Settings'):FindFirstChild("FE2_ID") ~= nil then
-	    CLMAIN.newAlert('Map is not Mirrored.')
-	    Mirrored = false
-	else
+	if not Map:WaitForChild('Settings'):WaitForChild("_MirrorMap", 5) and Map:WaitForChild('Settings'):FindFirstChild("FE2_ID") then
 	    CLMAIN.newAlert('Map is mirrored, TAS will be played mirrored!')
 	    Mirrored = true
+	else
+	    CLMAIN.newAlert('Map is not Mirrored.')
+	    Mirrored = false
 	end
 	
 	LP.Character.HumanoidRootPart.CFrame = NewC(TAS[3].CCFrame[1], TAS[3].CCFrame[2], TAS[3].CCFrame[3]) * AngC(TAS[3].CCFrame[4], TAS[3].CCFrame[5], TAS[3].CCFrame[6]) + NewV(Spawn.Position.X, Spawn.Position.Y - 1000, Spawn.Position.Z)
