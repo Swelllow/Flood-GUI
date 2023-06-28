@@ -26,7 +26,7 @@ CLMAIN.newAlert("TAS Loaded!")
 local Map = Multi:WaitForChild("Map")
 local mapName = Map:WaitForChild('Settings').MapName.Value
 
-local HighlightPath = game:GetService("Workspace").Multiplayer.Map.Settings:FindFirstChild("Highlight") --mirrored completely fixed by Moz
+local HighlightPath = game:GetService("Workspace").Multiplayer.Map.Settings:FindFirstChild("Highlight")
 
 if HighlightPath then
     CLMAIN.newAlert("Map cannot be mirrored.")
