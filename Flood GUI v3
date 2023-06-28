@@ -91,38 +91,144 @@ votemap.Changed:Connect(function(change)
 end)
 print("Loaded!")
 local lp = game.Players.LocalPlayer
-local UIS = game:GetService'UserInputService'
-local Library = loadstring(game:HttpGet("https://pastebin.com/raw/vff1bQ9F"))()
+local TweenService = game:GetService("TweenService")
+local TS = game:GetService("TweenService")
+local function Time(targetpos)
+	local tme = (targetpos - lp.Character.HumanoidRootPart.Position).Magnitude / math.random(16, 20)
+	return tme
+end
+local function tween(pos)
+	local toof = TS:Create(lp.Character.HumanoidRootPart, TweenInfo.new(Time(pos), Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {
+		CFrame = CFrame.new(pos)
+	})
+	toof:Play()
+	return toof
+end
+
+local UIS = game:GetService("UserInputService")
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 local colors = {
-	SchemeColor = Color3.fromRGB(0, 100, 255),
-	Background = Color3.fromRGB(40, 40, 40),
-	Header = Color3.fromRGB(30, 30, 30),
-	TextColor = Color3.fromRGB(255, 255, 255),
-	ElementColor = Color3.fromRGB(60, 60, 60)
+    SchemeColor = Color3.fromRGB(0, 100, 255),
+    Background = Color3.fromRGB(40, 40, 40),
+    Header = Color3.fromRGB(30, 30, 30),
+    TextColor = Color3.fromRGB(255, 255, 255),
+    ElementColor = Color3.fromRGB(60, 60, 60)
 }
-local Window = Library.CreateLib("Flood GUI v3 | By Tomato", colors)
+local Window = Library.CreateLib("Flood GUI v3", colors)
 local a = Window:NewTab("Auto")
+local s = Window:NewTab("Stat Tracker")
 local l = Window:NewTab("Local-Player")
 local b = Window:NewTab("Blatant")
 local t = Window:NewTab("TAS")
 local k = Window:NewTab("Other")
 local c = Window:NewTab("Credits")
+
 local auto = a:NewSection("Auto")
+local statTracker = s:NewSection("Stat Tracker")
 local loc = l:NewSection("Local Player")
 local blatant = b:NewSection("Blatant")
 local tas = t:NewSection("TAS")
 local other = k:NewSection("Other")
 local credits = c:NewSection("Credits")
+
 getgenv().wow = true
+
+-- Coins Tracker All credits to Moz
+local players = game:GetService("Players")
+local localPlayer = players.LocalPlayer
+local playerGui = localPlayer.PlayerGui
+local coinsAmount = playerGui.MenuGui.Shop.Currencies.Coins.Amount
+
+local coinsLabel = statTracker:NewLabel("Coins Earned: 0")
+local initialCoins = tonumber(coinsAmount.Text)
+
+-- Gems Tracker All credits to Moz
+local gemsAmount = playerGui.MenuGui.Shop.Currencies.Gems.Amount
+
+local gemsLabel = statTracker:NewLabel("Gems Earned: 0")
+local initialGems = tonumber(gemsAmount.Text)
+
+-- XP Tracker All credits to Moz
+local xpEarnedAmount = playerGui.MenuGui.Goals.Window.Content.Pages.Stats.xpEarned.Amount
+
+local xpLabel = statTracker:NewLabel("XP Earned: 0")
+local initialXP = tonumber(xpEarnedAmount.Text)
+
+local coinsEvent = Instance.new("BindableEvent")
+local gemsEvent = Instance.new("BindableEvent")
+local xpEvent = Instance.new("BindableEvent")
+
+coinsEvent.Event:Connect(function(coins)
+    coinsLabel:UpdateLabel("Coins Earned: " .. coins)
+end)
+
+gemsEvent.Event:Connect(function(gems)
+    gemsLabel:UpdateLabel("Gems Earned: " .. gems)
+end)
+
+xpEvent.Event:Connect(function(xp)
+    xpLabel:UpdateLabel("XP Earned: " .. xp)
+end)
+
+local function trackCoins()
+    local currentCoins = tonumber(coinsAmount.Text)
+    if initialCoins then
+        local coinsEarned = currentCoins - initialCoins
+        coinsEvent:Fire(coinsEarned)
+    else
+        initialCoins = currentCoins
+    end
+end
+
+local function trackGems()
+    local currentGems = tonumber(gemsAmount.Text)
+    if initialGems then
+        local gemsEarned = currentGems - initialGems
+        gemsEvent:Fire(gemsEarned)
+    else
+        initialGems = currentGems
+    end
+end
+
+local function trackXP()
+    local currentXP = tonumber(xpEarnedAmount.Text)
+    if initialXP then
+        local xpEarned = currentXP - initialXP
+        xpEvent:Fire(xpEarned)
+    else
+        initialXP = currentXP
+    end
+end
+
+spawn(function()
+    while wait(1) do
+        trackCoins()
+        trackGems()
+        trackXP()
+    end
+end)
+
+local startTime = os.time()
+
+local timerLabel = statTracker:NewLabel("Timer: 0 seconds")
+
+spawn(function()
+    while true do
+        local currentTime = os.time() - startTime
+        timerLabel:UpdateLabel("Timer: " .. currentTime .. " seconds")
+        wait(1)
+    end
+end)
+
 other:NewKeybind("ToggleUI", "Toggle UI with this keybind.", Enum.KeyCode.J, function()
-	if getgenv().ui == true then
-		clmain.newAlert("UI Disabled!", Color3.fromRGB(255, 0, 0))
-		getgenv().ui = false
-	else
-		clmain.newAlert("UI Enabled!", Color3.fromRGB(0, 60, 255))
-		getgenv().ui = true
-	end
-	Library:ToggleUI()
+    if getgenv().ui == true then
+        clmain.newAlert("UI Disabled!", Color3.fromRGB(255, 0, 0))
+        getgenv().ui = false
+    else
+        clmain.newAlert("UI Enabled!", Color3.fromRGB(0, 60, 255))
+        getgenv().ui = true
+    end
+    Library:ToggleUI()
 end)
 other:NewLabel("Discord Invites")
 other:NewButton("Copy Tomato-Hub Invite", "Copies Tomato-Hub invite to clipboard!", function()
@@ -306,6 +412,7 @@ end)
 credits:NewLabel("New Anti-Kick by AltLexon#6917")
 credits:NewLabel("TAS script by Voiz#5668 | Reverse Engineered by Tomato")
 credits:NewLabel("TAS File Minifier by iaan#8193")
+credits:NewLabel("Stat Tracker & other small things by Moz")
 credits:NewLabel("Everything else by Tomato")
 wait()
 if debugmode == true then
