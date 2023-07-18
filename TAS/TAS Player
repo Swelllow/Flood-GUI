@@ -26,7 +26,7 @@ CLMAIN.newAlert("TAS Loaded!")
 local Map = Multi:WaitForChild("Map")
 local mapName = Map:WaitForChild('Settings').MapName.Value
 
-local HighlightPath = game:GetService("Workspace").Multiplayer.Map.Settings:FindFirstChild("Highlight") --mirrored completely fixed by Moz
+local HighlightPath = game:GetService("Workspace").Multiplayer.Map.Settings:FindFirstChild("Highlight")
 
 if HighlightPath then
     CLMAIN.newAlert("Map cannot be mirrored.")
@@ -45,12 +45,20 @@ else
     end
 end
 
+local checkSize = function(size)
+    local size = Vector3.new(math.floor(size.X), math.floor(size.Y), math.floor(size.Z))
+    if size.Y == 0 and (size.X == 15 or size.X == 16) and (size.Z == 15 or size.Z == 16) then
+        return true
+    end
+    return false
+end
+
 local Spawn = (function() -- new spawn finder by "_tomato." on discord
     local Spawn = nil
     
     local connections = {}
     for i,v in ipairs(Map:GetChildren()) do
-        if v.Name == "Part" then
+        if v.Name == "Part" and checkSize(v.Size) == true then
             table.insert(connections, v:GetPropertyChangedSignal("Rotation"):Connect(function()
                 Spawn = v
                 for i,v in ipairs(connections) do
