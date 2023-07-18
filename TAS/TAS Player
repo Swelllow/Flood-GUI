@@ -5,7 +5,8 @@ local SkipMirroredMaps = {
     ["Northren Mill"] = true,
     ["Mysterium"] = true,
     ["Decaying Silo"] = true,
-    ["Active Volcanic Mines"] = true
+    ["Active Volcanic Mines"] = true,
+    ["Snowy Stronghold"] = true
 }
 local NewV = Vector3.new
 local NewC = CFrame.new
