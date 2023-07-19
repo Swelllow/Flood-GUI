@@ -1,10 +1,20 @@
+local Keybinds = {
+    UserPause = "CapsLock",
+    AddSavestate = "One",
+    RemoveSavestate = "Two",
+    BackSavestate = "Three",
+    CollisionToggler = "C",
+    SaveRun = "Five"
+}
+
 -- Fixed format to match Tas player Moz
-print("Started!!!!!1")
+local Offset, SpawnPos, Ything, Xoff, Yoff,  Zoff
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local LocalPlayer = game.Players.LocalPlayer
 local Alert = getsenv(game.Players.LocalPlayer.PlayerScripts.CL_MAIN_GameScript).newAlert
+Alert("Started!!!!!1", Color3.new(0.717647, 0, 1))
 local Key = -game.ReplicatedStorage.Remote.ReqPasskey:InvokeServer()
 local AnimationState = {}
 local Savestates = {}
@@ -16,15 +26,33 @@ local SenvAnimation
 local PlayAnimation
 local TimeStart
 local TimeText
+
+
+if setfpscap then
+    setfpscap(60)
+else
+    Alert("SHIT EXPLOIT ALERT PLEASE GET A NEW ONE PEEASE", Color3.new(1, 0, 0))
+end
+
+local function getCurrentCFrame()
+    local RealCframe = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+    local x, y, z, r00, r01, r02, r10, r11, r12, r20, r21, r22 = RealCframe:GetComponents()
+    -- all the r's dont matter
+    local fuck = CFrame.new(x - Xoff, (y - Yoff) + 1000, z - Zoff, r00, r01, r02, r10, r11, r12, r20, r21, r22)
+    return fuck
+end
+
 local function ReturnPlayerInfo()
     return {
-            CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame,
-            CameraCFrame = Workspace.CurrentCamera.CFrame,
+            CFrame = getCurrentCFrame(),
+            CameraCFrame = workspace.CurrentCamera.CFrame,
             Velocity = LocalPlayer.Character.HumanoidRootPart.Velocity,
             Animation = AnimationState,
             Time = tick() - TimeStart - TimePaused,
     }
 end
+
+
 local function SetPrimaryPart() -- new spawn finder by "_tomato." on discord
     local Map = game.Workspace.Multiplayer:WaitForChild("Map")
     local Spawn = nil
@@ -69,7 +97,13 @@ local function SetUpMap()
     SetPrimaryPart()
     Map = game.Workspace.Multiplayer.Map:Clone()
     Map.Parent = game.Workspace
-    Map:MoveTo(Vector3.new(0,1000,0))
+    --Map:MoveTo(Vector3.new(0,1000,0))
+    SpawnPos = Map.PrimaryPart.Position 
+    local Ything = SpawnPos.Y - 1000
+    print(Ything)
+    Xoff, Yoff, Zoff = SpawnPos.X, SpawnPos.Y, SpawnPos.Z
+    Offset = CFrame.new(Xoff, Yoff, Zoff)
+    print(getCurrentCFrame())
     LocalPlayer.Character.Head:Destroy()
     LocalPlayer.CharacterAdded:Wait()
     LocalPlayer.Character:WaitForChild("Humanoid")
@@ -86,8 +120,8 @@ local function SetUpMap()
     LocalPlayer.Character.Humanoid.WalkSpeed = 20
     LocalPlayer.Character.Humanoid.JumpPower = 50
     table.insert(Savestates,{{
-        CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame,
-        CameraCFrame = game.Workspace.CurrentCamera.CFrame,
+        CFrame = getCurrentCFrame(),
+        CameraCFrame = game.Workspace.CurrentCamera.CFrame * Offset,
         Velocity = Vector3.new(0,0,0),
         Animation = {"idle",0},
         Time = 0
@@ -103,11 +137,24 @@ local function SetUpMap()
             PlayAnimation(AnimationState[1],AnimationState[2], LocalPlayer.Character.Humanoid)
         end
     end
-    for i,v in ipairs(Map.Interactives:GetDescendants()) do
-    	if v:IsA('BasePart') and not v.ClassName == "Model" then
-    		v.Transparency = 0
-    		v.CanCollide = not v.CanCollide
-    	end
+    task.wait(2)
+    for _, v in ipairs(Map:GetDescendants()) do
+        if v.ClassName == "ObjectValue" then
+            local Interactive = v.Parent
+            if not Interactive.ClassName == "Model" then
+                if Interactive:IsA("BasePart") or Interactive:IsA("UnionOperation") or Interactive:IsA("TrussPart") and Interactive.ClassName ~= "Model" then
+                    Interactive.Transparency = ((Interactive.Transparency == 1 and Interactive.CanCollide == false) and 0) or 1
+                    Interactive.CanCollide = not Interactive.CanCollide
+                end
+            elseif Interactive.ClassName == "Model" then
+                for _, Interactive in ipairs(Interactive:GetDescendants()) do
+                    if Interactive:IsA("BasePart") or Interactive:IsA("UnionOperation") or Interactive:IsA("TrussPart") and Interactive.ClassName ~= "Model" then
+                        Interactive.Transparency = ((Interactive.Transparency == 1 and Interactive.CanCollide == false) and 0) or 1
+                        Interactive.CanCollide = not Interactive.CanCollide
+                    end
+                end
+            end
+        end
     end
 end
 local function SetTimeGui()
@@ -124,7 +171,7 @@ local function SetTimeGui()
 end
 local function UserPause()
     Pause = not Pause
-    if Pause then
+    if Pause == true then
         LocalPlayer.Character.HumanoidRootPart.Anchored = true
         TimeText.TextColor3 = Color3.fromRGB(255, 255, 0)
         TimePauseHolder = tick()
@@ -139,8 +186,8 @@ local function BackSavestate()
     PlayerInfo = {}
     Pause = true
     LocalPlayer.Character.HumanoidRootPart.Anchored = true
-    TimeText.TextColor3 = Color3.fromRGB(255, 255, 0)
-    LocalPlayer.Character.HumanoidRootPart.CFrame = InfoState.CFrame
+    TimeText.TextColor3 = Color3.fromRGB(255, 255, 0) --  Ything = SpawnPos + Vector3.new(0, 1000, 0)
+    LocalPlayer.Character.HumanoidRootPart.CFrame = InfoState.CFrame + Vector3.new(Xoff, Yoff - 1000, Zoff)
     LocalPlayer.Character.HumanoidRootPart.Velocity = InfoState.Velocity
     game.Workspace.CurrentCamera.CFrame = InfoState.CameraCFrame
     TimePauseHolder = tick()
@@ -172,12 +219,12 @@ local function CollisionToggler()
     if MouseTarget.CanCollide then
         MouseTarget.Transparency = 0
     else
-        MouseTarget.Transparency = 1
+        MouseTarget.Transparency = 0.8
     end
 end
 local function SaveRun()
     local AllPlayerInfo = {}
-    for i = 2, #Savestates do
+    for i = 1, #Savestates do
         for j = 1, #Savestates[i] do
             local InfoFromSavestates = Savestates[i][j]
             local InfoAddingToAllPlayerInfo = {}
@@ -185,35 +232,34 @@ local function SaveRun()
             InfoAddingToAllPlayerInfo.VVelocity = {InfoFromSavestates.Velocity.X, InfoFromSavestates.Velocity.Y, InfoFromSavestates.Velocity.Z}
             InfoAddingToAllPlayerInfo.CCameraCFrame = {InfoFromSavestates.CameraCFrame.X, InfoFromSavestates.CameraCFrame.Y, InfoFromSavestates.CameraCFrame.Z, InfoFromSavestates.CameraCFrame:ToEulerAnglesXYZ()}
             InfoAddingToAllPlayerInfo.CCFrame = {InfoFromSavestates.CFrame.X, InfoFromSavestates.CFrame.Y, InfoFromSavestates.CFrame.Z, InfoFromSavestates.CFrame:ToEulerAnglesXYZ()}
+            if InfoFromSavestates.Animation and InfoFromSavestates.Animation[1] then
+                InfoAddingToAllPlayerInfo.AAnimation = {InfoFromSavestates.Animation[1], InfoFromSavestates.Animation[2]}
+            else
+                InfoAddingToAllPlayerInfo.AAnimation = {"walk", 0.1}
+            end
             InfoAddingToAllPlayerInfo.time = InfoFromSavestates.Time
             table.insert(AllPlayerInfo, InfoAddingToAllPlayerInfo)
         end
     end
-    local i = -1
-    repeat
-        i = i + 1
-    until not isfile(game.Workspace.Map.Settings.MapName.Value..".json")
     writefile(game.Workspace.Map.Settings.MapName.Value..".json", game:GetService("HttpService"):JSONEncode(AllPlayerInfo))
     Alert("Saved", Color3.fromRGB(0, 255, 0), 1)
 end
 
 ReplicatedStorage.Remote.StartClientMapTimer.OnClientEvent:Wait()
-task.wait(1)
 SetUpMap()
 
 if not isfolder("tas") then
     makefolder("tas")
 end
 
-local FrameCount = 0
-RunService.Heartbeat:Connect(function()
+local timer = tick()
+RunService.Heartbeat:Connect(function(deltaTime)
     if not Pause then
         SetTimeGui()
         table.insert(PlayerInfo, ReturnPlayerInfo())
-        FrameCount += 1
-        if FrameCount >= 120 then
+        if tick() - timer >= 2 then
         	AddSavestate()
-        	FrameCount = 0
+        	timer = tick()
         end
     end
 end)
@@ -222,17 +268,17 @@ SaveRun()
 UserInputService.InputBegan:Connect(function(Key,Typing)
     if not Typing then
         Key = Key.KeyCode.Name
-        if Key == "CapsLock" then
+        if Key == Keybinds.UserPause then
             UserPause()
-        elseif Key == "One" then
+        elseif Key == Keybinds.AddSavestate then
             AddSavestate()
-        elseif Key == "Two" then
+        elseif Key == Keybinds.RemoveSavestate then
             RemoveSavestate()
-        elseif Key == "Three" then
+        elseif Key == Keybinds.BackSavestate then
             BackSavestate()
-        elseif Key == "Four" then
+        elseif Key == Keybinds.CollisionToggler then
             CollisionToggler()
-        elseif Key == "Five" then
+        elseif Key == Keybinds.SaveRun then
             SaveRun()
         end
     end
