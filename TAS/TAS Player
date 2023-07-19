@@ -5,16 +5,16 @@ local SkipMirroredMaps = {
     ["Northren Mill"] = true,
     ["Mysterium"] = true,
     ["Decaying Silo"] = true,
-    ["Active Volcanic Mines"] = true
+    ["Active Volcanic Mines"] = true,
+    ["Snowy Stronghold"] = true
 }
 local NewV = Vector3.new
 local NewC = CFrame.new
 local AngC = CFrame.fromEulerAnglesXYZ
 local LP = game.Players.LocalPlayer
 local Alert = getsenv(LP.PlayerScripts.CL_MAIN_GameScript).newAlert
-local Multi = Workspace.Multiplayer
+local Multi = workspace.Multiplayer
 local RS = game:GetService('RunService')
-local wait = task.wait
 
 -- IMPORTANT
 local CLMAIN = getsenv(LP.PlayerScripts.CL_MAIN_GameScript)
@@ -55,15 +55,15 @@ end
 
 local Spawn = (function() -- new spawn finder by "_tomato." on discord
     local Spawn = nil
-    
+
     local connections = {}
     for i,v in ipairs(Map:GetChildren()) do
-        if v.Name == "Part" and checkSize(v.Size) == true then
+        if v.Name == "Part" then
             table.insert(connections, v:GetPropertyChangedSignal("Rotation"):Connect(function()
-                Spawn = v
                 for i,v in ipairs(connections) do
                     v:Disconnect()
                 end
+                Spawn = v
             end))
         end
     end
@@ -72,12 +72,8 @@ local Spawn = (function() -- new spawn finder by "_tomato." on discord
     return Spawn
 end)()
 
-LP.Character.HumanoidRootPart.CFrame = NewC(TAS[3].CCFrame[1], TAS[3].CCFrame[2], TAS[3].CCFrame[3]) * AngC(TAS[3].CCFrame[4], TAS[3].CCFrame[5], TAS[3].CCFrame[6]) + NewV(Spawn.Position.X, Spawn.Position.Y - 1000, Spawn.Position.Z)
-LP.Character.HumanoidRootPart.Velocity = NewV(TAS[3].VVelocity[1], TAS[3].VVelocity[2], TAS[3].VVelocity[3])
-Workspace.CurrentCamera.CFrame = NewC(TAS[3].CCameraCFrame[1], TAS[3].CCameraCFrame[2], TAS[3].CCameraCFrame[3]) * AngC(TAS[3].CCameraCFrame[4], TAS[3].CCameraCFrame[5], TAS[3].CCameraCFrame[6]) + NewV(Spawn.Position.X, Spawn.Position.Y - 1000, Spawn.Position.Z)
-
 game:GetService("ReplicatedStorage").Remote.StartClientMapTimer.OnClientEvent:Wait()
-local TimeStart = os.clock()
+local TimeStart = tick()
 CLMAIN.newAlert('TAS Running..')
 PlayAnim = Animate.playAnimation
 Animate.playAnimation = function() end
@@ -87,34 +83,17 @@ for _, v in next, Map:GetDescendants() do
         local buttonPart = v.Parent.Parent:FindFirstChildOfClass('Part')
         if buttonPart ~= nil then
             buttonPart.Size = Vector3.new(6,6,6)
-            if debugmode == true then
-                buttonPart.Color = Color3.new(0,0,1)
-                buttonPart.Transparency = 0
-            end
         end
     end
 end
 
-local RayParts = Instance.new('Model')
-RayParts.Name = "RayParts"
-RayParts.Parent = Workspace
-local radius = 0.05
-
-local function MakeRayVisible(ray, color)
-    local midpoint = ray.Origin + ray.Direction/2
-
-    local part = Instance.new("Part")
-    part.CanCollide = false
-    part.CanTouch = false
-    part.Parent = RayParts
-    part.Anchored = true
-    part.CFrame = CFrame.new(midpoint, ray.Origin)
-    part.Size = Vector3.new(radius, radius, ray.Direction.Magnitude)
-
-    part.Material = Enum.Material.Neon
-    part.Color = color
-
-    return part
+local function activateAnimation(CurrentAnimation)
+    if CurrentAnimation and CurrentAnimation[1] then 
+        PlayAnim(CurrentAnimation[1],CurrentAnimation[2],LP.Character.Humanoid)
+        if CurrentAnimation[1] == "walk" then
+            Animate.setAnimationSpeed(.76) 
+        end
+    end
 end
 
 local Offset = Spawn.Position - NewV(0, 1000, 0)
@@ -128,62 +107,46 @@ Death = LP.Character.Humanoid.Changed:Connect(function(Change)
     if Change == "Health" and LP.Character.Humanoid.Health == 0 then
         Death:Disconnect()
         Loop:Disconnect()
-        RayParts:Destroy()
         CLMAIN.newAlert('Player Died.', Color3.new(1, 0, 0))
     end
 end)
 
-Loop = RS.Heartbeat:connect(function(DeltaTime)
+Loop = RS.Heartbeat:Connect(function(DeltaTime)
     local NewFrame = #TAS
     local Divider = OldFrame + 60
     if Divider < NewFrame then
         NewFrame = Divider
     end
     for i = OldFrame, NewFrame do
-        if (os.clock() - TimeStart) < TAS[i].time then
+        local CurrentInfo = TAS[i]
+        if (tick() - TimeStart) < CurrentInfo.time then
             break
         elseif i >= #TAS then
             Death:Disconnect()
             Loop:Disconnect()
-            RayParts:Destroy()
             Animate.playAnimation = PlayAnim
             CLMAIN.newAlert('TAS Run Finished!', Color3.new(0, 1, 0))
             CLMAIN.newAlert('TAS Player By Tomato', Color3.new(0, 1, 0))
-        elseif (os.clock() - TimeStart) >= TAS[i].time then
+        elseif (tick() - TimeStart) >= CurrentInfo.time then
             OldFrame = i
-            local CF = TAS[i].CCFrame
-            local CCF = TAS[i].CCameraCFrame
-            local VV = TAS[i].VVelocity
+            local RootPart = LP.Character.HumanoidRootPart
+            local CCFrame = CurrentInfo.CCFrame
+            local CCameraCFrame = CurrentInfo.CCameraCFrame
+            local VVelocity = CurrentInfo.VVelocity
+            local CurrentAnimation = CurrentInfo.AAnimation
 
             if Mirrored == true then
-                local nCF = CF
-                CF[1] = nCF[1]
-                CF[2] = nCF[2]
-                CF[3] = -nCF[3]
-                CF[4] = nCF[4]
-                CF[5] = nCF[5]
-                CF[6] = -nCF[6]
-                VV[3] = -VV[3]
-                CCF[3] = -CCF[3]
+                print("MIRRORED FRAME")
+                RootPart.CFrame = NewC(CCFrame[1], CCFrame[2], -CCFrame[3]) * AngC(-3.1415927410125732, CCFrame[5], -3.1415927410125732) + Offset
+                RootPart.Velocity = NewV(VVelocity[1], VVelocity[2], -VVelocity[3])
+                --workspace.CurrentCamera.CFrame = NewC(-CCameraCFrame[1], -CCameraCFrame[2], -CCameraCFrame[3]) * AngC(3.1415927410125732, CCameraCFrame[5], 3.1415927410125732) + Offset
+            else
+                print("NON MIRRORED FRAME")
+                RootPart.CFrame = NewC(CCFrame[1], CCFrame[2], CCFrame[3]) * AngC(CCFrame[4], CCFrame[5], CCFrame[6]) + Offset
+                RootPart.Velocity = NewV(VVelocity[1], VVelocity[2], VVelocity[3])
+                workspace.CurrentCamera.CFrame = NewC(CCameraCFrame[1], CCameraCFrame[2], CCameraCFrame[3]) * AngC(CCameraCFrame[4], CCameraCFrame[5], CCameraCFrame[6]) + Offset
             end
-
-            local CA = TAS[i].AAnimation
-
-            LP.Character.HumanoidRootPart.CFrame = NewC(CF[1], CF[2], CF[3]) * AngC(CF[4], CF[5], CF[6]) + Offset
-            LP.Character.HumanoidRootPart.Velocity = NewV(VV[1], VV[2], VV[3])
-            Workspace.CurrentCamera.CFrame = NewC(CCF[1], CCF[2], CCF[3]) * AngC(CCF[4], CCF[5], CCF[6]) + Offset
-
-            if TAS[i].AAnimation and TAS[i].AAnimationChanged and TAS[i].AAnimationChanged > DiffAnim then
-                if CA[1] == "walk" then
-                    PlayAnim(CA[1], CA[2], LP.Character.Humanoid)
-                    DiffAnim = TAS[i].AAnimationChanged
-                    Animate.setAnimationSpeed(0.76)
-                elseif CA[1] == "climb" then
-                else
-                    PlayAnim(CA[1], CA[2], LP.Character.Humanoid)
-                    DiffAnim = TAS[i].AAnimationChanged
-                end
-            end
+            activateAnimation(CurrentAnimation)
         end
     end
 end)
