@@ -210,12 +210,16 @@ end)
 
 local startTime = os.time()
 
-local timerLabel = statTracker:NewLabel("Timer: 0 seconds")
+local timerLabel = statTracker:NewLabel("Timer: 00:00:00")
 
 spawn(function()
     while true do
         local currentTime = os.time() - startTime
-        timerLabel:UpdateLabel("Timer: " .. currentTime .. " seconds")
+        local hours = math.floor(currentTime / 3600)
+        local minutes = math.floor((currentTime % 3600) / 60)
+        local seconds = currentTime % 60
+        local timeString = string.format("%02d:%02d:%02d", hours, minutes, seconds)
+        timerLabel:UpdateLabel("Timer: " .. timeString)
         wait(1)
     end
 end)
