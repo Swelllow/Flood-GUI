@@ -1,4 +1,7 @@
-local Mirrored = false
+if Legit == nil then
+ Legit = false
+end
+
 local SkipMirroredMaps = {
     ["Retro Coast"] = true,
     ["Zemblanity"] = true,
@@ -8,10 +11,29 @@ local SkipMirroredMaps = {
     ["Active Volcanic Mines"] = true,
     ["Snowy Stronghold"] = true
 }
+local Mirrored = false
 local NewV = Vector3.new
 local NewC = CFrame.new
 local AngC = CFrame.fromEulerAnglesXYZ
 local LP = game.Players.LocalPlayer
+local function toggleSlide(newValue)
+    if newValue == true then
+        LP.Character.HumanoidRootPart.Size = Vector3.new(2, 1, 1)
+        LP.Character.BoundingBox.Size = Vector3.new(2, 1, 1)
+        LP.Character.Humanoid.HipHeight = -1.5
+    else
+        LP.Character.HumanoidRootPart.Size = Vector3.new(2, 2, 1)
+        LP.Character.BoundingBox.Size = Vector3.new(2, 2, 1)
+        LP.Character.Humanoid.HipHeight = 0
+    end
+    LP.Character.Animate.Sliding:Fire(newValue)
+end
+
+local function doSlide(delay)
+    toggleSlide(true)
+    task.wait(delay)
+    toggleSlide(false)
+end
 local Alert = getsenv(LP.PlayerScripts.CL_MAIN_GameScript).newAlert
 local Multi = workspace.Multiplayer
 local RS = game:GetService('RunService')
@@ -45,22 +67,14 @@ else
     end
 end
 
-local checkSize = function(size)
-    local size = Vector3.new(math.floor(size.X), math.floor(size.Y), math.floor(size.Z))
-    if size.Y == 0 and (size.X == 15 or size.X == 16) and (size.Z == 15 or size.Z == 16) then
-        return true
-    end
-    return false
-end
-
 local Spawn = (function() -- new spawn finder by "_tomato." on discord
     local Spawn = nil
 
     local connections = {}
-    for i,v in ipairs(Map:GetChildren()) do
+    for _,v in ipairs(Map:GetChildren()) do
         if v.Name == "Part" then
             table.insert(connections, v:GetPropertyChangedSignal("Rotation"):Connect(function()
-                for i,v in ipairs(connections) do
+                for _,v in ipairs(connections) do
                     v:Disconnect()
                 end
                 Spawn = v
@@ -87,17 +101,24 @@ for _, v in next, Map:GetDescendants() do
     end
 end
 
+--[[
+local ToggleSwim = function(val)
+    LP.Character.Animate.ToggleSwim:Fire(val)
+end
+]]
+
 local function activateAnimation(CurrentAnimation)
     if CurrentAnimation and CurrentAnimation[1] then 
         PlayAnim(CurrentAnimation[1],CurrentAnimation[2],LP.Character.Humanoid)
         if CurrentAnimation[1] == "walk" then
             Animate.setAnimationSpeed(.76) 
+        elseif CurrentAnimation[1] == "slide" then
+            task.spawn(doSlide, 0.2)
         end
     end
 end
 
 local Offset = Spawn.Position - NewV(0, 1000, 0)
-local DiffAnim = 0
 local OldFrame = 3
 
 local Loop
@@ -111,6 +132,10 @@ Death = LP.Character.Humanoid.Changed:Connect(function(Change)
     end
 end)
 
+local RootPart = LP.Character.HumanoidRootPart
+if Legit then
+    RootPart.RootJoint.Enabled = false
+end
 Loop = RS.Heartbeat:Connect(function(DeltaTime)
     local NewFrame = #TAS
     local Divider = OldFrame + 60
@@ -124,26 +149,26 @@ Loop = RS.Heartbeat:Connect(function(DeltaTime)
         elseif i >= #TAS then
             Death:Disconnect()
             Loop:Disconnect()
+            if Legit then
+                RootPart.RootJoint.Enabled = true
+            end
             Animate.playAnimation = PlayAnim
             CLMAIN.newAlert('TAS Run Finished!', Color3.new(0, 1, 0))
             CLMAIN.newAlert('TAS Player By Tomato', Color3.new(0, 1, 0))
         elseif (tick() - TimeStart) >= CurrentInfo.time then
             OldFrame = i
-            local RootPart = LP.Character.HumanoidRootPart
             local CCFrame = CurrentInfo.CCFrame
             local CCameraCFrame = CurrentInfo.CCameraCFrame
             local VVelocity = CurrentInfo.VVelocity
             local CurrentAnimation = CurrentInfo.AAnimation
-
             if Mirrored == true then
-                RootPart.CFrame = NewC(CCFrame[1], CCFrame[2], -CCFrame[3]) * AngC(-3.1415927410125732, CCFrame[5], -3.1415927410125732) + Offset
-                RootPart.Velocity = NewV(VVelocity[1], VVelocity[2], -VVelocity[3])
+                RootPart.CFrame = NewC(CCFrame[1], CCFrame[2], CCFrame[3]) * AngC(-3.1415927410125732, CCFrame[5], -3.1415927410125732) + Offset
                 --workspace.CurrentCamera.CFrame = NewC(-CCameraCFrame[1], -CCameraCFrame[2], -CCameraCFrame[3]) * AngC(3.1415927410125732, CCameraCFrame[5], 3.1415927410125732) + Offset
             else
                 RootPart.CFrame = NewC(CCFrame[1], CCFrame[2], CCFrame[3]) * AngC(CCFrame[4], CCFrame[5], CCFrame[6]) + Offset
-                RootPart.Velocity = NewV(VVelocity[1], VVelocity[2], VVelocity[3])
                 workspace.CurrentCamera.CFrame = NewC(CCameraCFrame[1], CCameraCFrame[2], CCameraCFrame[3]) * AngC(CCameraCFrame[4], CCameraCFrame[5], CCameraCFrame[6]) + Offset
             end
+            RootPart.Velocity = NewV(VVelocity[1], VVelocity[2], VVelocity[3])
             activateAnimation(CurrentAnimation)
         end
     end
