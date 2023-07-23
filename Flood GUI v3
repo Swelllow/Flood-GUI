@@ -290,6 +290,10 @@ blatant:NewButton("Lag Server", "Equip buddy then press", function()
 		game:GetService("ReplicatedStorage").Remote.ConfirmItem:FireServer(key, 40)
 	end
 end)
+local Legit = false
+auto:NewToggle("Look Legit?", "Makes serverside look more legit but not on your screen.", function(t)
+	Legit = t
+end)
 auto:NewToggle("Auto-Play [Working]", "Requires TAS files", function(t)
 	getgenv().play = t
 end)
