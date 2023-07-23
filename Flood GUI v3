@@ -290,7 +290,7 @@ blatant:NewButton("Lag Server", "Equip buddy then press", function()
 		game:GetService("ReplicatedStorage").Remote.ConfirmItem:FireServer(key, 40)
 	end
 end)
-local Legit = false
+Legit = false
 auto:NewToggle("Look Legit?", "Makes serverside look more legit but not on your screen.", function(t)
 	Legit = t
 end)
