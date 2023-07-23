@@ -1,7 +1,6 @@
 if Legit == nil then
- Legit = false
+    Legit = false
 end
-
 local SkipMirroredMaps = {
     ["Retro Coast"] = true,
     ["Zemblanity"] = true,
@@ -153,6 +152,8 @@ Loop = RS.Heartbeat:Connect(function(DeltaTime)
                 RootPart.RootJoint.Enabled = true
             end
             Animate.playAnimation = PlayAnim
+            Animate.Disabled = true
+            Animate.Disabled = false
             CLMAIN.newAlert('TAS Run Finished!', Color3.new(0, 1, 0))
             CLMAIN.newAlert('TAS Player By Tomato', Color3.new(0, 1, 0))
         elseif (tick() - TimeStart) >= CurrentInfo.time then
