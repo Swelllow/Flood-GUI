@@ -2,9 +2,11 @@ local Branch = (...);
 if Branch == nil then
 	Branch = "main";
 end
-repeat wait() until game:IsLoaded() or game.Loaded:wait()
+if not game:IsLoaded() then game.Loaded:wait() end
 --anticheat bypass all credits to altlexon
-game:GetService("ReplicatedStorage").Remote.ReqCharVars.OnClientInvoke = function()return{}end
+game:GetService("ReplicatedStorage").Remote.ReqCharVars.OnClientInvoke = function()return wait(9e9)end
+-- secondary anticheat bypass thing 
+game:GetService("ReplicatedStorage").Remote.FetchPos.OnClientInvoke = function()return wait(9e9)end
 
 getgenv().maps = {}
 local script = require(game.ReplicatedStorage.SharedModules.FE2Library)
@@ -60,7 +62,7 @@ end)
 
 for i,v in ipairs(getnilinstances()) do
 	if v.Name == "CL_AntiExploit" then
-		print('AntiCheat Disabled.')
+		print('Anti-Cheat Deleted.')
 		v:Destroy()
 	end
 end
@@ -291,11 +293,11 @@ blatant:NewButton("Lag Server", "Equip buddy then press", function()
 	end
 end)
 Legit = false
-auto:NewToggle("Look Legit?", "Makes serverside look more legit but not on your screen.", function(t)
-	Legit = t
-end)
 auto:NewToggle("Auto-Play [Working]", "Requires TAS files", function(t)
 	getgenv().play = t
+end)
+auto:NewToggle("Legit Mode", "Makes serverside look more legit but not on your screen.", function(t)
+	Legit = t
 end)
 getgenv().play = false
 task.spawn(function()
@@ -320,8 +322,7 @@ UIS.InputBegan:connect(function(UserInput,Typed)
 		lp.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 	end
 end)
-auto:NewToggle("Auto-Farm [DISCONTINUED]", "Automatically wins for you!", function(t)
-end)
+
 --[[auto:NewToggle("Auto-Vote", "Automatically votes for you!", function(t)
 	getgenv().oof = t
 end)]]
