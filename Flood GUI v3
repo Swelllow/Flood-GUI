@@ -384,11 +384,6 @@ tas:NewButton("Create-TAS", "Create a TAS, Press then enter lift.", function()
 	Fix()
 	ButtonStuff()
 end)
-tas:NewButton("Run-TAS", "Press then enter lift!", function()
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/ImMejor35/Flood-GUI/"..Branch.."/TAS/TAS%20Player"))
-	"TAS Player Fixed By Tomato with help from Epix"
-end)
-
 
 local oldindex
 oldindex = hookmetamethod(game, "__index", function(self, b)
@@ -408,13 +403,7 @@ tas:NewKeybind("Toggle Swim", "Only works while creating TAS.", Enum.KeyCode.T, 
 		getgenv().swim = true
 	end
 end)
-tas:NewButton("Remove Water (TAS)", "Removes water in tas creator", function()
-    for i,v in pairs(game.Workspace:GetDescendants()) do
-        if string.match(string.lower(v.Name),"water") then
-            v:Destroy()
-        end
-    end
-end)
+
 tas:NewToggle("Auto-Leave", "Automatically leaves when player joins!", function(t)
 	getgenv().autoleave = t
 end)
