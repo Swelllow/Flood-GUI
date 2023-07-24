@@ -2,9 +2,11 @@ local Branch = (...);
 if Branch == nil then
 	Branch = "main";
 end
-repeat wait() until game:IsLoaded() or game.Loaded:wait()
+if not game:IsLoaded() then game.Loaded:wait() end
 --anticheat bypass all credits to altlexon
-game:GetService("ReplicatedStorage").Remote.ReqCharVars.OnClientInvoke = function()return{}end
+game:GetService("ReplicatedStorage").Remote.ReqCharVars.OnClientInvoke = function()return wait(9e9)end
+-- secondary anticheat bypass thing 
+game:GetService("ReplicatedStorage").Remote.FetchPos.OnClientInvoke = function()return wait(9e9)end
 
 getgenv().maps = {}
 local script = require(game.ReplicatedStorage.SharedModules.FE2Library)
@@ -60,7 +62,7 @@ end)
 
 for i,v in ipairs(getnilinstances()) do
 	if v.Name == "CL_AntiExploit" then
-		print('AntiCheat Disabled.')
+		print('Anti-Cheat Deleted.')
 		v:Destroy()
 	end
 end
@@ -290,8 +292,12 @@ blatant:NewButton("Lag Server", "Equip buddy then press", function()
 		game:GetService("ReplicatedStorage").Remote.ConfirmItem:FireServer(key, 40)
 	end
 end)
+Legit = false
 auto:NewToggle("Auto-Play [Working]", "Requires TAS files", function(t)
 	getgenv().play = t
+end)
+auto:NewToggle("Legit Mode", "Makes serverside look more legit but not on your screen.", function(t)
+	Legit = t
 end)
 getgenv().play = false
 task.spawn(function()
@@ -316,8 +322,7 @@ UIS.InputBegan:connect(function(UserInput,Typed)
 		lp.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 	end
 end)
-auto:NewToggle("Auto-Farm [DISCONTINUED]", "Automatically wins for you!", function(t)
-end)
+
 --[[auto:NewToggle("Auto-Vote", "Automatically votes for you!", function(t)
 	getgenv().oof = t
 end)]]
@@ -379,11 +384,6 @@ tas:NewButton("Create-TAS", "Create a TAS, Press then enter lift.", function()
 	Fix()
 	ButtonStuff()
 end)
-tas:NewButton("Run-TAS", "Press then enter lift!", function()
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/ImMejor35/Flood-GUI/"..Branch.."/TAS/TAS%20Player"))
-	"TAS Player Fixed By Tomato with help from Epix"
-end)
-
 
 local oldindex
 oldindex = hookmetamethod(game, "__index", function(self, b)
@@ -403,13 +403,7 @@ tas:NewKeybind("Toggle Swim", "Only works while creating TAS.", Enum.KeyCode.T, 
 		getgenv().swim = true
 	end
 end)
-tas:NewButton("Remove Water (TAS)", "Removes water in tas creator", function()
-    for i,v in pairs(game.Workspace:GetDescendants()) do
-        if string.match(string.lower(v.Name),"water") then
-            v:Destroy()
-        end
-    end
-end)
+
 tas:NewToggle("Auto-Leave", "Automatically leaves when player joins!", function(t)
 	getgenv().autoleave = t
 end)
