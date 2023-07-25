@@ -118,6 +118,26 @@ local function ReturnPlayerInfo()
     }
 end
 
+local function isRandomString(str)
+    for i = 1, #str do
+        local ltr = str:sub(i, i)
+        if ltr:lower() == ltr then
+            return false
+        end     
+    end
+    return true
+end
+
+local function HandleThing(Interactive)
+    if not isRandomString(Interactive.Name) then
+        Interactive.CanCollide = not Interactive.CanCollide
+        if Interactive.CanCollide == false then
+            Interactive.Transparency = 0
+        elseif Interactive.CanCollide == true then
+            Interactive.Transparency = 1
+        end
+    end
+end
 
 local function SetPrimaryPart() -- new spawn finder by "_tomato." on discord
     local Map = game.Workspace.Multiplayer:WaitForChild("Map")
@@ -284,6 +304,7 @@ local function hookAnimation()
     end
     print("Updated animation hook values")
 end
+
 local function SetUpMap()
     local Map
     local CurrentInfo
@@ -338,21 +359,40 @@ local function SetUpMap()
         if v.ClassName == "ObjectValue" then
             local Interactive = v.Parent
             if not Interactive.ClassName == "Model" then
-                if Interactive:IsA("BasePart") or Interactive:IsA("UnionOperation") or Interactive:IsA("TrussPart") and Interactive.ClassName ~= "Model" then
-                    Interactive.Transparency = ((Interactive.Transparency == 1 and Interactive.CanCollide == false) and 0) or 1
-                    Interactive.CanCollide = not Interactive.CanCollide
-                end
+                xpcall(HandleThing, print, Interactive)
             elseif Interactive.ClassName == "Model" then
                 for _, Interactive in ipairs(Interactive:GetDescendants()) do
-                    if Interactive:IsA("BasePart") or Interactive:IsA("UnionOperation") or Interactive:IsA("TrussPart") and Interactive.ClassName ~= "Model" then
-                        Interactive.Transparency = ((Interactive.Transparency == 1 and Interactive.CanCollide == false) and 0) or 1
-                        Interactive.CanCollide = not Interactive.CanCollide
-                    end
+                    xpcall(HandleThing, print, Interactive)
                 end
             end
         end
     end
+    for _, v in ipairs(Map:GetDescendants()) do
+        if isRandomString(v.Name) then 
+            local Hitbox = v:GetChildren()[2]
+            if Hitbox and isRandomString(Hitbox.Name) then
+                local selectbox = Instance.new("SelectionBox", Hitbox)
+                Hitbox.Color = Color3.fromRGB(255,140,0)
+
+                selectbox.Adornee = Hitbox
+                selectbox.Color3 = Color3.fromRGB(255,140,0)
+
+                getgenv().delayy = false
+                Hitbox.Touched:Connect(function(part)
+                    if delayy == false then
+                        Alert("Button Touched!",Color3.fromRGB(255,140,0))
+                        delayy = true
+                        wait(1)
+                        delayy = false
+                    end
+                end)
+                print("stupid button connected? :", Hitbox.Parent)
+            end
+        end
+    end
+    print("Buttons script loaded for map: "..Map.Settings.MapName.Value)
 end
+
 local function SetTimeGui()
     local TimePlayed = tick() - TimeStart - TimePaused
     local m = math.floor(TimePlayed / 60)
@@ -435,7 +475,7 @@ local function SaveRun()
         for j = 1, #Savestates[i] do
             local InfoFromSavestates = Savestates[i][j]
             local InfoAddingToAllPlayerInfo = {}
-            InfoAddingToAllPlayerInfo.AAnimationChanged = InfoFromSavestates.AnimationChanged
+            InfoAddingToAllPlayerInfo.AAnimationChanged = InfoFromSavestates.Animation[2]
             InfoAddingToAllPlayerInfo.VVelocity = {InfoFromSavestates.Velocity.X, InfoFromSavestates.Velocity.Y, InfoFromSavestates.Velocity.Z}
             InfoAddingToAllPlayerInfo.CCameraCFrame = {InfoFromSavestates.CameraCFrame.X, InfoFromSavestates.CameraCFrame.Y, InfoFromSavestates.CameraCFrame.Z, InfoFromSavestates.CameraCFrame:ToEulerAnglesXYZ()}
             InfoAddingToAllPlayerInfo.CCFrame = {InfoFromSavestates.CFrame.X, InfoFromSavestates.CFrame.Y, InfoFromSavestates.CFrame.Z, InfoFromSavestates.CFrame:ToEulerAnglesXYZ()}
@@ -448,6 +488,37 @@ local function SaveRun()
             table.insert(AllPlayerInfo, InfoAddingToAllPlayerInfo)
         end
     end
+
+    -- TAS file minifier 
+    -- Starting from this line to ending line code was made by ian
+    local function round(x)
+        local factorOfTen = 10^(3)
+        return math.floor(x * factorOfTen + .5) / factorOfTen
+    end
+    local function minfile(file)
+        local tasFile = file
+        local minTasFile = {}
+        for t,data in ipairs(tasFile) do
+            local minData = {}
+            for key,val in pairs(data) do
+                local minVal = nil
+                if type(val) == "table" then
+                    minVal = {}
+                    for f,x in ipairs(val) do
+                        if type(x) == "number" then table.insert(minVal, round(x))
+                        else table.insert(minVal, x) end    
+                    end
+                else
+                    minVal = round(val)
+                end
+                minData[key] = minVal
+            end
+            table.insert(minTasFile, minData)
+        end
+        return minTasFile
+    end
+    -- ending line
+    local AllPlayerInfo = minfile(AllPlayerInfo)
     writefile("TAS/"..game.Workspace.Map.Settings.MapName.Value..".json", game:GetService("HttpService"):JSONEncode(AllPlayerInfo))
     Alert("Saved", Color3.fromRGB(0, 255, 0), 1)
 end
@@ -455,7 +526,7 @@ end
 ReplicatedStorage.Remote.StartClientMapTimer.OnClientEvent:Wait()
 task.wait(1)
 SetUpMap()
-RemoveSavestate()
+
 if not isfolder("TAS") then
     makefolder("TAS")
 end
