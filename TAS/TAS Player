@@ -154,7 +154,7 @@ local function activateAnimation(CurrentAnimation)
         if CurrentAnimation[1] == "walk" then
             Animate.setAnimationSpeed(.76) 
         elseif CurrentAnimation[1] == "slide" then
-            task.spawn(doSlide, 0.15)
+            task.spawn(doSlide, 0.10)
         end
     end
 end
@@ -190,6 +190,8 @@ Loop = RS.Heartbeat:Connect(function(DeltaTime)
         elseif i >= #TAS then
             Death:Disconnect()
             Loop:Disconnect()
+            toggleTouch(true)
+            toggleTouch = nil
             walljumpfix:Disconnect()
             walljumpfix2:Disconnect()
             if Legit then
@@ -198,7 +200,7 @@ Loop = RS.Heartbeat:Connect(function(DeltaTime)
             end
             Animate.playAnimation = PlayAnim
             CLMAIN.newAlert('TAS Run Finished!', Color3.new(0, 1, 0))
-            CLMAIN.newAlert('TAS Player By Tomato', Color3.new(0, 1, 0))
+            CLMAIN.newAlert('TAS Player By Tomato & Moz', Color3.new(0, 1, 0))
         elseif (tick() - TimeStart) >= CurrentInfo.time then
             OldFrame = i
             local CCFrame = CurrentInfo.CCFrame
