@@ -41,11 +41,10 @@ local RS = game:GetService('RunService')
 local CLMAIN = getsenv(LP.PlayerScripts.CL_MAIN_GameScript)
 CLMAIN.newAlert("TAS Player Started.")
 local Animate = getsenv(LP.Character.Animate)
-local RunName = Multi:WaitForChild('NewMap'):WaitForChild('Settings'):WaitForChild('MapName').Value
-local TAS = game:GetService("HttpService"):JSONDecode(readfile(RunName .. ".json"))
+local mapName = Multi:WaitForChild('NewMap'):WaitForChild('Settings'):GetAttribute("MapName")
+local TAS = game:GetService("HttpService"):JSONDecode(readfile(mapName .. ".json"))
 CLMAIN.newAlert("TAS Loaded!")
 local Map = Multi:WaitForChild("Map")
-local mapName = Map:WaitForChild('Settings').MapName.Value
 
 local HighlightPath = game:GetService("Workspace").Multiplayer.Map.Settings:FindFirstChild("Highlight")
 
@@ -154,7 +153,7 @@ local function activateAnimation(CurrentAnimation)
         if CurrentAnimation[1] == "walk" then
             Animate.setAnimationSpeed(.76) 
         elseif CurrentAnimation[1] == "slide" then
-            task.spawn(doSlide, 0.15)
+            task.spawn(doSlide, 0.10)
         end
     end
 end
@@ -190,6 +189,8 @@ Loop = RS.Heartbeat:Connect(function(DeltaTime)
         elseif i >= #TAS then
             Death:Disconnect()
             Loop:Disconnect()
+            toggleTouch(true)
+            toggleTouch = nil
             walljumpfix:Disconnect()
             walljumpfix2:Disconnect()
             if Legit then

@@ -29,44 +29,7 @@ local TimeStart
 local TimeText
 local SaveStatesCount
 local CapLockPause
-local Synced = true
-local RootPart, RootClone
-
-
-local function desync()
-    if Synced == true then
-        local Char = LocalPlayer.Character
-        Synced = false
-        LocalPlayer.Character.Animate.Enabled = false
-        Char.Parent = game.ReplicatedStorage
-        RootPart = Char.HumanoidRootPart
-        RootClone = RootPart:Clone()
-
-        RootPart.Transparency = 0
-        RootPart.RootJoint.Enabled = false
-        RootPart.Name = "NotRootPart"
-
-
-        RootClone.Transparency = 1
-        RootClone.Parent = Char
-        Char.PrimaryPart = RootClone
-        Char.Parent = workspace
-        LocalPlayer.Character.Animate.Enabled = true
-    end
-end
-
-local function sync()
-    if Synced == false then
-        local Char = LocalPlayer.Character
-        Synced = true
-        Char.Parent = game.ReplicatedStorage
-        RootClone:Destroy()
-        RootPart.Name = "HumanoidRootPart"
-        Char.PrimaryPart = RootPart
-        RootPart.RootJoint.Enabled = true
-    end
-end
-
+local MapName
 local function getCurrentCFrame()
     local RealCframe
     if AnimationState[1] and AnimationState[1]:lower():match("swim") then
@@ -90,6 +53,26 @@ local function ReturnPlayerInfo()
     }
 end
 
+local function isRandomString(str)
+    for i = 1, #str do
+        local ltr = str:sub(i, i)
+        if ltr:lower() == ltr then
+            return false
+        end     
+    end
+    return true
+end
+
+local function HandleThing(Interactive)
+    if not isRandomString(Interactive.Name) then
+        Interactive.CanCollide = not Interactive.CanCollide
+        if Interactive.CanCollide == false then
+            Interactive.Transparency = 0
+        elseif Interactive.CanCollide == true then
+            Interactive.Transparency = 1
+        end
+    end
+end
 
 local function SetPrimaryPart() -- new spawn finder by "_tomato." on discord
     local Map = game.Workspace.Multiplayer:WaitForChild("Map")
@@ -236,12 +219,15 @@ local function hookAnimation()
     end
     print("Updated animation hook values")
 end
+
 local function SetUpMap()
     local Map
     local CurrentInfo
     function game.ReplicatedStorage.Remote.ReqCharVars.OnClientInvoke() return {} end
     function game.ReplicatedStorage.Remote.FetchPos.OnClientInvoke() return CFrame.new() end
     SetPrimaryPart()
+    MapName = game.Workspace.Multiplayer.Map.Settings:GetAttribute("MapName")
+    print(MapName)
     Map = game.Workspace.Multiplayer.Map:Clone()
     Map.Parent = game.Workspace
     --Map:MoveTo(Vector3.new(0,1000,0))
@@ -258,7 +244,6 @@ local function SetUpMap()
     task.wait(0.5)
     LocalPlayer.Character.Humanoid.WalkSpeed = 0
     LocalPlayer.Character.Humanoid.JumpPower = 0
-    --desync()
     LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(Map.PrimaryPart.Position) + Vector3.new(0,Map.PrimaryPart.Size.Y/2,0) + Vector3.new(0,LocalPlayer.Character.HumanoidRootPart.Size.Y/2,0) + Vector3.new(0,LocalPlayer.Character["Left Leg"].Size.Y,0)
     task.wait(0.5)
     LocalPlayer.Character.HumanoidRootPart.Anchored = true
@@ -286,17 +271,33 @@ local function SetUpMap()
         if v.ClassName == "ObjectValue" then
             local Interactive = v.Parent
             if not Interactive.ClassName == "Model" then
-                if Interactive:IsA("BasePart") or Interactive:IsA("UnionOperation") or Interactive:IsA("TrussPart") and Interactive.ClassName ~= "Model" then
-                    Interactive.Transparency = ((Interactive.Transparency == 1 and Interactive.CanCollide == false) and 0) or 1
-                    Interactive.CanCollide = not Interactive.CanCollide
-                end
+                xpcall(HandleThing, function()end, Interactive)
             elseif Interactive.ClassName == "Model" then
                 for _, Interactive in ipairs(Interactive:GetDescendants()) do
-                    if Interactive:IsA("BasePart") or Interactive:IsA("UnionOperation") or Interactive:IsA("TrussPart") and Interactive.ClassName ~= "Model" then
-                        Interactive.Transparency = ((Interactive.Transparency == 1 and Interactive.CanCollide == false) and 0) or 1
-                        Interactive.CanCollide = not Interactive.CanCollide
-                    end
+                    xpcall(HandleThing, function()end, Interactive)
                 end
+            end
+        end
+    end
+    for _, v in ipairs(Map:GetDescendants()) do
+        if isRandomString(v.Name) then 
+            local Hitbox = v:GetChildren()[2]
+            if Hitbox and isRandomString(Hitbox.Name) then
+                local selectbox = Instance.new("SelectionBox", Hitbox)
+                Hitbox.Color = Color3.fromRGB(255,140,0)
+
+                selectbox.Adornee = Hitbox
+                selectbox.Color3 = Color3.fromRGB(255,140,0)
+
+                getgenv().delayy = false
+                Hitbox.Touched:Connect(function(part)
+                    if delayy == false then
+                        Alert("Button Touched!",Color3.fromRGB(255,140,0))
+                        delayy = true
+                        wait(1)
+                        delayy = false
+                    end
+                end)
             end
         end
     end
@@ -396,7 +397,37 @@ local function SaveRun()
             table.insert(AllPlayerInfo, InfoAddingToAllPlayerInfo)
         end
     end
-    writefile("TAS/"..game.Workspace.Map.Settings.MapName.Value..".json", game:GetService("HttpService"):JSONEncode(AllPlayerInfo))
+    -- TAS file minifier 
+    -- Starting from this line to ending line code was made by ian
+    local function round(x)
+        local factorOfTen = 10^(3)
+        return math.floor(x * factorOfTen + .5) / factorOfTen
+    end
+    local function minfile(file)
+        local tasFile = file
+        local minTasFile = {}
+        for t,data in ipairs(tasFile) do
+            local minData = {}
+            for key,val in pairs(data) do
+                local minVal = nil
+                if type(val) == "table" then
+                    minVal = {}
+                    for f,x in ipairs(val) do
+                        if type(x) == "number" then table.insert(minVal, round(x))
+                        else table.insert(minVal, x) end    
+                    end
+                else
+                    minVal = round(val)
+                end
+                minData[key] = minVal
+            end
+            table.insert(minTasFile, minData)
+        end
+        return minTasFile
+    end
+    -- ending line
+    local AllPlayerInfo = minfile(AllPlayerInfo)
+    writefile("TAS/"..MapName..".json", game:GetService("HttpService"):JSONEncode(AllPlayerInfo))
     Alert("Saved", Color3.fromRGB(0, 255, 0), 1)
 end
 
