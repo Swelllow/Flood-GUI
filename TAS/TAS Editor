@@ -1,574 +1,515 @@
-local Keybinds = {
-    UserPause = "CapsLock",
-    AddSavestate = "One",
-    RemoveSavestate = "Two",
-    BackSavestate = "Three",
-    CollisionToggler = "C",
-    SaveRun = "Six"
-}
 
 
--- Fixed format to match Tas player Moz
-local Offset, SpawnPos, Ything, Xoff, Yoff,  Zoff
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
-local HttpService = game:GetService("HttpService")
-local LocalPlayer = game.Players.LocalPlayer
-local Alert = getsenv(game.Players.LocalPlayer.PlayerScripts.CL_MAIN_GameScript).newAlert
-Alert("Started!!!!!1", Color3.new(0.717647, 0, 1))
-local Key = -game.ReplicatedStorage.Remote.ReqPasskey:InvokeServer()
-local AnimationState = {}
-local Savestates = {}
-local PlayerInfo = {}
-local TimePaused = 0
-local Pause = true
-local TimePauseHolder
-local SenvAnimation
-local PlayAnimation
-local TimeStart
-local TimeText
-local SaveStatesCount
-local CapLockPause
-local Synced = true
-local RootPart, RootClone
-
-local function convertToSaveStates(info)
-    local info = HttpService:JSONDecode(info)
-    local savestates = {}
-    local currentFramesList = {}
-    local frameCounter = 0
-    for i, currentFrame in pairs(info) do
-        info[i].Time = currentFrame.time
-        info[i].Velocity = Vector3.new(currentFrame.VVelocity[1], currentFrame.VVelocity[2], currentFrame.VVelocity[2])
-        info[i].CFrame = CFrame.new(currentFrame.CCFrame[1], currentFrame.CCFrame[2], currentFrame.CCFrame[3]) * CFrame.Angles(currentFrame.CCFrame[4], currentFrame.CCFrame[5], currentFrame.CCFrame[6])
-        info[i].CameraCFrame = CFrame.new(currentFrame.CCameraCFrame[1], currentFrame.CCameraCFrame[2], currentFrame.CCameraCFrame[3]) * CFrame.Angles(currentFrame.CCameraCFrame[4], currentFrame.CCameraCFrame[5], currentFrame.CCameraCFrame[6])
-        info[i].AnimationChanged = currentFrame.AAnimationChanged
-        if info[i].Animation then
-            info[i].Animation = currentFrame.AAnimation
-        else
-            info[i].Animation = {"idle", 0}
-        end
-        if frameCounter == 60 then
-            frameCounter = 0
-            table.insert(savestates, currentFramesList)
-            currentFramesList = {}
-        else
-            table.insert(currentFramesList, info[i])
-        end
-        frameCounter += 1
-    end
-    return savestates
-end
-
-local function desync()
-    if Synced == true then
-        local Char = LocalPlayer.Character
-        Synced = false
-        LocalPlayer.Character.Animate.Enabled = false
-        Char.Parent = game.ReplicatedStorage
-        RootPart = Char.HumanoidRootPart
-        RootClone = RootPart:Clone()
-
-        RootPart.Transparency = 0
-        RootPart.RootJoint.Enabled = false
-        RootPart.Name = "NotRootPart"
-
-
-        RootClone.Transparency = 1
-        RootClone.Parent = Char
-        Char.PrimaryPart = RootClone
-        Char.Parent = workspace
-        LocalPlayer.Character.Animate.Enabled = true
-    end
-end
-
-local function sync()
-    if Synced == false then
-        local Char = LocalPlayer.Character
-        Synced = true
-        Char.Parent = game.ReplicatedStorage
-        RootClone:Destroy()
-        RootPart.Name = "HumanoidRootPart"
-        Char.PrimaryPart = RootPart
-        RootPart.RootJoint.Enabled = true
-    end
-end
-
-local function getCurrentCFrame()
-    local RealCframe
-    if AnimationState[1] and AnimationState[1]:lower():match("swim") then
-        RealCframe = game.Players.LocalPlayer.Character.Torso.CFrame
-    else
-        RealCframe = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-    end
-    local x, y, z, r00, r01, r02, r10, r11, r12, r20, r21, r22 = RealCframe:GetComponents()
-    -- all the r's dont matter
-    local fuck = CFrame.new(x - Xoff, (y - Yoff) + 1000, z - Zoff, r00, r01, r02, r10, r11, r12, r20, r21, r22)
-    return fuck
-end
-
-local function ReturnPlayerInfo()
-    return {
-            CFrame = getCurrentCFrame(),
-            CameraCFrame = workspace.CurrentCamera.CFrame,
-            Velocity = LocalPlayer.Character.HumanoidRootPart.Velocity,
-            Animation = AnimationState,
-            Time = tick() - TimeStart - TimePaused,
+    local Keybinds = {
+        UserPause = "CapsLock",
+        AddSavestate = "One",
+        RemoveSavestate = "Two",
+        BackSavestate = "Three",
+        CollisionToggler = "C",
+        SaveRun = "Six"
     }
-end
-
-local function isRandomString(str)
-    for i = 1, #str do
-        local ltr = str:sub(i, i)
-        if ltr:lower() == ltr then
-            return false
-        end     
+    
+    
+    -- Fixed format to match Tas player Moz
+    local Offset, SpawnPos, Ything, Xoff, Yoff,  Zoff
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local UserInputService = game:GetService("UserInputService")
+    local RunService = game:GetService("RunService")
+    local HttpService = game:GetService("HttpService")
+    local LocalPlayer = game.Players.LocalPlayer
+    local Alert = getsenv(game.Players.LocalPlayer.PlayerScripts.CL_MAIN_GameScript).newAlert
+    Alert("Started!!!!!1", Color3.new(0.717647, 0, 1))
+    local Key = -game.ReplicatedStorage.Remote.ReqPasskey:InvokeServer()
+    local AnimationState = {}
+    local Savestates = {}
+    local PlayerInfo = {}
+    local TimePaused = 0
+    local Pause = true
+    local TimePauseHolder
+    local SenvAnimation
+    local PlayAnimation
+    local TimeStart
+    local TimeText
+    local SaveStatesCount
+    local CapLockPause
+    local MapName
+    local function getCurrentCFrame()
+        local RealCframe
+        if AnimationState[1] and AnimationState[1]:lower():match("swim") then
+            RealCframe = game.Players.LocalPlayer.Character.Torso.CFrame
+        else
+            RealCframe = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+        end
+        local x, y, z, r00, r01, r02, r10, r11, r12, r20, r21, r22 = RealCframe:GetComponents()
+        -- all the r's dont matter
+        local fuck = CFrame.new(x - Xoff, (y - Yoff) + 1000, z - Zoff, r00, r01, r02, r10, r11, r12, r20, r21, r22)
+        return fuck
     end
-    return true
-end
-
-local function HandleThing(Interactive)
-    if not isRandomString(Interactive.Name) then
-        Interactive.CanCollide = not Interactive.CanCollide
-        if Interactive.CanCollide == false then
-            Interactive.Transparency = 0
-        elseif Interactive.CanCollide == true then
-            Interactive.Transparency = 1
+    
+    local function ReturnPlayerInfo()
+        return {
+                CFrame = getCurrentCFrame(),
+                CameraCFrame = workspace.CurrentCamera.CFrame,
+                Velocity = LocalPlayer.Character.HumanoidRootPart.Velocity,
+                Animation = AnimationState,
+                Time = tick() - TimeStart - TimePaused,
+        }
+    end
+    
+    local function isRandomString(str)
+        for i = 1, #str do
+            local ltr = str:sub(i, i)
+            if ltr:lower() == ltr then
+                return false
+            end     
+        end
+        return true
+    end
+    
+    local function HandleThing(Interactive)
+        if not isRandomString(Interactive.Name) then
+            Interactive.CanCollide = not Interactive.CanCollide
+            if Interactive.CanCollide == false then
+                Interactive.Transparency = 0
+            elseif Interactive.CanCollide == true then
+                Interactive.Transparency = 1
+            end
         end
     end
-end
 
-local function SetPrimaryPart() -- new spawn finder by "_tomato." on discord
-    local Map = game.Workspace.Multiplayer:WaitForChild("Map")
-    local Spawn = nil
-    local connections = {}
-    for _,v in ipairs(Map:GetChildren()) do
-        if v.Name == "Part" and v.Size.Y < 5 then
-            table.insert(connections, v:GetPropertyChangedSignal("Rotation"):Connect(function()
-                Spawn = v
-                for _,v in ipairs(connections) do
-                    v:Disconnect()
-                end
-            end))
+    -- tas editor special
+    local function convertToSaveStates(info)
+        local info = HttpService:JSONDecode(info)
+        local savestates = {}
+        local currentFramesList = {}
+        local frameCounter = 0
+        for i, currentFrame in pairs(info) do
+            info[i].Time = currentFrame.time
+            info[i].Velocity = Vector3.new(currentFrame.VVelocity[1], currentFrame.VVelocity[2], currentFrame.VVelocity[2])
+            info[i].CFrame = CFrame.new(currentFrame.CCFrame[1], currentFrame.CCFrame[2], currentFrame.CCFrame[3]) * CFrame.Angles(currentFrame.CCFrame[4], currentFrame.CCFrame[5], currentFrame.CCFrame[6])
+            info[i].CameraCFrame = CFrame.new(currentFrame.CCameraCFrame[1], currentFrame.CCameraCFrame[2], currentFrame.CCameraCFrame[3]) * CFrame.Angles(currentFrame.CCameraCFrame[4], currentFrame.CCameraCFrame[5], currentFrame.CCameraCFrame[6])
+            info[i].AnimationChanged = currentFrame.AAnimationChanged
+            if info[i].Animation then
+                info[i].Animation = currentFrame.AAnimation
+            else
+                info[i].Animation = {"idle", 0}
+            end
+            if frameCounter == 60 then
+                frameCounter = 0
+                table.insert(savestates, currentFramesList)
+                currentFramesList = {}
+            else
+                table.insert(currentFramesList, info[i])
+            end
+            frameCounter += 1
         end
+        return savestates
     end
-    repeat task.wait() until Spawn
-    Map.PrimaryPart = Spawn
-end
-local function SetUpGui()
-    --[[
-    for i,v in pairs(LocalPlayer.PlayerGui.GameGui.HUD.Main.GameStats:GetChildren()) do
-        if v:IsA("Frame") then
-            v.Visible = false
+    
+    local function SetPrimaryPart() -- new spawn finder by "_tomato." on discord
+        local Map = game.Workspace.Multiplayer:WaitForChild("Map")
+        local Spawn = nil
+        local connections = {}
+        for _,v in ipairs(Map:GetChildren()) do
+            if v.Name == "Part" and v.Size.Y < 5 then
+                table.insert(connections, v:GetPropertyChangedSignal("Rotation"):Connect(function()
+                    Spawn = v
+                    for _,v in ipairs(connections) do
+                        v:Disconnect()
+                    end
+                end))
+            end
         end
+        repeat task.wait() until Spawn
+        Map.PrimaryPart = Spawn
     end
-    TimeText = Instance.new("TextLabel")
-    TimeText.Name = "TimeText"
-    TimeText.Parent = LocalPlayer.PlayerGui.GameGui.HUD.Main.GameStats
-    TimeText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    TimeText.BackgroundTransparency = 1.000
-    TimeText.Position = UDim2.new(0.030, 0, 0.35, 0)
-    TimeText.Size = UDim2.new(0, 100, 0, 27)
-    TimeText.Font = Enum.Font.Highway
-    TimeText.Text = "0:00:000"
-    TimeText.TextColor3 = Color3.fromRGB(255, 255, 0)
-    TimeText.TextSize = 60
-    TimeText.TextXAlignment = Enum.TextXAlignment.Left
-    LocalPlayer.PlayerGui.GameGui.Challenges.Visible = false
-    ]]
-    local HUD = LocalPlayer.PlayerGui.GameGui.HUD
-    local GameStats = HUD.Main.GameStats
-    GameStats.Size = UDim2.new(1, 0, 1, 0)
-    HUD.Main.MenuButtons.Visible = false
-    GameStats.Stats.Visible = false
-    LocalPlayer.PlayerGui.GameGui.Challenges.Visible = false
-
-    TimeText = Instance.new("TextLabel", GameStats)
-    TimeText.Visible = true
-    TimeText.BackgroundTransparency = 1
-    TimeText.Size = UDim2.new(1, -645, 1, 0)
-    TimeText.Text = "0:00.000"
-    TimeText.Font = "Highway"
-    TimeText.TextColor3 = Color3.new(255, 255, 255)
-    TimeText.TextSize = 50
-    TimeText.Name = "TextForTime"
-    TimeText.TextXAlignment = Enum.TextXAlignment.Center
-
-    SaveStatesCount = Instance.new("TextLabel", GameStats)
-    SaveStatesCount.Visible = true
-    SaveStatesCount.BackgroundTransparency = 1
-    SaveStatesCount.Size = UDim2.new(1, -220, 1, 0)
-    SaveStatesCount.Text = "Savestates 0"
-    SaveStatesCount.Font = "Highway"
-    SaveStatesCount.TextColor3 = Color3.new(255, 255, 255)
-    SaveStatesCount.TextSize = 35
-    SaveStatesCount.Name = "SavestatesCount"
-
-    CapLockPause = Instance.new("TextLabel", GameStats)
-    CapLockPause.Visible = true
-    CapLockPause.BackgroundTransparency = 1
-    CapLockPause.Size = UDim2.new(1, 130, 0.25, 0)
-    CapLockPause.Text = "CapLocks : Paused"
-    CapLockPause.Font = "Highway"
-    CapLockPause.TextColor3 = Color3.fromRGB(255, 255, 0)
-    CapLockPause.TextSize = 18
-    CapLockPause.Name = "CapLockPause"
-
-    local SaveStateInfo = Instance.new("TextLabel", GameStats)
-    SaveStateInfo.Visible = true
-    SaveStateInfo.BackgroundTransparency = 1
-    SaveStateInfo.Size = UDim2.new(1, 160, 0.75, 0)
-    SaveStateInfo.Text = "One : Add a Savestate"
-    SaveStateInfo.Font = "Highway"
-    SaveStateInfo.TextColor3 = Color3.new(255, 255, 255)
-    SaveStateInfo.TextSize = 18
-    SaveStateInfo.Name = "SaveStateInfo"
-
-    local RemoveSaveStateInfo = Instance.new("TextLabel", GameStats)
-    RemoveSaveStateInfo.Visible = true
-    RemoveSaveStateInfo.BackgroundTransparency = 1
-    RemoveSaveStateInfo.Size = UDim2.new(1, 188, 1.25, 0)
-    RemoveSaveStateInfo.Text = "Two : Remove a Savestate"
-    RemoveSaveStateInfo.Font = "Highway"
-    RemoveSaveStateInfo.TextColor3 = Color3.new(255, 255, 255)
-    RemoveSaveStateInfo.TextSize = 18
-    RemoveSaveStateInfo.Name = "RemoveSaveStateInfo"
-
-    local GoBackSavestate = Instance.new("TextLabel", GameStats)
-    GoBackSavestate.Visible = true
-    GoBackSavestate.BackgroundTransparency = 1
-    GoBackSavestate.Size = UDim2.new(1, 205, 1.75, 0)
-    GoBackSavestate.Text = "Three : Go To Last SaveState"
-    GoBackSavestate.Font = "Highway"
-    GoBackSavestate.TextColor3 = Color3.new(255, 255, 255)
-    GoBackSavestate.TextSize = 18
-    GoBackSavestate.Name = "GoBackSavestate"
-
-    local GoFrameBack = Instance.new("TextLabel", GameStats)
-    GoFrameBack.Visible = true
-    GoFrameBack.BackgroundTransparency = 1
-    GoFrameBack.Size = UDim2.new(1, 578, 0.25, 0)
-    GoFrameBack.Text = "Four : Go Back a Frame (NOT WORKING)"
-    GoFrameBack.Font = "Highway"
-    GoFrameBack.TextColor3 = Color3.new(255, 255, 255)
-    GoFrameBack.TextSize = 18
-    GoFrameBack.Name = "GoFrameBack"
-
-    local GoFrameForward = Instance.new("TextLabel", GameStats)
-    GoFrameForward.Visible = true
-    GoFrameForward.BackgroundTransparency = 1
-    GoFrameForward.Size = UDim2.new(1, 600, 0.75, 0)
-    GoFrameForward.Text = "Five : Go a Frame Forward (NOT WORKING)"
-    GoFrameForward.Font = "Highway"
-    GoFrameForward.TextColor3 = Color3.new(255, 255, 255)
-    GoFrameForward.TextSize = 18
-    GoFrameForward.Name = "GoFrameForward"
-
-    local SaveRun = Instance.new("TextLabel", GameStats)
-    SaveRun.Visible = true
-    SaveRun.BackgroundTransparency = 1
-    SaveRun.Size = UDim2.new(1, 509, 1.25, 0)
-    SaveRun.Text = "Six : SaveRun"
-    SaveRun.Font = "Highway"
-    SaveRun.TextColor3 = Color3.new(255, 255, 255)
-    SaveRun.TextSize = 18
-    SaveRun.Name = "SaveRun"
-
-    local CanCollideToggle = Instance.new("TextLabel", GameStats)
-    CanCollideToggle.Visible = true
-    CanCollideToggle.BackgroundTransparency = 1
-    CanCollideToggle.Size = UDim2.new(1, 560, 1.75, 0)
-    CanCollideToggle.Text = "C : CanCollide Toggle"
-    CanCollideToggle.Font = "Highway"
-    CanCollideToggle.TextColor3 = Color3.new(255, 255, 255)
-    CanCollideToggle.TextSize = 18
-    CanCollideToggle.Name = "CanCollideToggle"
-end
-
-local function hookAnimation()
-    repeat
-        SenvAnimation = getsenv(LocalPlayer.Character:WaitForChild("Animate"))
+    local function SetUpGui()
+        local HUD = LocalPlayer.PlayerGui.GameGui.HUD
+        local GameStats = HUD.Main.GameStats
+        GameStats.Size = UDim2.new(1, 0, 1, 0)
+        HUD.Main.MenuButtons.Visible = false
+        GameStats.Stats.Visible = false
+        LocalPlayer.PlayerGui.GameGui.Challenges.Visible = false
+    
+        TimeText = Instance.new("TextLabel", GameStats)
+        TimeText.Visible = true
+        TimeText.BackgroundTransparency = 1
+        TimeText.Size = UDim2.new(1, -645, 1, 0)
+        TimeText.Text = "0:00.000"
+        TimeText.Font = "Highway"
+        TimeText.TextColor3 = Color3.new(255, 255, 255)
+        TimeText.TextSize = 50
+        TimeText.Name = "TextForTime"
+        TimeText.TextXAlignment = Enum.TextXAlignment.Center
+    
+        SaveStatesCount = Instance.new("TextLabel", GameStats)
+        SaveStatesCount.Visible = true
+        SaveStatesCount.BackgroundTransparency = 1
+        SaveStatesCount.Size = UDim2.new(1, -220, 1, 0)
+        SaveStatesCount.Text = "Savestates 0"
+        SaveStatesCount.Font = "Highway"
+        SaveStatesCount.TextColor3 = Color3.new(255, 255, 255)
+        SaveStatesCount.TextSize = 35
+        SaveStatesCount.Name = "SavestatesCount"
+    
+        CapLockPause = Instance.new("TextLabel", GameStats)
+        CapLockPause.Visible = true
+        CapLockPause.BackgroundTransparency = 1
+        CapLockPause.Size = UDim2.new(1, 130, 0.25, 0)
+        CapLockPause.Text = "CapLocks : Paused"
+        CapLockPause.Font = "Highway"
+        CapLockPause.TextColor3 = Color3.fromRGB(255, 255, 0)
+        CapLockPause.TextSize = 18
+        CapLockPause.Name = "CapLockPause"
+    
+        local SaveStateInfo = Instance.new("TextLabel", GameStats)
+        SaveStateInfo.Visible = true
+        SaveStateInfo.BackgroundTransparency = 1
+        SaveStateInfo.Size = UDim2.new(1, 160, 0.75, 0)
+        SaveStateInfo.Text = "One : Add a Savestate"
+        SaveStateInfo.Font = "Highway"
+        SaveStateInfo.TextColor3 = Color3.new(255, 255, 255)
+        SaveStateInfo.TextSize = 18
+        SaveStateInfo.Name = "SaveStateInfo"
+    
+        local RemoveSaveStateInfo = Instance.new("TextLabel", GameStats)
+        RemoveSaveStateInfo.Visible = true
+        RemoveSaveStateInfo.BackgroundTransparency = 1
+        RemoveSaveStateInfo.Size = UDim2.new(1, 188, 1.25, 0)
+        RemoveSaveStateInfo.Text = "Two : Remove a Savestate"
+        RemoveSaveStateInfo.Font = "Highway"
+        RemoveSaveStateInfo.TextColor3 = Color3.new(255, 255, 255)
+        RemoveSaveStateInfo.TextSize = 18
+        RemoveSaveStateInfo.Name = "RemoveSaveStateInfo"
+    
+        local GoBackSavestate = Instance.new("TextLabel", GameStats)
+        GoBackSavestate.Visible = true
+        GoBackSavestate.BackgroundTransparency = 1
+        GoBackSavestate.Size = UDim2.new(1, 205, 1.75, 0)
+        GoBackSavestate.Text = "Three : Go To Last SaveState"
+        GoBackSavestate.Font = "Highway"
+        GoBackSavestate.TextColor3 = Color3.new(255, 255, 255)
+        GoBackSavestate.TextSize = 18
+        GoBackSavestate.Name = "GoBackSavestate"
+    
+        local GoFrameBack = Instance.new("TextLabel", GameStats)
+        GoFrameBack.Visible = true
+        GoFrameBack.BackgroundTransparency = 1
+        GoFrameBack.Size = UDim2.new(1, 578, 0.25, 0)
+        GoFrameBack.Text = "Four : Go Back a Frame (NOT WORKING)"
+        GoFrameBack.Font = "Highway"
+        GoFrameBack.TextColor3 = Color3.new(255, 255, 255)
+        GoFrameBack.TextSize = 18
+        GoFrameBack.Name = "GoFrameBack"
+    
+        local GoFrameForward = Instance.new("TextLabel", GameStats)
+        GoFrameForward.Visible = true
+        GoFrameForward.BackgroundTransparency = 1
+        GoFrameForward.Size = UDim2.new(1, 600, 0.75, 0)
+        GoFrameForward.Text = "Five : Go a Frame Forward (NOT WORKING)"
+        GoFrameForward.Font = "Highway"
+        GoFrameForward.TextColor3 = Color3.new(255, 255, 255)
+        GoFrameForward.TextSize = 18
+        GoFrameForward.Name = "GoFrameForward"
+    
+        local SaveRun = Instance.new("TextLabel", GameStats)
+        SaveRun.Visible = true
+        SaveRun.BackgroundTransparency = 1
+        SaveRun.Size = UDim2.new(1, 509, 1.25, 0)
+        SaveRun.Text = "Six : SaveRun"
+        SaveRun.Font = "Highway"
+        SaveRun.TextColor3 = Color3.new(255, 255, 255)
+        SaveRun.TextSize = 18
+        SaveRun.Name = "SaveRun"
+    
+        local CanCollideToggle = Instance.new("TextLabel", GameStats)
+        CanCollideToggle.Visible = true
+        CanCollideToggle.BackgroundTransparency = 1
+        CanCollideToggle.Size = UDim2.new(1, 560, 1.75, 0)
+        CanCollideToggle.Text = "C : CanCollide Toggle"
+        CanCollideToggle.Font = "Highway"
+        CanCollideToggle.TextColor3 = Color3.new(255, 255, 255)
+        CanCollideToggle.TextSize = 18
+        CanCollideToggle.Name = "CanCollideToggle"
+    end
+    
+    local function hookAnimation()
+        repeat
+            SenvAnimation = getsenv(LocalPlayer.Character:WaitForChild("Animate"))
+            task.wait()
+        until SenvAnimation.playAnimation ~= nil
+        PlayAnimation = SenvAnimation.playAnimation
+        function SenvAnimation.playAnimation(a,b)
+            if not Pause then
+                AnimationState = {a,b}
+                PlayAnimation(AnimationState[1],AnimationState[2], LocalPlayer.Character.Humanoid)
+            end
+        end
         task.wait()
-    until SenvAnimation.playAnimation ~= nil
-    PlayAnimation = SenvAnimation.playAnimation
-    function SenvAnimation.playAnimation(a,b)
-        if not Pause then
-            AnimationState = {a,b}
-            PlayAnimation(AnimationState[1],AnimationState[2], LocalPlayer.Character.Humanoid)
+        if PlayAnimation == nil then
+            print("the animation script is f*cked")
+        end
+        print("Updated animation hook values")
+    end
+    
+    local function SetUpMap()
+        local Map
+        local CurrentInfo
+        function game.ReplicatedStorage.Remote.ReqCharVars.OnClientInvoke() return {} end
+        function game.ReplicatedStorage.Remote.FetchPos.OnClientInvoke() return CFrame.new() end
+        SetPrimaryPart()
+        MapName = game.Workspace.Multiplayer.Map.Settings:GetAttribute("MapName")..".json"
+        local FileToEdit = readfile(MapName)
+        Savestates = convertToSaveStates(FileToEdit)
+        Map = game.Workspace.Multiplayer.Map:Clone()
+        Map.Parent = game.Workspace
+        --Map:MoveTo(Vector3.new(0,1000,0))
+        SpawnPos = Map.PrimaryPart.Position 
+        Xoff, Yoff, Zoff = SpawnPos.X, SpawnPos.Y, SpawnPos.Z
+        Offset = CFrame.new(Xoff, Yoff, Zoff)
+        LocalPlayer.Character.Head:Destroy()
+        LocalPlayer.CharacterAdded:Wait()
+        LocalPlayer.Character:WaitForChild("Humanoid")
+        LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+        ReplicatedStorage.Remote.RemoveWaiting:FireServer(Key)
+        LocalPlayer.Character.Humanoid.WalkSpeed = 0
+        LocalPlayer.Character.Humanoid.JumpPower = 0
+        task.wait(0.5)
+        LocalPlayer.Character.Humanoid.WalkSpeed = 0
+        LocalPlayer.Character.Humanoid.JumpPower = 0
+        LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(Map.PrimaryPart.Position) + Vector3.new(0,Map.PrimaryPart.Size.Y/2,0) + Vector3.new(0,LocalPlayer.Character.HumanoidRootPart.Size.Y/2,0) + Vector3.new(0,LocalPlayer.Character["Left Leg"].Size.Y,0)
+        task.wait(0.5)
+        LocalPlayer.Character.HumanoidRootPart.Anchored = true
+        LocalPlayer.Character.Humanoid.WalkSpeed = 20
+        LocalPlayer.Character.Humanoid.JumpPower = 50
+        table.insert(Savestates,{{
+            CFrame = getCurrentCFrame(),
+            CameraCFrame = game.Workspace.CurrentCamera.CFrame * Offset,
+            Velocity = Vector3.new(0,0,0),
+            Animation = {"idle",0},
+            Time = 0
+        }})
+        SetUpGui()
+        TimePauseHolder = tick()
+        TimeStart = tick()
+        hookAnimation()
+        LocalPlayer.CharacterAdded:Connect(function(char)
+            local animate = char:WaitForChild("Animate")
+            if animate.Enabled == true then
+                hookAnimation()
+            end
+        end)
+        task.wait(2)
+        for _, v in ipairs(Map:GetDescendants()) do
+            if v.ClassName == "ObjectValue" then
+                local Interactive = v.Parent
+                if not Interactive.ClassName == "Model" then
+                    xpcall(HandleThing, function()end, Interactive)
+                elseif Interactive.ClassName == "Model" then
+                    for _, Interactive in ipairs(Interactive:GetDescendants()) do
+                        xpcall(HandleThing, function()end, Interactive)
+                    end
+                end
+            end
+        end
+        for _, v in ipairs(Map:GetDescendants()) do
+            if isRandomString(v.Name) then 
+                local Hitbox = v:GetChildren()[2]
+                if Hitbox and isRandomString(Hitbox.Name) then
+                    local selectbox = Instance.new("SelectionBox", Hitbox)
+                    Hitbox.Color = Color3.fromRGB(255,140,0)
+    
+                    selectbox.Adornee = Hitbox
+                    selectbox.Color3 = Color3.fromRGB(255,140,0)
+    
+                    getgenv().delayy = false
+                    Hitbox.Touched:Connect(function(part)
+                        if delayy == false then
+                            Alert("Button Touched!",Color3.fromRGB(255,140,0))
+                            delayy = true
+                            wait(1)
+                            delayy = false
+                        end
+                    end)
+                end
+            end
         end
     end
-    task.wait()
-    if PlayAnimation == nil then
-        print("the animation script is f*cked")
+    local function SetTimeGui()
+        local TimePlayed = tick() - TimeStart - TimePaused
+        local m = math.floor(TimePlayed / 60)
+        local s = math.floor(TimePlayed % 60)
+        local ms = math.floor((TimePlayed * 1000) % 1000)
+        m = tostring(m)
+        s = tostring(s)
+        ms = tostring(ms)
+        for i=1, 2 do if #ms < 3 then ms = '0' .. ms end end
+        for i=1, 1 do if #s < 2 then s = '0' .. s end end
+        TimeText.Text = m .. ":" .. s .. ":" .. ms
     end
-    print("Updated animation hook values")
-end
-
-local function SetUpMap()
-    local Map
-    local CurrentInfo
-    function game.ReplicatedStorage.Remote.ReqCharVars.OnClientInvoke() return {} end
-    function game.ReplicatedStorage.Remote.FetchPos.OnClientInvoke() return CFrame.new() end
-    SetPrimaryPart()
-    Map = game.Workspace.Multiplayer.Map:Clone()
-    Map.Parent = game.Workspace
-    --Map:MoveTo(Vector3.new(0,1000,0))
-    SpawnPos = Map.PrimaryPart.Position 
-    Xoff, Yoff, Zoff = SpawnPos.X, SpawnPos.Y, SpawnPos.Z
-    Offset = CFrame.new(Xoff, Yoff, Zoff)
-    local MapFileName = game.Workspace.Map.Settings.MapName.Value..".json"
-    print(MapFileName)
-    local FileToEdit = readfile(MapFileName)
-    Savestates = convertToSaveStates(FileToEdit)
-    LocalPlayer.Character.Head:Destroy()
-    LocalPlayer.CharacterAdded:Wait()
-    LocalPlayer.Character:WaitForChild("Humanoid")
-    LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-    ReplicatedStorage.Remote.RemoveWaiting:FireServer(Key)
-    LocalPlayer.Character.Humanoid.WalkSpeed = 0
-    LocalPlayer.Character.Humanoid.JumpPower = 0
-    task.wait(0.5)
-    LocalPlayer.Character.Humanoid.WalkSpeed = 0
-    LocalPlayer.Character.Humanoid.JumpPower = 0
-    --desync()
-    LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(Map.PrimaryPart.Position) + Vector3.new(0,Map.PrimaryPart.Size.Y/2,0) + Vector3.new(0,LocalPlayer.Character.HumanoidRootPart.Size.Y/2,0) + Vector3.new(0,LocalPlayer.Character["Left Leg"].Size.Y,0)
-    task.wait(0.5)
-    LocalPlayer.Character.HumanoidRootPart.Anchored = true
-    LocalPlayer.Character.Humanoid.WalkSpeed = 20
-    LocalPlayer.Character.Humanoid.JumpPower = 50
-    table.insert(Savestates,{{
-        CFrame = getCurrentCFrame(),
-        CameraCFrame = game.Workspace.CurrentCamera.CFrame * Offset,
-        Velocity = Vector3.new(0,0,0),
-        Animation = {"idle",0},
-        Time = 0
-    }})
-    SetUpGui()
-    TimePauseHolder = tick()
-    TimeStart = tick()
-    hookAnimation()
-    LocalPlayer.CharacterAdded:Connect(function(char)
-        local animate = char:WaitForChild("Animate")
-        if animate.Enabled == true then
-            hookAnimation()
+    local function UserPause()
+        Pause = not Pause
+        if Pause == true then
+            LocalPlayer.Character.HumanoidRootPart.Anchored = true
+            TimeText.TextColor3 = Color3.fromRGB(255, 255, 0)
+            TimePauseHolder = tick()
+    
+            CapLockPause.Text = "CapsLock : Paused"
+            CapLockPause.TextColor3 = Color3.fromRGB(255, 255, 0)
+        else
+            LocalPlayer.Character.HumanoidRootPart.Anchored = false
+            TimeText.TextColor3 = Color3.fromRGB(255,255,255)
+            TimePaused = TimePaused + tick() - TimePauseHolder
+    
+            CapLockPause.Text = "CapsLock : Unpaused"
+            CapLockPause.TextColor3 = Color3.fromRGB(255,255,255)
+        end
+    end
+    local function BackSavestate()
+        local InfoState = Savestates[#Savestates][#Savestates[#Savestates]]
+        if InfoState then
+            PlayerInfo = {}
+            Pause = true
+            LocalPlayer.Character.HumanoidRootPart.Anchored = true
+            TimeText.TextColor3 = Color3.fromRGB(255, 255, 0) --  Ything = SpawnPos + Vector3.new(0, 1000, 0)
+            LocalPlayer.Character.HumanoidRootPart.CFrame = InfoState.CFrame + Vector3.new(Xoff, Yoff - 1000, Zoff)
+            LocalPlayer.Character.HumanoidRootPart.Velocity = InfoState.Velocity
+            game.Workspace.CurrentCamera.CFrame = InfoState.CameraCFrame
+            TimePauseHolder = tick()
+            TimeStart = tick() - InfoState.Time
+            TimePaused = 0
+            PlayAnimation(InfoState.Animation[1],InfoState.Animation[2],LocalPlayer.Character.Humanoid)
+            if InfoState.Animation[1] == "walk" then
+                SenvAnimation.setAnimationSpeed(.76)
+            end
+            SetTimeGui()
+        end
+    end
+    local function UpdSavestatesGUI()
+        SaveStatesCount.Text = "Savestates "..tostring(#Savestates)
+    end
+    local function AddSavestate()
+        Alert("Added Savestate",Color3.fromRGB(0, 255, 0),1)
+        table.insert(Savestates,PlayerInfo)
+        PlayerInfo = {}
+    end
+    local function RemoveSavestate()
+        if #Savestates > 1 then
+            Alert("Removed Savestate",Color3.fromRGB(0, 255, 0),1)
+            table.remove(Savestates)
+            BackSavestate()
+        else
+            Alert("No Savestate",Color3.fromRGB(255, 0, 0),1)
+        end
+    end
+    local function CollisionToggler()
+        local MouseTarget = game.Players.LocalPlayer:GetMouse().Target
+        MouseTarget.CanCollide = not MouseTarget.CanCollide
+        if MouseTarget.CanCollide then
+            MouseTarget.Transparency = 0
+        else
+            MouseTarget.Transparency = 0.8
+        end
+    end
+    local function SaveRun()
+        local AllPlayerInfo = {}
+        for i = 1, #Savestates do
+            for j = 1, #Savestates[i] do
+                local InfoFromSavestates = Savestates[i][j]
+                local InfoAddingToAllPlayerInfo = {}
+                InfoAddingToAllPlayerInfo.AAnimationChanged = InfoFromSavestates.Animation[2]
+                InfoAddingToAllPlayerInfo.VVelocity = {InfoFromSavestates.Velocity.X, InfoFromSavestates.Velocity.Y, InfoFromSavestates.Velocity.Z}
+                InfoAddingToAllPlayerInfo.CCameraCFrame = {InfoFromSavestates.CameraCFrame.X, InfoFromSavestates.CameraCFrame.Y, InfoFromSavestates.CameraCFrame.Z, InfoFromSavestates.CameraCFrame:ToEulerAnglesXYZ()}
+                InfoAddingToAllPlayerInfo.CCFrame = {InfoFromSavestates.CFrame.X, InfoFromSavestates.CFrame.Y, InfoFromSavestates.CFrame.Z, InfoFromSavestates.CFrame:ToEulerAnglesXYZ()}
+                if InfoFromSavestates.Animation and InfoFromSavestates.Animation[1] then
+                    InfoAddingToAllPlayerInfo.AAnimation = {InfoFromSavestates.Animation[1], InfoFromSavestates.Animation[2]}
+                else
+                    InfoAddingToAllPlayerInfo.AAnimation = {"walk", 0.1}
+                end
+                InfoAddingToAllPlayerInfo.time = InfoFromSavestates.Time
+                table.insert(AllPlayerInfo, InfoAddingToAllPlayerInfo)
+            end
+        end
+        -- TAS file minifier 
+        -- Starting from this line to ending line code was made by ian
+        local function round(x)
+            local factorOfTen = 10^(3)
+            return math.floor(x * factorOfTen + .5) / factorOfTen
+        end
+        local function minfile(file)
+            local tasFile = file
+            local minTasFile = {}
+            for t,data in ipairs(tasFile) do
+                local minData = {}
+                for key,val in pairs(data) do
+                    local minVal = nil
+                    if type(val) == "table" then
+                        minVal = {}
+                        for f,x in ipairs(val) do
+                            if type(x) == "number" then table.insert(minVal, round(x))
+                            else table.insert(minVal, x) end    
+                        end
+                    else
+                        minVal = round(val)
+                    end
+                    minData[key] = minVal
+                end
+                table.insert(minTasFile, minData)
+            end
+            return minTasFile
+        end
+        -- ending line
+        local AllPlayerInfo = minfile(AllPlayerInfo)
+        writefile("TAS/"..MapName..".json", HttpService:JSONEncode(AllPlayerInfo))
+        Alert("Saved", Color3.fromRGB(0, 255, 0), 1)
+    end
+    
+    ReplicatedStorage.Remote.StartClientMapTimer.OnClientEvent:Wait()
+    task.wait(1)
+    SetUpMap()
+    
+    if not isfolder("TAS") then
+        makefolder("TAS")
+    end
+    
+    local timer = tick()
+    RunService.Heartbeat:Connect(function(deltaTime)
+        if not Pause then
+            SetTimeGui()
+            table.insert(PlayerInfo, ReturnPlayerInfo())
+            if tick() - timer >= 2 then
+                AddSavestate()
+                timer = tick()
+            end
+        end
+        UpdSavestatesGUI()
+    end)
+    
+    SaveRun()
+    UserInputService.InputBegan:Connect(function(Key,Typing)
+        if not Typing then
+            Key = Key.KeyCode.Name
+            if Key == Keybinds.UserPause then
+                UserPause()
+            elseif Key == Keybinds.AddSavestate then
+                AddSavestate()
+            elseif Key == Keybinds.RemoveSavestate then
+                RemoveSavestate()
+            elseif Key == Keybinds.BackSavestate then
+                BackSavestate()
+            elseif Key == Keybinds.CollisionToggler then
+                CollisionToggler()
+            elseif Key == Keybinds.SaveRun then
+                SaveRun()
+            end
         end
     end)
-    task.wait(2)
-    for _, v in ipairs(Map:GetDescendants()) do
-        if v.ClassName == "ObjectValue" then
-            local Interactive = v.Parent
-            if not Interactive.ClassName == "Model" then
-                xpcall(HandleThing, print, Interactive)
-            elseif Interactive.ClassName == "Model" then
-                for _, Interactive in ipairs(Interactive:GetDescendants()) do
-                    xpcall(HandleThing, print, Interactive)
-                end
-            end
-        end
-    end
-    for _, v in ipairs(Map:GetDescendants()) do
-        if isRandomString(v.Name) then 
-            local Hitbox = v:GetChildren()[2]
-            if Hitbox and isRandomString(Hitbox.Name) then
-                local selectbox = Instance.new("SelectionBox", Hitbox)
-                Hitbox.Color = Color3.fromRGB(255,140,0)
-
-                selectbox.Adornee = Hitbox
-                selectbox.Color3 = Color3.fromRGB(255,140,0)
-
-                getgenv().delayy = false
-                Hitbox.Touched:Connect(function(part)
-                    if delayy == false then
-                        Alert("Button Touched!",Color3.fromRGB(255,140,0))
-                        delayy = true
-                        wait(1)
-                        delayy = false
-                    end
-                end)
-                print("stupid button connected? :", Hitbox.Parent)
-            end
-        end
-    end
-    print("Buttons script loaded for map: "..Map.Settings.MapName.Value)
-end
-
-local function SetTimeGui()
-    local TimePlayed = tick() - TimeStart - TimePaused
-    local m = math.floor(TimePlayed / 60)
-    local s = math.floor(TimePlayed % 60)
-    local ms = math.floor((TimePlayed * 1000) % 1000)
-    m = tostring(m)
-    s = tostring(s)
-    ms = tostring(ms)
-    for i=1, 2 do if #ms < 3 then ms = '0' .. ms end end
-    for i=1, 1 do if #s < 2 then s = '0' .. s end end
-    TimeText.Text = m .. ":" .. s .. ":" .. ms
-end
-local function UserPause()
-    Pause = not Pause
-    if Pause == true then
-        LocalPlayer.Character.HumanoidRootPart.Anchored = true
-        TimeText.TextColor3 = Color3.fromRGB(255, 255, 0)
-        TimePauseHolder = tick()
-
-        CapLockPause.Text = "CapsLock : Paused"
-        CapLockPause.TextColor3 = Color3.fromRGB(255, 255, 0)
-    else
-        LocalPlayer.Character.HumanoidRootPart.Anchored = false
-        TimeText.TextColor3 = Color3.fromRGB(255,255,255)
-        TimePaused = TimePaused + tick() - TimePauseHolder
-
-        CapLockPause.Text = "CapsLock : Unpaused"
-        CapLockPause.TextColor3 = Color3.fromRGB(255,255,255)
-    end
-end
-local function BackSavestate()
-    local InfoState = Savestates[#Savestates][#Savestates[#Savestates]]
-    if InfoState then
-        PlayerInfo = {}
-        Pause = true
-        LocalPlayer.Character.HumanoidRootPart.Anchored = true
-        TimeText.TextColor3 = Color3.fromRGB(255, 255, 0) --  Ything = SpawnPos + Vector3.new(0, 1000, 0)
-        LocalPlayer.Character.HumanoidRootPart.CFrame = InfoState.CFrame + Vector3.new(Xoff, Yoff - 1000, Zoff)
-        LocalPlayer.Character.HumanoidRootPart.Velocity = InfoState.Velocity
-        game.Workspace.CurrentCamera.CFrame = InfoState.CameraCFrame
-        TimePauseHolder = tick()
-        TimeStart = tick() - InfoState.Time
-        TimePaused = 0
-        PlayAnimation(InfoState.Animation[1],InfoState.Animation[2],LocalPlayer.Character.Humanoid)
-        if InfoState.Animation[1] == "walk" then
-            SenvAnimation.setAnimationSpeed(.76)
-        end
-        SetTimeGui()
-    end
-end
-local function UpdSavestatesGUI()
-    SaveStatesCount.Text = "Savestates "..tostring(#Savestates)
-end
-local function AddSavestate()
-    Alert("Added Savestate",Color3.fromRGB(0, 255, 0),1)
-    table.insert(Savestates,PlayerInfo)
-    PlayerInfo = {}
-end
-local function RemoveSavestate()
-    if #Savestates > 1 then
-        Alert("Removed Savestate",Color3.fromRGB(0, 255, 0),1)
-        table.remove(Savestates)
-        BackSavestate()
-    else
-        Alert("No Savestate",Color3.fromRGB(255, 0, 0),1)
-    end
-end
-local function CollisionToggler()
-    local MouseTarget = game.Players.LocalPlayer:GetMouse().Target
-    MouseTarget.CanCollide = not MouseTarget.CanCollide
-    if MouseTarget.CanCollide then
-        MouseTarget.Transparency = 0
-    else
-        MouseTarget.Transparency = 0.8
-    end
-end
-local function SaveRun()
-    local AllPlayerInfo = {}
-    for i = 1, #Savestates do
-        for j = 1, #Savestates[i] do
-            local InfoFromSavestates = Savestates[i][j]
-            local InfoAddingToAllPlayerInfo = {}
-            InfoAddingToAllPlayerInfo.AAnimationChanged = InfoFromSavestates.Animation[2]
-            InfoAddingToAllPlayerInfo.VVelocity = {InfoFromSavestates.Velocity.X, InfoFromSavestates.Velocity.Y, InfoFromSavestates.Velocity.Z}
-            InfoAddingToAllPlayerInfo.CCameraCFrame = {InfoFromSavestates.CameraCFrame.X, InfoFromSavestates.CameraCFrame.Y, InfoFromSavestates.CameraCFrame.Z, InfoFromSavestates.CameraCFrame:ToEulerAnglesXYZ()}
-            InfoAddingToAllPlayerInfo.CCFrame = {InfoFromSavestates.CFrame.X, InfoFromSavestates.CFrame.Y, InfoFromSavestates.CFrame.Z, InfoFromSavestates.CFrame:ToEulerAnglesXYZ()}
-            if InfoFromSavestates.Animation and InfoFromSavestates.Animation[1] then
-                InfoAddingToAllPlayerInfo.AAnimation = {InfoFromSavestates.Animation[1], InfoFromSavestates.Animation[2]}
-            else
-                InfoAddingToAllPlayerInfo.AAnimation = {"walk", 0.1}
-            end
-            InfoAddingToAllPlayerInfo.time = InfoFromSavestates.Time
-            table.insert(AllPlayerInfo, InfoAddingToAllPlayerInfo)
-        end
-    end
-
-    -- TAS file minifier 
-    -- Starting from this line to ending line code was made by ian
-    local function round(x)
-        local factorOfTen = 10^(3)
-        return math.floor(x * factorOfTen + .5) / factorOfTen
-    end
-    local function minfile(file)
-        local tasFile = file
-        local minTasFile = {}
-        for t,data in ipairs(tasFile) do
-            local minData = {}
-            for key,val in pairs(data) do
-                local minVal = nil
-                if type(val) == "table" then
-                    minVal = {}
-                    for f,x in ipairs(val) do
-                        if type(x) == "number" then table.insert(minVal, round(x))
-                        else table.insert(minVal, x) end    
-                    end
-                else
-                    minVal = round(val)
-                end
-                minData[key] = minVal
-            end
-            table.insert(minTasFile, minData)
-        end
-        return minTasFile
-    end
-    -- ending line
-    local AllPlayerInfo = minfile(AllPlayerInfo)
-    writefile("TAS/"..game.Workspace.Map.Settings.MapName.Value..".json", game:GetService("HttpService"):JSONEncode(AllPlayerInfo))
-    Alert("Saved", Color3.fromRGB(0, 255, 0), 1)
-end
-
-ReplicatedStorage.Remote.StartClientMapTimer.OnClientEvent:Wait()
-task.wait(1)
-SetUpMap()
-
-if not isfolder("TAS") then
-    makefolder("TAS")
-end
-
-local timer = tick()
-RunService.Heartbeat:Connect(function(deltaTime)
-    if not Pause then
-        SetTimeGui()
-        table.insert(PlayerInfo, ReturnPlayerInfo())
-        if tick() - timer >= 2 then
-        	AddSavestate()
-        	timer = tick()
-        end
-    end
-    UpdSavestatesGUI()
-end)
-
-SaveRun()
-UserInputService.InputBegan:Connect(function(Key,Typing)
-    if not Typing then
-        Key = Key.KeyCode.Name
-        if Key == Keybinds.UserPause then
+    
+    
+    LocalPlayer.Character.Humanoid.Died:Connect(function()
+        if Pause == false and UserPause then
             UserPause()
-        elseif Key == Keybinds.AddSavestate then
-            AddSavestate()
-        elseif Key == Keybinds.RemoveSavestate then
-            RemoveSavestate()
-        elseif Key == Keybinds.BackSavestate then
+            LocalPlayer.CharacterAdded:wait()
             BackSavestate()
-        elseif Key == Keybinds.CollisionToggler then
-            CollisionToggler()
-        elseif Key == Keybinds.SaveRun then
-            SaveRun()
         end
-    end
-end)
-
-
-LocalPlayer.Character.Humanoid.Died:Connect(function()
-    if Pause == false and UserPause then
-        UserPause()
-        LocalPlayer.CharacterAdded:wait()
-        BackSavestate()
-    end
-end)
+    end)
