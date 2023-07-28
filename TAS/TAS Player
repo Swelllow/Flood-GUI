@@ -41,11 +41,10 @@ local RS = game:GetService('RunService')
 local CLMAIN = getsenv(LP.PlayerScripts.CL_MAIN_GameScript)
 CLMAIN.newAlert("TAS Player Started.")
 local Animate = getsenv(LP.Character.Animate)
-local RunName = Multi:WaitForChild('NewMap'):WaitForChild('Settings'):WaitForChild('MapName').Value
-local TAS = game:GetService("HttpService"):JSONDecode(readfile(RunName .. ".json"))
+local mapName = Multi:WaitForChild('NewMap'):WaitForChild('Settings'):GetAttribute("MapName")
+local TAS = game:GetService("HttpService"):JSONDecode(readfile(mapName .. ".json"))
 CLMAIN.newAlert("TAS Loaded!")
 local Map = Multi:WaitForChild("Map")
-local mapName = Map:WaitForChild('Settings').MapName.Value
 
 local HighlightPath = game:GetService("Workspace").Multiplayer.Map.Settings:FindFirstChild("Highlight")
 
@@ -200,7 +199,7 @@ Loop = RS.Heartbeat:Connect(function(DeltaTime)
             end
             Animate.playAnimation = PlayAnim
             CLMAIN.newAlert('TAS Run Finished!', Color3.new(0, 1, 0))
-            CLMAIN.newAlert('TAS Player By Tomato & Moz', Color3.new(0, 1, 0))
+            CLMAIN.newAlert('TAS Player By Tomato', Color3.new(0, 1, 0))
         elseif (tick() - TimeStart) >= CurrentInfo.time then
             OldFrame = i
             local CCFrame = CurrentInfo.CCFrame
