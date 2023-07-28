@@ -29,44 +29,7 @@ local TimeStart
 local TimeText
 local SaveStatesCount
 local CapLockPause
-local Synced = true
-local RootPart, RootClone
-
-
-local function desync()
-    if Synced == true then
-        local Char = LocalPlayer.Character
-        Synced = false
-        LocalPlayer.Character.Animate.Enabled = false
-        Char.Parent = game.ReplicatedStorage
-        RootPart = Char.HumanoidRootPart
-        RootClone = RootPart:Clone()
-
-        RootPart.Transparency = 0
-        RootPart.RootJoint.Enabled = false
-        RootPart.Name = "NotRootPart"
-
-
-        RootClone.Transparency = 1
-        RootClone.Parent = Char
-        Char.PrimaryPart = RootClone
-        Char.Parent = workspace
-        LocalPlayer.Character.Animate.Enabled = true
-    end
-end
-
-local function sync()
-    if Synced == false then
-        local Char = LocalPlayer.Character
-        Synced = true
-        Char.Parent = game.ReplicatedStorage
-        RootClone:Destroy()
-        RootPart.Name = "HumanoidRootPart"
-        Char.PrimaryPart = RootPart
-        RootPart.RootJoint.Enabled = true
-    end
-end
-
+local MapName
 local function getCurrentCFrame()
     local RealCframe
     if AnimationState[1] and AnimationState[1]:lower():match("swim") then
@@ -128,7 +91,6 @@ local function SetPrimaryPart() -- new spawn finder by "_tomato." on discord
     repeat task.wait() until Spawn
     Map.PrimaryPart = Spawn
 end
-
 local function SetUpGui()
     local HUD = LocalPlayer.PlayerGui.GameGui.HUD
     local GameStats = HUD.Main.GameStats
@@ -264,6 +226,8 @@ local function SetUpMap()
     function game.ReplicatedStorage.Remote.ReqCharVars.OnClientInvoke() return {} end
     function game.ReplicatedStorage.Remote.FetchPos.OnClientInvoke() return CFrame.new() end
     SetPrimaryPart()
+    MapName = game.Workspace.Multiplayer.Map.Settings:GetAttribute("MapName")
+    print(MapName)
     Map = game.Workspace.Multiplayer.Map:Clone()
     Map.Parent = game.Workspace
     --Map:MoveTo(Vector3.new(0,1000,0))
@@ -307,10 +271,10 @@ local function SetUpMap()
         if v.ClassName == "ObjectValue" then
             local Interactive = v.Parent
             if not Interactive.ClassName == "Model" then
-                xpcall(HandleThing, print, Interactive)
+                xpcall(HandleThing, function()end, Interactive)
             elseif Interactive.ClassName == "Model" then
                 for _, Interactive in ipairs(Interactive:GetDescendants()) do
-                    xpcall(HandleThing, print, Interactive)
+                    xpcall(HandleThing, function()end, Interactive)
                 end
             end
         end
@@ -334,13 +298,10 @@ local function SetUpMap()
                         delayy = false
                     end
                 end)
-                print("stupid button connected? :", Hitbox.Parent)
             end
         end
     end
-    print("Buttons script loaded for map: "..Map.Settings.MapName.Value)
 end
-
 local function SetTimeGui()
     local TimePlayed = tick() - TimeStart - TimePaused
     local m = math.floor(TimePlayed / 60)
@@ -436,7 +397,6 @@ local function SaveRun()
             table.insert(AllPlayerInfo, InfoAddingToAllPlayerInfo)
         end
     end
-
     -- TAS file minifier 
     -- Starting from this line to ending line code was made by ian
     local function round(x)
@@ -467,7 +427,7 @@ local function SaveRun()
     end
     -- ending line
     local AllPlayerInfo = minfile(AllPlayerInfo)
-    writefile("TAS/"..game.Workspace.Map.Settings.MapName.Value..".json", game:GetService("HttpService"):JSONEncode(AllPlayerInfo))
+    writefile("TAS/"..MapName..".json", game:GetService("HttpService"):JSONEncode(AllPlayerInfo))
     Alert("Saved", Color3.fromRGB(0, 255, 0), 1)
 end
 
