@@ -16,6 +16,9 @@ end
 wait = task.wait
 
 local clmain = getsenv( game.Players.LocalPlayer.PlayerScripts["CL_MAIN_GameScript"] )
+if game:GetService("ReplicatedStorage").Config:GetAttribute("BuildVersion") ~= "57.11" then
+	clmain.newAlert("Flood GUI v3 is outdated please report all issues on the discord server!", Color3.new(1, 0, 0))
+end
 local save = clmain.newAlert
 if getgenv().wow and debugmode == false then
 	clmain.newAlert('Already Executed!',Color3.new(1,0,0))
