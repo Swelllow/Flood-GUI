@@ -46,7 +46,7 @@ local TAS = game:GetService("HttpService"):JSONDecode(readfile(mapName .. ".json
 CLMAIN.newAlert("TAS Loaded!")
 local Map = Multi:WaitForChild("Map")
 
-local HighlightPath = game:GetService("Workspace").Multiplayer.Map.Settings:FindFirstChild("Highlight")
+local HighlightPath = game:GetService("Workspace").Multiplayer.Map.Settings:GetAttribute("Highlight")
 
 if HighlightPath then
     CLMAIN.newAlert("Map cannot be mirrored.")
