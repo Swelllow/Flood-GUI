@@ -14,13 +14,14 @@ for i,v in pairs(script.getOfficialMapData()) do
 	table.insert(maps,v.mapName)
 end
 local highlights = game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Goals.Window.Content.Pages.Highlights.Maps
-
+getgenv().whatthefuckisthisyoumayaskitisaverylongvariblename = {}
 for i,v in pairs(highlights:GetChildren()) do
     if v.Name == "HighlightFrame" then
         local pre = string.split(v.MapName.Text, "[")[1]
         local mapName = pre:sub(2, #pre - 1)
 	if not table.find(maps, mapName) then
 		table.insert(maps, mapName)
+		table.insert(getgenv().whatthefuckisthisyoumayaskitisaverylongvariblename, mapName)
 	end
     end
 end
