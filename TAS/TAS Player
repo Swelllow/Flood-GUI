@@ -44,33 +44,49 @@ local RS = game:GetService('RunService')
 
 -- IMPORTANT
 local CLMAIN = getsenv(LP.PlayerScripts.CL_MAIN_GameScript)
-CLMAIN.newAlert("TAS Player Started.")
+local oldalert
+oldalert = hookfunction(CLMAIN.newAlert, function(...)
+    warn("Alert function fired with args:", ...)
+    return oldalert(...)
+end)
+if not getrenv().alreadystarted then
+    CLMAIN.newAlert("TAS Player Started.", Color3.fromRGB(255, 149, 5))
+    getrenv().alreadystarted = true
+else
+    CLMAIN.newAlert("TAS Player ready for next map.", Color3.new(0,1,.5))
+end
 local Animate = getsenv(LP.Character.Animate)
-local mapName = Multi:WaitForChild('NewMap'):WaitForChild('Settings'):GetAttribute("MapName")
+local Map = Multi:WaitForChild('NewMap')
+local mapName = Map:WaitForChild('Settings'):GetAttribute("MapName")
 local TAS = game:GetService("HttpService"):JSONDecode(readfile(mapName .. ".json"))
+if not TAS then
+    CLMAIN.newAlert("TAS file for "..mapName.." is not in workspace folder!", Color3.new(1,0,0))
+    LP.Character.Humanoid.Health = 0
+    LP.CharacterAdded:wait()
+else
 CLMAIN.newAlert("TAS Loaded!")
-local Map = Multi:WaitForChild("Map")
+repeat task.wait() until Map.Name == "Map"
 
 local HighlightPath = game:GetService("Workspace").Multiplayer.Map.Settings:GetAttribute("Highlight")
 
 if HighlightPath then
-    CLMAIN.newAlert("Map cannot be mirrored.")
+    CLMAIN.newAlert("Map cannot be mirrored.", Color3.fromRGB(255, 100, 0))
     Mirrored = false
 else
     if SkipMirroredMaps[mapName] then
-        CLMAIN.newAlert('Map cannot be mirrored.')
+        CLMAIN.newAlert('Map cannot be mirrored.', Color3.fromRGB(255, 100, 0))
     else
         if Map:WaitForChild('Settings'):FindFirstChild("_MirrorMap") then
-            CLMAIN.newAlert('Map is not mirrored.')
+            CLMAIN.newAlert('Map is not mirrored.', Color3.fromRGB(255, 149, 5))
             Mirrored = false
         else
-            CLMAIN.newAlert('Map is mirrored, TAS will be played mirrored!')
+            CLMAIN.newAlert('Map is mirrored, TAS will be played mirrored!', Color3.fromRGB(255, 149, 5))
             Mirrored = true
         end
     end
 end
 
-local Spawn = (function() -- new spawn finder by "_tomato." on discord
+local Spawn = (function() -- new spawn finder by "tomato.txt" on discord
     local Spawn = nil
 
     local connections = {}
@@ -85,14 +101,13 @@ local Spawn = (function() -- new spawn finder by "_tomato." on discord
         end
     end
     repeat task.wait() until Spawn
-    CLMAIN.newAlert("Spawn found!")
+    CLMAIN.newAlert("Spawn found!", Color3.fromRGB(0, 255, 0))
     return Spawn
 end)()
 
 game:GetService("ReplicatedStorage").Remote.StartClientMapTimer.OnClientEvent:Wait()
-task.wait(.1)
 local TimeStart = tick()
-CLMAIN.newAlert('TAS Running..')
+CLMAIN.newAlert('TAS Running..', Color3.fromRGB(255, 149, 5))
 PlayAnim = Animate.playAnimation
 Animate.playAnimation = function() end
 
@@ -223,3 +238,4 @@ Loop = RS.Heartbeat:Connect(function(DeltaTime)
         end
     end
 end)
+end
