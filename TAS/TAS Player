@@ -10,6 +10,11 @@ local SkipMirroredMaps = {
     ["Active Volcanic Mines"] = true,
     ["Snowy Stronghold"] = true
 }
+if getgenv().whatthefuckisthisyoumayaskitisaverylongvariblename then
+    for _,v in ipairs(getgenv().whatthefuckisthisyoumayaskitisaverylongvariblename) do
+        SkipMirroredMaps[v] = true
+    end
+end
 local Mirrored = false
 local NewV = Vector3.new
 local NewC = CFrame.new
