@@ -1,0 +1,5 @@
+{
+    "krnlLsp.diagnostics.globals": [
+        "isfile"
+    ]
+}
