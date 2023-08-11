@@ -28,4 +28,4 @@ local startimport = tick()
 if import("/Flood GUI v3") and import("/TAS/TAS Editor") and import("/TAS/TAS Player") and import("/TAS/TAS Record Voiz") then
     print("Imported Flood GUI in "..tostring(tick() - startimport))
 end
-loadfile("Flood-GUI/Flood GUI v3")()
+loadfile("Flood-GUI/Flood GUI v3")(Branch)
