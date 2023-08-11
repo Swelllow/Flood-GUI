@@ -1,5 +1,5 @@
 local Branch = (...);
-if Branch == nil then
+if type(Branch) ~= "string" then
 	Branch = "main";
 end
 if not game:IsLoaded() then game.Loaded:wait() end
@@ -341,21 +341,25 @@ end)
 --[[auto:NewToggle("Auto-Vote", "Automatically votes for you!", function(t)
 	getgenv().oof = t
 end)]]
+if not isfolder("Flood-GUI/TAS FILES") then
+    makefolder("Flood-GUI/TAS FILES")
+end
 auto:NewButton("Download TAS files", "Downloads Required TAS files!", function()
 	for i, v in pairs(maps) do
 		local map = HttpService:UrlEncode(v)
-		local su = isfile("Flood-GUI/TAS FILES/"..v..".json")
+		local su = isfile("Flood-GUI/TAS FILES"..v..".json")
 		if su == true then
 			clmain.newAlert(v.." TAS file already exists!",Color3.fromRGB(50,100,255))
 		else
 			local s, r = pcall(function()
-				local tas = readfile("Flood-GUI/TAS FILES/"..map..".json")
+				local tas = game:HttpGet("https://raw.githubusercontent.com/ImMejor35/Flood-GUI/"..Branch.."/TAS%20FILES/"..map..".json")
 				if not string.find(tas, "CFrame") then error('file not exist') end
-				writefile("Flood-GUI/TAS FILES/"..v..".json", tas,true) -- minfile(tas) removed
+				writefile("Flood-GUI/TAS FILES"..v..".json", tas,true) -- minfile(tas) removed
 			end)
 			if s then
 				clmain.newAlert("Downloaded "..v.." TAS file succesfully!",Color3.fromRGB(0,255,0))
 			else
+                print(r)
 				clmain.newAlert("Failed to download "..v.." TAS file. :(",Color3.fromRGB(255,0,0))
 			end
 		end
