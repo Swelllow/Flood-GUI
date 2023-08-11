@@ -1,5 +1,8 @@
 {
     "krnlLsp.diagnostics.globals": [
-        "isfile"
+        "isfile",
+        "isfolder",
+        "makefolder",
+        "writefile"
     ]
 }
