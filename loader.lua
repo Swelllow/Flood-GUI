@@ -1,19 +1,10 @@
-local LatestBuild = 57.11
-local CurrentBuild = tonumber(game:GetService("ReplicatedStorage").Config:GetAttribute("BuildVersion"))
-if LatestBuild < CurrentBuild then
-  warn("Build mismatch bugs and errors may be caused due to this!")
-  warn("Current Build:", CurrentBuild)
-end
-
 local Branch = ...
 local FloodGUIRepo = "https://raw.githubusercontent.com/ImMejor35/Flood-GUI/"..Branch
 if not isfolder("Flood-GUI") then
 	makefolder("Flood-GUI")
+elseif not isfolder("Flood-GUI/TAS") then
+	makefolder("Flood-GUI/TAS")
 end
-if not isfolder("Flood-GUI/TAS") then
-    makefolder("Flood-GUI/TAS")
-end
-
 local function import(webpath)
     local filepath = "Flood-GUI"..webpath
     local fullurl = (FloodGUIRepo..webpath):gsub(" ", "%%20")
