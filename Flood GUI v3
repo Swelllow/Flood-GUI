@@ -255,10 +255,10 @@ other:NewKeybind("ToggleUI", "Toggle UI with this keybind.", Enum.KeyCode.J, fun
     Library:ToggleUI()
 end)
 other:NewLabel("Discord Invites")
-other:NewButton("Copy Tomato-Hub Invite", "Copies Tomato-Hub invite to clipboard!", function()
+other:NewButton("Copy Tomato Support Server invite.", "Copies Tomato Support Server invite to clipboard!", function()
 	setclipboard("https://discord.gg/8N2M9fHJqa")
 end)
-other:NewButton("Copy Lexon-Hub Invite", "Copies Lexon-Hub invite to clipboard!", function()
+other:NewButton("Copy Lexon Hub Invite", "Copies Lexon-Hub invite to clipboard!", function()
 	setclipboard("https://discord.gg/ng4CN7Vq")
 end)
 getgenv().ui = true
