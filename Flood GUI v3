@@ -347,7 +347,7 @@ end
 auto:NewButton("Download TAS files", "Downloads Required TAS files!", function()
 	for i, v in pairs(maps) do
 		local map = HttpService:UrlEncode(v)
-		local su = isfile("Flood-GUI/TAS FILES"..v..".json")
+		local su = isfile("Flood-GUI/TAS FILES/"..v..".json")
 		if su == true then
 			clmain.newAlert(v.." TAS file already exists!",Color3.fromRGB(50,100,255))
 		else
