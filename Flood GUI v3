@@ -288,7 +288,7 @@ blatant:NewKeybind("Infinite Air", "Infinite Air/God Mode", Enum.KeyCode.R, func
 		getgenv().godmode = true
 	end
 end)
-loadfile = (isfile("Flood-GUI") and loadfile) or loadstring
+
 getgenv().noclip = false
 blatant:NewKeybind("Noclip", "Walk through some walls!", Enum.KeyCode.G, function()
 	lp.Character:WaitForChild("Torso").CanCollide = getgenv().noclip
