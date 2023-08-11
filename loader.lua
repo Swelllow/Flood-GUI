@@ -1,11 +1,11 @@
-local LatestBuild = 58
+local LatestBuild = 57.11
 local CurrentBuild = tonumber(game:GetService("ReplicatedStorage").Config:GetAttribute("BuildVersion"))
 if LatestBuild < CurrentBuild then
   warn("Build mismatch bugs and errors may be caused due to this!")
   warn("Current Build:", CurrentBuild)
 end
 
-local Branch = "systest"
+local Branch = ...
 local FloodGUIRepo = "https://raw.githubusercontent.com/ImMejor35/Flood-GUI/"..Branch
 if not isfolder("Flood-GUI") then
 	makefolder("Flood-GUI")
