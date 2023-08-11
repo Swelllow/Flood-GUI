@@ -20,6 +20,7 @@ local NewV = Vector3.new
 local NewC = CFrame.new
 local AngC = CFrame.fromEulerAnglesXYZ
 local LP = game.Players.LocalPlayer
+local CurrentCamera = workspace.CurrentCamera
 local function toggleSlide(newValue)
     if newValue == true then
         LP.Character.HumanoidRootPart.Size = Vector3.new(2, 1, 1)
@@ -58,7 +59,7 @@ end
 local Animate = getsenv(LP.Character.Animate)
 local Map = Multi:WaitForChild('NewMap')
 local mapName = Map:WaitForChild('Settings'):GetAttribute("MapName")
-local TAS = game:GetService("HttpService"):JSONDecode(readfile(mapName .. ".json"))
+local TAS = game:GetService("HttpService"):JSONDecode(readfile("Flood-GUI/TAS FILES/" .. mapName .. ".json"))
 if not TAS then
     CLMAIN.newAlert("TAS file for "..mapName.." is not in workspace folder!", Color3.new(1,0,0))
     LP.Character.Humanoid.Health = 0
@@ -144,7 +145,11 @@ end
 
 
 local function badCheck(Thing) --  NOT walljump or NOT AIRTANK or explodingbutton hitbox :check:
-    return not (Thing:FindFirstChild("_Wall") or Thing.Parent.Name ~= "AirTank" or (Thing.Name == "Part" and isRandomString(Thing.Parent.Name)))
+    local Parent = Thing.Parent
+    if Parent then
+        return not (Thing:FindFirstChild("_Wall") or Parent.Name ~= "AirTank" or (Thing.Name == "Part" and isRandomString(Parent.Name)))
+    end
+    return not Thing:FindFirstChild("_Wall") or Thing.Name == "Part"
 end
 local walljumpfix
 walljumpfix = LP.Character.HumanoidRootPart.Touched:Connect(function(Thing)
@@ -196,6 +201,7 @@ local RootPart = LP.Character.HumanoidRootPart
 if Legit then
     RootPart.RootJoint.Enabled = false
 end
+
 Loop = RS.Heartbeat:Connect(function(DeltaTime)
     local NewFrame = #TAS
     local Divider = OldFrame + 60
@@ -207,34 +213,32 @@ Loop = RS.Heartbeat:Connect(function(DeltaTime)
         if (tick() - TimeStart) < CurrentInfo.time then
             break
         elseif i >= #TAS then
+            CLMAIN.newAlert('TAS Run Finished!', Color3.new(0, 1, 0))
+            CLMAIN.newAlert('TAS Player By Tomato & Moz', Color3.new(0, 1, 0))
             Death:Disconnect()
             Loop:Disconnect()
-            toggleTouch(true)
-            toggleTouch = nil
+            Animate.playAnimation = PlayAnim
             walljumpfix:Disconnect()
             walljumpfix2:Disconnect()
+            toggleTouch(true)
             if Legit then
                 RootPart.RootJoint.Enabled = true
                 LP.Character.Humanoid.Health = 0
             end
-            Animate.playAnimation = PlayAnim
-            CLMAIN.newAlert('TAS Run Finished!', Color3.new(0, 1, 0))
-            CLMAIN.newAlert('TAS Player By Tomato & Moz', Color3.new(0, 1, 0))
         elseif (tick() - TimeStart) >= CurrentInfo.time then
             OldFrame = i
             local CCFrame = CurrentInfo.CCFrame
             local CCameraCFrame = CurrentInfo.CCameraCFrame
-            local VVelocity = CurrentInfo.VVelocity
-            local CurrentAnimation = CurrentInfo.AAnimation
             if Mirrored == true then
                 RootPart.CFrame = NewC(CCFrame[1], CCFrame[2], -CCFrame[3]) * AngC(-3.1415927410125732, CCFrame[5], -3.1415927410125732) + Offset
                 --workspace.CurrentCamera.CFrame = NewC(-CCameraCFrame[1], -CCameraCFrame[2], -CCameraCFrame[3]) * AngC(3.1415927410125732, CCameraCFrame[5], 3.1415927410125732) + Offset
+            elseif Mirrored == true and Legit then
+                
             else
                 RootPart.CFrame = NewC(CCFrame[1], CCFrame[2], CCFrame[3]) * AngC(CCFrame[4], CCFrame[5], CCFrame[6]) + Offset
-                workspace.CurrentCamera.CFrame = NewC(CCameraCFrame[1], CCameraCFrame[2], CCameraCFrame[3]) * AngC(CCameraCFrame[4], CCameraCFrame[5], CCameraCFrame[6]) + Offset
+                CurrentCamera.CFrame = NewC(CCameraCFrame[1], CCameraCFrame[2], CCameraCFrame[3]) * AngC(CCameraCFrame[4], CCameraCFrame[5], CCameraCFrame[6]) + Offset
             end
-            RootPart.Velocity = NewV(VVelocity[1], VVelocity[2], VVelocity[3])
-            activateAnimation(CurrentAnimation)
+            activateAnimation(CurrentInfo.AAnimation)
         end
     end
 end)
