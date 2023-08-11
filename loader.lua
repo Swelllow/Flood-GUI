@@ -5,7 +5,7 @@ if not isfolder("Flood-GUI") then
 elseif not isfolder("Flood-GUI/TAS") then
 	makefolder("Flood-GUI/TAS")
 end
-local function import(webpath)
+function import(webpath)
     local filepath = "Flood-GUI"..webpath
     local fullurl = (FloodGUIRepo..webpath):gsub(" ", "%%20")
     if not isfile(filepath) then
