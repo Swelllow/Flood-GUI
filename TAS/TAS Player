@@ -116,7 +116,7 @@ for _, v in next, Map:GetDescendants() do
     if v.Name == 'ButtonIcon' then
         local buttonPart = v.Parent.Parent:FindFirstChildOfClass('Part')
         if buttonPart ~= nil then
-            buttonPart.Size = Vector3.new(4,3,4)
+            buttonPart.Size = Vector3.new(6,6,6)
         end
     end
 end
