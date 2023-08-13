@@ -34,6 +34,7 @@ local TimeText
 local SaveStatesCount
 local CapLockPause
 local MapName
+local AnimationHookConnection
 local function getCurrentCFrame()
     local RealCframe
     if AnimationState[1] and AnimationState[1]:lower():match("swim") then
@@ -245,7 +246,7 @@ local function hookAnimation()
     end)
     return connection
 end
-local AnimationHook
+
 local Map
 local function SetUpMap()
     local CurrentInfo
@@ -286,7 +287,7 @@ local function SetUpMap()
     TimePauseHolder = tick()
     TimeStart = tick()
     hookAnimation()
-    AnimationHook = LocalPlayer.CharacterAdded:Connect(function(char)
+    AnimationHookConnection = LocalPlayer.CharacterAdded:Connect(function(char)
         local animate = char:WaitForChild("Animate")
         if animate.Enabled == true then
             hookAnimation()
@@ -577,16 +578,15 @@ local timer = tick()
 local RecordLoop
 local KeybindsConnect
 local Death
-local AnimationHookConnection
 local function ResetToNormal()
-    Map:Destroy()
-    AnimationHook:Disconnect()
-    SenvAnimation.playAnimation = PlayAnimation
-    RealHUD.Parent = HUD.Parent
-    HUD:Destroy()
+    AnimationHookConnection:Disconnect()
+    hookAnimation = function()end
     RecordLoop:Disconnect()
     KeybindsConnect:Disconnect()
     Death:Disconnect()
+    Map:Destroy()
+    RealHUD.Parent = HUD.Parent
+    HUD:Destroy()
     LocalPlayer.Character.Humanoid.Health = 0
     print("Reset to normal"..RunID)
 end
