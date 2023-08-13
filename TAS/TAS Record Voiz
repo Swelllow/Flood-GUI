@@ -100,6 +100,7 @@ local HUD
 local function SetUpGui()
     RealHUD = LocalPlayer.PlayerGui.GameGui.HUD
     HUD = RealHUD:Clone()
+    HUD.Parent = RealHUD.Parent
     RealHUD.Parent = game.ReplicatedStorage
     local GameStats = HUD.Main.GameStats
     GameStats.Size = UDim2.new(1, 0, 1, 0)
@@ -236,9 +237,9 @@ local function hookAnimation()
     end
     print("Updated animation hook values"..RunID)
 end
-
+local AnimationHook
+local Map
 local function SetUpMap()
-    local Map
     local CurrentInfo
     function game.ReplicatedStorage.Remote.ReqCharVars.OnClientInvoke() return {} end
     function game.ReplicatedStorage.Remote.FetchPos.OnClientInvoke() return CFrame.new() end
@@ -277,7 +278,7 @@ local function SetUpMap()
     TimePauseHolder = tick()
     TimeStart = tick()
     hookAnimation()
-    LocalPlayer.CharacterAdded:Connect(function(char)
+    AnimationHook = LocalPlayer.CharacterAdded:Connect(function(char)
         local animate = char:WaitForChild("Animate")
         if animate.Enabled == true then
             hookAnimation()
@@ -298,8 +299,17 @@ local function SetUpMap()
     end
     for _, v in ipairs(Map:GetDescendants()) do
         if isRandomString(v.Name) then 
-            local Hitbox = v:GetChildren()[2]
-            if Hitbox and isRandomString(Hitbox.Name) then
+            local Children = (function()
+                local parts = {}
+                for _, huh in ipairs(v:GetChildren()) do
+                    if huh:IsA("BasePart") then
+                        table.insert(parts, huh)
+                    end
+                end
+                return parts
+            end)()
+            local Hitbox = Children[2]
+            if Hitbox and Hitbox:IsA("BasePart") and isRandomString(Hitbox.Name) then
                 local selectbox = Instance.new("SelectionBox", Hitbox)
                 Hitbox.Color = Color3.fromRGB(255,140,0)
 
@@ -318,6 +328,8 @@ local function SetUpMap()
             end
         end
     end
+    game.Workspace.Multiplayer.Map:Destroy()
+    print("Finished setting up map"..RunID)
 end
 local function SetTimeGui()
     local TimePlayed = tick() - TimeStart - TimePaused
@@ -499,13 +511,15 @@ local RecordLoop
 local KeybindsConnect
 local Death
 local function ResetToNormal()
+    Map:Destroy()
+    AnimationHook:Disconnect()
     SenvAnimation.playAnimation = PlayAnimation
     RealHUD.Parent = HUD.Parent
     HUD:Destroy()
     RecordLoop:Disconnect()
     KeybindsConnect:Disconnect()
     Death:Disconnect()
-    LP.Character.Humanoid.Health = 0
+    LocalPlayer.Character.Humanoid.Health = 0
     print("Reset to normal"..RunID)
 end
 RecordLoop = RunService.Heartbeat:Connect(function(deltaTime)

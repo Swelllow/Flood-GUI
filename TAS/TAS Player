@@ -1,4 +1,4 @@
-print("Diffrent player")
+print("Diffrent player v2")
 if Legit == nil then
     Legit = false
 end
@@ -57,9 +57,11 @@ else
     CLMAIN.newAlert("TAS Player ready for next map.", Color3.new(0,1,.5))
 end
 local Animate = getsenv(LP.Character.Animate)
-local Map = Multi:WaitForChild('NewMap', 120)
+local Map = Multi:WaitForChild('NewMap', 9e6)
 local mapName = Map:WaitForChild('Settings'):GetAttribute("MapName")
-local TAS = game:GetService("HttpService"):JSONDecode(readfile("Flood-GUI/TAS FILES/" .. mapName .. ".json"))
+local path = readfile("Flood-GUI/TAS FILES/" .. mapName .. ".json")
+local TAS = game:GetService("HttpService"):JSONDecode(path)
+print(#path)
 if not TAS then
     CLMAIN.newAlert("TAS file for "..mapName.." is not in workspace folder!", Color3.new(1,0,0))
     LP.Character.Humanoid.Health = 0
