@@ -107,7 +107,7 @@ local function SetUpGui()
     HUD.Main.MenuButtons.Visible = false
     GameStats.Stats.Visible = false
     LocalPlayer.PlayerGui.GameGui.Challenges.Visible = false
-
+    
     TimeText = Instance.new("TextLabel", GameStats)
     TimeText.Visible = true
     TimeText.BackgroundTransparency = 1
@@ -221,6 +221,7 @@ local function SetUpGui()
 end
 
 local function hookAnimation()
+    local connection
     repeat
         SenvAnimation = getsenv(LocalPlayer.Character:WaitForChild("Animate"))
         task.wait()
@@ -236,6 +237,13 @@ local function hookAnimation()
         print("the animation script is f*cked"..RunID)
     end
     print("Updated animation hook values"..RunID)
+    connection = LocalPlayer.CharacterAdded:Connect(function(char)
+        local animate = char:WaitForChild("Animate")
+        if animate.Enabled == true then
+            hookAnimation()
+        end
+    end)
+    return connection
 end
 local AnimationHook
 local Map
@@ -414,7 +422,12 @@ local function CollisionToggler()
         MouseTarget.Transparency = 0.8
     end
 end
-local function FrameForward()
+
+-- beginning of fram forward
+local isFrameForwardHeld = false
+local FrameForwardLoopThread
+
+local function GoForwardFrame()
     if Pause then
         UserPause()
         for i = 1, 2 do
@@ -423,11 +436,40 @@ local function FrameForward()
         UserPause()
     end
 end
-local function FrameBack()
+
+local function FrameForwardLoop()
+    while isFrameForwardHeld do
+        GoForwardFrame()
+        wait(.1) 
+    end
+end
+
+local function FrameForwardStart()
+    if not isFrameForwardHeld then
+        isFrameForwardHeld = true
+        FrameForwardLoopThread = task.spawn(FrameForwardLoop)
+    end
+end
+
+local function FrameForwardStop()
+    if isFrameForwardHeld then
+        isFrameForwardHeld = false
+        if FrameForwardLoopThread then
+            FrameForwardLoopThread:cancel()
+        end
+    end
+end
+--End of Frame forward
+
+-- beginning of frame back
+local isFrameBackHeld = false
+local FrameBackLoopThread
+
+local function GoBackFrame()
     if LocalPlayer.Character then
-        local InfoState = PlayerInfo[#PlayerInfo-1]
+        local InfoState = PlayerInfo[#PlayerInfo - 1]
         if not InfoState then
-            InfoState = Savestates[#Savestates][#Savestates[#Savestates]-1]
+            InfoState = Savestates[#Savestates][#Savestates[#Savestates] - 1]
         elseif not Pause then
             UserPause()
         end
@@ -437,7 +479,7 @@ local function FrameBack()
         TimePauseHolder = tick()
         TimeStart = tick() - InfoState.Time
         TimePaused = 0
-        PlayAnimation(InfoState.Animation[1],InfoState.Animation[2],LocalPlayer.Character.Humanoid)
+        PlayAnimation(InfoState.Animation[1], InfoState.Animation[2], LocalPlayer.Character.Humanoid)
         if InfoState.Animation[1] == "walk" then
             SenvAnimation.setAnimationSpeed(.76)
         end
@@ -445,6 +487,31 @@ local function FrameBack()
         PlayerInfo[#PlayerInfo] = nil
     end
 end
+
+local function FrameBackLoop()
+    while isFrameBackHeld do
+        GoBackFrame()
+        wait(.1) 
+    end
+end
+
+local function FrameBackStart()
+    if not isFrameBackHeld then
+        isFrameBackHeld = true
+        FrameBackLoopThread = task.spawn(FrameBackLoop)
+    end
+end
+
+local function FrameBackStop()
+    if isFrameBackHeld then
+        isFrameBackHeld = false
+        if FrameBackLoopThread then
+            FrameBackLoopThread:cancel()
+        end
+    end
+end
+-- end of frame back
+
 local function SaveRun()
     local AllPlayerInfo = {}
     for i = 1, #Savestates do
@@ -510,6 +577,7 @@ local timer = tick()
 local RecordLoop
 local KeybindsConnect
 local Death
+local AnimationHookConnection
 local function ResetToNormal()
     Map:Destroy()
     AnimationHook:Disconnect()
@@ -537,7 +605,7 @@ RecordLoop = RunService.Heartbeat:Connect(function(deltaTime)
 end)
 
 SaveRun()
-KeybindsConnect = UserInputService.InputBegan:Connect(function(Key,Typing)
+KeybindsConnect = UserInputService.InputBegan:Connect(function(Key, Typing)
     if not Typing then
         Key = Key.KeyCode.Name
         if Key == Keybinds.UserPause then
@@ -553,11 +621,22 @@ KeybindsConnect = UserInputService.InputBegan:Connect(function(Key,Typing)
         elseif Key == Keybinds.SaveRun then
             SaveRun()
         elseif Key == Keybinds.GoFrameForward then
-            FrameForward()
+            FrameForwardStart()
         elseif Key == Keybinds.GoFrameBack then
-            FrameBack()
+            FrameBackStart()
         elseif Key == Keybinds.ResetToNormal then
             ResetToNormal()
+        end
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(Key, Typing)
+    if not Typing then
+        Key = Key.KeyCode.Name
+        if Key == Keybinds.GoFrameBack then
+            FrameBackStop()
+        elseif Key == Keybinds.GoFrameForward then
+            FrameForwardStop()
         end
     end
 end)
@@ -570,6 +649,3 @@ Death = LocalPlayer.Character.Humanoid.Died:Connect(function()
         BackSavestate()
     end
 end)
-
-
-
