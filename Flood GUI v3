@@ -408,6 +408,4 @@ else
 end
 
 --resets character to fix lag bug wow
-char.Parent = game.ReplicatedStorage
-task.wait(.1)
-char.Parent = game.Workspace
+--removed for now

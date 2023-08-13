@@ -230,13 +230,11 @@ local function hookAnimation()
         SenvAnimation = getsenv(LocalPlayer.Character:WaitForChild("Animate"))
         task.wait()
     until SenvAnimation.playAnimation ~= nil
-    PlayAnimation = SenvAnimation.playAnimation
+    PlayAnimation = clonefunc(SenvAnimation.playAnimation)
     function SenvAnimation.playAnimation(a,b)
         if not Pause then
             AnimationState = {a,b}
-            if LocalPlayer.Character.Humanoid then
-                PlayAnimation(AnimationState[1],AnimationState[2], LocalPlayer.Character.Humanoid)
-            end
+            PlayAnimation(AnimationState[1],AnimationState[2], LocalPlayer.Character.Humanoid)
         end
     end
     if PlayAnimation == nil then
