@@ -582,6 +582,7 @@ RecordLoop = RunService.Heartbeat:Connect(function(deltaTime)
         timer = tick()
     end
     UpdSavestatesGUI()
+    UpdFramesGUI()
 end)
 
 SaveRun()
