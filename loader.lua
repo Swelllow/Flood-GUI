@@ -8,8 +8,12 @@ end
 function import(webpath)
     local filepath = "Flood-GUI"..webpath
     local fullurl = (FloodGUIRepo..webpath):gsub(" ", "%%20")
-    if not isfile(filepath) then
-        writefile(filepath, game:HttpGet(fullurl))
+    if isfile(filepath) then
+        local newdata = game:HttpGet(fullurl)
+        local olddata = readfile(filepath)
+        if newdata ~= olddata then
+            writefile(filepath, game:HttpGet(fullurl))
+        end
         return true
     end
     return false

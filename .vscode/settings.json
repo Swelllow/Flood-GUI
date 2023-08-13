@@ -4,6 +4,7 @@
         "makefolder",
         "isfile",
         "writefile",
-        "loadfile"
+        "loadfile",
+        "readfile"
     ]
 }
