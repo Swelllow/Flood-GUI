@@ -15,6 +15,9 @@ function import(webpath)
             writefile(filepath, game:HttpGet(fullurl))
         end
         return true
+    else
+	writefile(filepath, game:HttpGet(fullurl))
+	return true
     end
     return false
 end
