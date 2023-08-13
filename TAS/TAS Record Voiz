@@ -477,28 +477,20 @@ local function GoBackFrame()
     end
 end
 
-local function FrameBackLoop()
-    while isFrameBackHeld do
-        GoBackFrame()
-        wait(.1) 
-    end
-end
-
 local function FrameBackStart()
-    if not isFrameBackHeld then
-        isFrameBackHeld = true
-        FrameBackLoopThread = task.spawn(FrameBackLoop)
+    isFrameBackHeld = true
+    while task.wait(.1) and isFrameBackHeld do
+        GoBackFrame()
     end
 end
 
-local function FrameBackStop()
-    if isFrameBackHeld then
-        isFrameBackHeld = false
-        if FrameBackLoopThread then
-            FrameBackLoopThread:cancel()
-        end
+local function FrameForwardStart()
+    isFrameForwardHeld = true
+    while task.wait(.1) and isFrameForwardHeld do
+        GoForwardFrame()
     end
 end
+
 -- end of frame back
 
 local function SaveRun()
@@ -622,9 +614,9 @@ UserInputService.InputEnded:Connect(function(Key, Typing)
     if not Typing then
         Key = Key.KeyCode.Name
         if Key == Keybinds.GoFrameBack then
-            FrameBackStop()
+            isFrameBackHeld = false
         elseif Key == Keybinds.GoFrameForward then
-            FrameForwardStop()
+            isFrameForwardHeld = false
         end
     end
 end)
