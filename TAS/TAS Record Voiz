@@ -23,7 +23,7 @@ repeat
     RealRunID = math.random(1, 999)
 until RealRunID ~= 666 and RealRunID ~= 14
 local RunID = " "..tostring(RealRunID)
-Alert("Started!!!!!"..RunID, Color3.new(0.717647, 0, 1))
+Alert("Activated neutron bomb!!!!"..RunID, Color3.new(0.717647, 0, 1))
 local Key = -game.ReplicatedStorage.Remote.ReqPasskey:InvokeServer()
 local AnimationState = {}
 local Savestates = {}
