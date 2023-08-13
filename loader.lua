@@ -1,4 +1,4 @@
-local Branch = "main"
+local Branch = ...
 local FloodGUIRepo = "https://raw.githubusercontent.com/ImMejor35/Flood-GUI/"..Branch
 
 if not isfolder("Flood-GUI") then
