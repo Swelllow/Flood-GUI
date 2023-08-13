@@ -7,7 +7,7 @@ loadstring(game:HttpGet"https://raw.github.com/ImMejor35/Flood-GUI/main/loader.l
 
 Testing branch may fix bugs sooner but higher chance of bugs and crashes.
 ```lua
-loadstring(game:HttpGet"https://raw.github.com/ImMejor35/Flood-GUI/main/loader.lua")"testing"
+loadstring(game:HttpGet"https://raw.github.com/ImMejor35/Flood-GUI/testing/loader.lua")"testing"
 ```
 
 
