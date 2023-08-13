@@ -1,25 +1,18 @@
 local Branch = ...
 local FloodGUIRepo = "https://raw.githubusercontent.com/ImMejor35/Flood-GUI/"..Branch
+
 if not isfolder("Flood-GUI") then
-	makefolder("Flood-GUI")
+    makefolder("Flood-GUI")
 elseif not isfolder("Flood-GUI/TAS") then
-	makefolder("Flood-GUI/TAS")
+    makefolder("Flood-GUI/TAS")
+elseif not isfolder("Flood-GUI/TAS FILES") then
+    makefolder("Flood-GUI/TAS FILES")
 end
 function import(webpath)
     local filepath = "Flood-GUI"..webpath
     local fullurl = (FloodGUIRepo..webpath):gsub(" ", "%%20")
-    if isfile(filepath) then
-        local newdata = game:HttpGet(fullurl)
-        local olddata = readfile(filepath)
-        if newdata ~= olddata then
-            writefile(filepath, game:HttpGet(fullurl))
-        end
-        return true
-    else
 	writefile(filepath, game:HttpGet(fullurl))
-	return true
-    end
-    return false
+    return true
 end
 
 local startimport = tick()
