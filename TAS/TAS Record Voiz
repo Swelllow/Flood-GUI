@@ -642,10 +642,11 @@ UserInputService.InputEnded:Connect(function(Key, Typing)
 end)
 
 Death = LocalPlayer.Character.Humanoid.Died:Connect(function()
-    if Pause == false and UserPause then
+    task.wait(.1)
+    if not Pause then
         UserPause()
-        LocalPlayer.CharacterAdded:wait()
-        task.wait(.1)
-        BackSavestate()
     end
+    LocalPlayer.CharacterAdded:wait()
+    task.wait(.1)
+    BackSavestate()
 end)
