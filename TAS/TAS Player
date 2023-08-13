@@ -1,3 +1,4 @@
+print("Diffrent player v2")
 if Legit == nil then
     Legit = false
 end
@@ -47,7 +48,6 @@ local RS = game:GetService('RunService')
 local CLMAIN = getsenv(LP.PlayerScripts.CL_MAIN_GameScript)
 local oldalert
 oldalert = hookfunction(CLMAIN.newAlert, function(...)
-    warn("Alert function fired with args:", ...)
     return oldalert(...)
 end)
 if not getrenv().alreadystarted then
@@ -57,9 +57,11 @@ else
     CLMAIN.newAlert("TAS Player ready for next map.", Color3.new(0,1,.5))
 end
 local Animate = getsenv(LP.Character.Animate)
-local Map = Multi:WaitForChild('NewMap')
+local Map = Multi:WaitForChild('NewMap', 9e6)
 local mapName = Map:WaitForChild('Settings'):GetAttribute("MapName")
-local TAS = game:GetService("HttpService"):JSONDecode(readfile("Flood-GUI/TAS FILES/" .. mapName .. ".json"))
+local path = readfile("Flood-GUI/TAS FILES/" .. mapName .. ".json")
+local TAS = game:GetService("HttpService"):JSONDecode(path)
+print(#path)
 if not TAS then
     CLMAIN.newAlert("TAS file for "..mapName.." is not in workspace folder!", Color3.new(1,0,0))
     LP.Character.Humanoid.Health = 0
@@ -110,7 +112,7 @@ game:GetService("ReplicatedStorage").Remote.StartClientMapTimer.OnClientEvent:Wa
 local TimeStart = tick()
 CLMAIN.newAlert('TAS Running..', Color3.fromRGB(255, 149, 5))
 PlayAnim = Animate.playAnimation
-Animate.playAnimation = function() end
+Animate.playAnimation = function()end
 
 for _, v in next, Map:GetDescendants() do
     if v.Name == 'ButtonIcon' then
@@ -146,19 +148,25 @@ end
 
 local function badCheck(Thing) --  NOT walljump or NOT AIRTANK or explodingbutton hitbox :check:
     local Parent = Thing.Parent
-    if Parent then
-        return not (Thing:FindFirstChild("_Wall") or Parent.Name ~= "AirTank" or (Thing.Name == "Part" and isRandomString(Parent.Name)))
+    if not Thing:FindFirstChild("_Wall") then
+        if Parent and not (Thing.Name == "Part" and isRandomString(Parent.Name)) then
+            if Parent.Name == "AirTank" then
+                return true
+            end
+            return true
+        end
+        return true
     end
-    return not Thing:FindFirstChild("_Wall") or Thing.Name == "Part"
+    return false
 end
 local walljumpfix
 walljumpfix = LP.Character.HumanoidRootPart.Touched:Connect(function(Thing)
     if badCheck(Thing) then
         toggleTouch(true)
-        print("Touched:", Thing:GetFullName())
     elseif Thing.Name == "RopeStart" then
         toggleTouch(true)
-        firetouchinterest(Thing, BoundingBox, 0)
+    else
+        print("Didn't Touch:", Thing:GetFullName())
     end
 end)
 
@@ -168,13 +176,12 @@ walljumpfix2 = LP.Character.HumanoidRootPart.TouchEnded:Connect(function(Thing)
         toggleTouch(false)
     elseif Thing.Name == "RopeStart" then
         toggleTouch(false)
-        firetouchinterest(Thing, BoundingBox, 1)
     end
 end)
 
 local function activateAnimation(CurrentAnimation)
-    if CurrentAnimation and CurrentAnimation[1] then 
-        PlayAnim(CurrentAnimation[1],CurrentAnimation[2],LP.Character.Humanoid)
+    if CurrentAnimation and CurrentAnimation[1] and CurrentAnimation[2] and LP.Character and LP.Character.Humanoid then
+        PlayAnim(CurrentAnimation[1],CurrentAnimation[2], LP.Character.Humanoid)
         if CurrentAnimation[1] == "walk" then
             Animate.setAnimationSpeed(.76) 
         elseif CurrentAnimation[1] == "slide" then
@@ -205,7 +212,7 @@ end
 Loop = RS.Heartbeat:Connect(function(DeltaTime)
     local NewFrame = #TAS
     local Divider = OldFrame + 60
-    if Divider < NewFrame then
+    if Divider < #TAS then
         NewFrame = Divider
     end
     for i = OldFrame, NewFrame do
@@ -218,12 +225,14 @@ Loop = RS.Heartbeat:Connect(function(DeltaTime)
             Death:Disconnect()
             Loop:Disconnect()
             Animate.playAnimation = PlayAnim
+            if LP.Character and LP.Character.Humanoid then
+                Animate.playAnimation("idle", 0.1, LP.Character.Humanoid)
+            end
             walljumpfix:Disconnect()
             walljumpfix2:Disconnect()
             toggleTouch(true)
             if Legit then
                 RootPart.RootJoint.Enabled = true
-                LP.Character.Humanoid.Health = 0
             end
         elseif (tick() - TimeStart) >= CurrentInfo.time then
             OldFrame = i

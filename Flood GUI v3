@@ -13,7 +13,9 @@ local script = require(game.ReplicatedStorage.SharedModules.FE2Library)
 for i,v in pairs(script.getOfficialMapData()) do
 	table.insert(maps,v.mapName)
 end
-local highlights = game:GetService("Players").LocalPlayer.PlayerGui.MenuGui.Goals.Window.Content.Pages.Highlights.Maps
+local LocalPlayer = game:GetService("Players").LocalPlayer
+
+local highlights = LocalPlayer.PlayerGui.MenuGui.Goals.Window.Content.Pages.Highlights.Maps
 getgenv().whatthefuckisthisyoumayaskitisaverylongvariblename = {}
 for i,v in pairs(highlights:GetChildren()) do
     if v.Name == "HighlightFrame" then
@@ -27,7 +29,7 @@ for i,v in pairs(highlights:GetChildren()) do
 end
 wait = task.wait
 
-local clmain = getsenv( game.Players.LocalPlayer.PlayerScripts["CL_MAIN_GameScript"] )
+local clmain = getsenv( LocalPlayer.PlayerScripts["CL_MAIN_GameScript"] )
 local LatestBuild = 57.11
 local CurrentBuild = tonumber(game:GetService("ReplicatedStorage").Config:GetAttribute("BuildVersion"))
 if LatestBuild < CurrentBuild then
@@ -71,9 +73,9 @@ local function minfile(file)
     return HttpService:JSONEncode(minTasFile)
 end
 -- ending line
-local char = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:wait()
+local char = LocalPlayer.Character or (LocalPlayer.CharacterAdded:wait() and LocalPlayer.Character)
 local bb = game:service'VirtualUser'
-game:service'Players'.LocalPlayer.Idled:connect(function()
+LocalPlayer.Idled:connect(function()
 	bb:CaptureController()
 	bb:ClickButton2(Vector2.new())
 end)
@@ -86,7 +88,7 @@ for i,v in ipairs(getnilinstances()) do
 end
 
 getgenv().oof = false
-local votemap = game.Players.LocalPlayer.PlayerGui.GameGui.VoteMap
+local votemap = LocalPlayer.PlayerGui.GameGui.VoteMap
 local key = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
 function vote()
 	wait(1)
@@ -97,7 +99,7 @@ function vote()
 end
 game.Players.PlayerAdded:Connect(function()
 	if getgenv().autoleave == true then
-		game.Players.LocalPlayer:Kick("Auto-Leave is enabled. So you were kicked because a player joined.")	
+		LocalPlayer:Kick("Auto-Leave is enabled. So you were kicked because a player joined.")	
 	end
 end)
 votemap.Changed:Connect(function(change)
@@ -110,7 +112,7 @@ votemap.Changed:Connect(function(change)
 	end
 end)
 print("Loaded!")
-local lp = game.Players.LocalPlayer
+local lp = LocalPlayer
 local TweenService = game:GetService("TweenService")
 local TS = game:GetService("TweenService")
 local function Time(targetpos)
@@ -220,8 +222,8 @@ local function trackXP()
     end
 end
 
-spawn(function()
-    while wait(1) do
+task.spawn(function()
+    while task.wait(1) do
         trackCoins()
         trackGems()
         trackXP()
@@ -232,15 +234,14 @@ local startTime = os.time()
 
 local timerLabel = statTracker:NewLabel("Timer: 00:00:00")
 
-spawn(function()
-    while true do
+task.spawn(function()
+    while task.wait(1) do
         local currentTime = os.time() - startTime
         local hours = math.floor(currentTime / 3600)
         local minutes = math.floor((currentTime % 3600) / 60)
         local seconds = currentTime % 60
         local timeString = string.format("%02d:%02d:%02d", hours, minutes, seconds)
         timerLabel:UpdateLabel("Timer: " .. timeString)
-        wait(1)
     end
 end)
 
@@ -263,32 +264,26 @@ other:NewButton("Copy Lexon Hub Invite", "Copies Lexon-Hub invite to clipboard!"
 end)
 getgenv().ui = true
 loc:NewSlider("Walkspeed", "Change your walkspeed!", 100, 20, function(t)
-	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = t
+	LocalPlayer.Character.Humanoid.WalkSpeed = t
 end)
 loc:NewSlider("JumpPower", "Change your jumppower!", 200, 50, function(t)
-	game.Players.LocalPlayer.Character.Humanoid.JumpPower = t
+	LocalPlayer.Character.Humanoid.JumpPower = t
 end)
 
-local save = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir
+local save = getsenv(LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir
 getgenv().godmode = false
-spawn(function()
-	while wait(.04) do
-		if getgenv().godmode == true then
-			getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = function()
-				return 0
-			end
-		else
-			getsenv(game:GetService("Players").LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = save
-		end
-	end
-end)
+
 blatant:NewKeybind("Infinite Air", "Infinite Air/God Mode", Enum.KeyCode.R, function()
 	if getgenv().godmode ~= false then
 		clmain.newAlert("Infinite Air Disabled!", Color3.fromRGB(255, 0, 0))
 		getgenv().godmode = false
+		getsenv(LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = save
 	else
 		clmain.newAlert("Infinite Air Enabled!", Color3.fromRGB(0, 255, 0))
 		getgenv().godmode = true
+		getsenv(LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = function()
+			return 0
+		end
 	end
 end)
 
@@ -356,8 +351,8 @@ auto:NewButton("Download TAS files", "Downloads Required TAS files!", function()
 		else
 			local s, r = pcall(function()
 				local tas = game:HttpGet("https://raw.githubusercontent.com/ImMejor35/Flood-GUI/"..Branch.."/TAS%20FILES/"..map..".json")
-				if not string.find(tas, "CFrame") then error('file not exist') end
-				writefile("Flood-GUI/TAS FILES"..v..".json", tas,true) -- minfile(tas) removed
+				if not string.find(tas, "CFrame") then error(v..' file not exist') end
+				writefile("Flood-GUI/TAS FILES/"..v..".json", tas,true) -- minfile(tas) removed
 			end)
 			if s then
 				clmain.newAlert("Downloaded "..v.." TAS file succesfully!",Color3.fromRGB(0,255,0))
@@ -371,40 +366,11 @@ auto:NewButton("Download TAS files", "Downloads Required TAS files!", function()
 	clmain.newAlert("Finished Downloading TAS files")
 end)
 tas:NewButton("Rejoin", "Rejoin game so you can create another TAS", function()
-	game:GetService("TeleportService"):Teleport(game:GetService("Players").LocalPlayer)
+	game:GetService("TeleportService"):Teleport(LocalPlayer)
 end)
 
 tas:NewButton("Create-TAS", "Create a TAS, Press then enter lift.", function()
-	game.Workspace.DescendantAdded:Connect(function(child)
-		if child.ClassName == "Sound" then
-			child:Destroy()
-		end
-	end)
-	local Fix = coroutine.wrap(function()
-		loadfile("Flood-GUI/TAS/TAS Record Voiz")()
-	end)
-        local ButtonStuff = coroutine.wrap(function()
-            for i,v in pairs(game.Workspace:WaitForChild("Map"):GetDescendants()) do
-                if v.ClassName == "Part" and v.Size == Vector3.new(3,1,3) then 
-                    v.Size = v.Size * 1.8
-                    v.Color = Color3.fromRGB(255,140,0)
-                    local selectbox = Instance.new("SelectionBox", v)
-                    selectbox.Adornee = v
-                    selectbox.Color3 = Color3.fromRGB(255,140,0)
-                    getgenv().delayy = false
-                    v.Touched:Connect(function(part)
-                        if delayy == false then
-                            clmain.newAlert("Button Touched!",Color3.fromRGB(255,140,0))
-                            delayy = true
-                            wait(1)
-                            delayy = false
-                        end
-                    end)
-                end
-            end
-        end)
-	Fix()
-	ButtonStuff()
+	loadfile("Flood-GUI/TAS/TAS Record Voiz")()
 end)
 
 local oldindex
@@ -442,4 +408,6 @@ else
 end
 
 --resets character to fix lag bug wow
-game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Health = 0
+char.Parent = game.ReplicatedStorage
+task.wait(.1)
+char.Parent = game.Workspace

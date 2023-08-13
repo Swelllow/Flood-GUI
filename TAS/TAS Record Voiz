@@ -1,10 +1,13 @@
 local Keybinds = {
-    UserPause = "CapsLock",
     AddSavestate = "One",
     RemoveSavestate = "Two",
     BackSavestate = "Three",
+    GoFrameBack = "Four",
+    GoFrameForward = "Five",
+    SaveRun = "Six",
+    UserPause = "CapsLock",
     CollisionToggler = "C",
-    SaveRun = "Six"
+    ResetToNormal = "Delete"
 }
 
 
@@ -15,7 +18,8 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local LocalPlayer = game.Players.LocalPlayer
 local Alert = getsenv(game.Players.LocalPlayer.PlayerScripts.CL_MAIN_GameScript).newAlert
-Alert("Started!!!!!1", Color3.new(0.717647, 0, 1))
+local RunID = " "..tostring(math.random(1, 999))
+Alert("Started!!!!!"..RunID, Color3.new(0.717647, 0, 1))
 local Key = -game.ReplicatedStorage.Remote.ReqPasskey:InvokeServer()
 local AnimationState = {}
 local Savestates = {}
@@ -30,6 +34,7 @@ local TimeText
 local SaveStatesCount
 local CapLockPause
 local MapName
+local AnimationHookConnection
 local function getCurrentCFrame()
     local RealCframe
     if AnimationState[1] and AnimationState[1]:lower():match("swim") then
@@ -91,14 +96,19 @@ local function SetPrimaryPart() -- new spawn finder by "_tomato." on discord
     repeat task.wait() until Spawn
     Map.PrimaryPart = Spawn
 end
+local RealHUD
+local HUD
 local function SetUpGui()
-    local HUD = LocalPlayer.PlayerGui.GameGui.HUD
+    RealHUD = LocalPlayer.PlayerGui.GameGui.HUD
+    HUD = RealHUD:Clone()
+    HUD.Parent = RealHUD.Parent
+    RealHUD.Parent = game.ReplicatedStorage
     local GameStats = HUD.Main.GameStats
     GameStats.Size = UDim2.new(1, 0, 1, 0)
     HUD.Main.MenuButtons.Visible = false
     GameStats.Stats.Visible = false
     LocalPlayer.PlayerGui.GameGui.Challenges.Visible = false
-
+    
     TimeText = Instance.new("TextLabel", GameStats)
     TimeText.Visible = true
     TimeText.BackgroundTransparency = 1
@@ -113,12 +123,22 @@ local function SetUpGui()
     SaveStatesCount = Instance.new("TextLabel", GameStats)
     SaveStatesCount.Visible = true
     SaveStatesCount.BackgroundTransparency = 1
-    SaveStatesCount.Size = UDim2.new(1, -220, 1, 0)
+    SaveStatesCount.Size = UDim2.new(1, -220, .75, 0)
     SaveStatesCount.Text = "Savestates 0"
     SaveStatesCount.Font = "Highway"
     SaveStatesCount.TextColor3 = Color3.new(255, 255, 255)
-    SaveStatesCount.TextSize = 35
+    SaveStatesCount.TextSize = 30
     SaveStatesCount.Name = "SavestatesCount"
+
+    FrameCount = Instance.new("TextLabel", GameStats)
+    FrameCount.Visible = true
+    FrameCount.BackgroundTransparency = 1
+    FrameCount.Size = UDim2.new(1, -220, 1.25, 0)
+    FrameCount.Text = "Frames 0"
+    FrameCount.Font = "Highway"
+    FrameCount.TextColor3 = Color3.new(255, 255, 255)
+    FrameCount.TextSize = 30
+    FrameCount.Name = "FrameCount"
 
     CapLockPause = Instance.new("TextLabel", GameStats)
     CapLockPause.Visible = true
@@ -130,7 +150,7 @@ local function SetUpGui()
     CapLockPause.TextSize = 18
     CapLockPause.Name = "CapLockPause"
 
-    local SaveStateInfo = Instance.new("TextLabel", GameStats)
+    SaveStateInfo = Instance.new("TextLabel", GameStats)
     SaveStateInfo.Visible = true
     SaveStateInfo.BackgroundTransparency = 1
     SaveStateInfo.Size = UDim2.new(1, 160, 0.75, 0)
@@ -140,7 +160,7 @@ local function SetUpGui()
     SaveStateInfo.TextSize = 18
     SaveStateInfo.Name = "SaveStateInfo"
 
-    local RemoveSaveStateInfo = Instance.new("TextLabel", GameStats)
+    RemoveSaveStateInfo = Instance.new("TextLabel", GameStats)
     RemoveSaveStateInfo.Visible = true
     RemoveSaveStateInfo.BackgroundTransparency = 1
     RemoveSaveStateInfo.Size = UDim2.new(1, 188, 1.25, 0)
@@ -150,7 +170,7 @@ local function SetUpGui()
     RemoveSaveStateInfo.TextSize = 18
     RemoveSaveStateInfo.Name = "RemoveSaveStateInfo"
 
-    local GoBackSavestate = Instance.new("TextLabel", GameStats)
+    GoBackSavestate = Instance.new("TextLabel", GameStats)
     GoBackSavestate.Visible = true
     GoBackSavestate.BackgroundTransparency = 1
     GoBackSavestate.Size = UDim2.new(1, 205, 1.75, 0)
@@ -160,27 +180,27 @@ local function SetUpGui()
     GoBackSavestate.TextSize = 18
     GoBackSavestate.Name = "GoBackSavestate"
 
-    local GoFrameBack = Instance.new("TextLabel", GameStats)
+    GoFrameBack = Instance.new("TextLabel", GameStats)
     GoFrameBack.Visible = true
     GoFrameBack.BackgroundTransparency = 1
     GoFrameBack.Size = UDim2.new(1, 578, 0.25, 0)
-    GoFrameBack.Text = "Four : Go Back a Frame (NOT WORKING)"
+    GoFrameBack.Text = "Four : Go Back a Frame"
     GoFrameBack.Font = "Highway"
     GoFrameBack.TextColor3 = Color3.new(255, 255, 255)
     GoFrameBack.TextSize = 18
     GoFrameBack.Name = "GoFrameBack"
 
-    local GoFrameForward = Instance.new("TextLabel", GameStats)
+    GoFrameForward = Instance.new("TextLabel", GameStats)
     GoFrameForward.Visible = true
     GoFrameForward.BackgroundTransparency = 1
     GoFrameForward.Size = UDim2.new(1, 600, 0.75, 0)
-    GoFrameForward.Text = "Five : Go a Frame Forward (NOT WORKING)"
+    GoFrameForward.Text = "Five : Go a Frame Forward"
     GoFrameForward.Font = "Highway"
     GoFrameForward.TextColor3 = Color3.new(255, 255, 255)
     GoFrameForward.TextSize = 18
     GoFrameForward.Name = "GoFrameForward"
 
-    local SaveRun = Instance.new("TextLabel", GameStats)
+    SaveRun = Instance.new("TextLabel", GameStats)
     SaveRun.Visible = true
     SaveRun.BackgroundTransparency = 1
     SaveRun.Size = UDim2.new(1, 509, 1.25, 0)
@@ -190,7 +210,7 @@ local function SetUpGui()
     SaveRun.TextSize = 18
     SaveRun.Name = "SaveRun"
 
-    local CanCollideToggle = Instance.new("TextLabel", GameStats)
+    CanCollideToggle = Instance.new("TextLabel", GameStats)
     CanCollideToggle.Visible = true
     CanCollideToggle.BackgroundTransparency = 1
     CanCollideToggle.Size = UDim2.new(1, 560, 1.75, 0)
@@ -202,6 +222,7 @@ local function SetUpGui()
 end
 
 local function hookAnimation()
+    local connection
     repeat
         SenvAnimation = getsenv(LocalPlayer.Character:WaitForChild("Animate"))
         task.wait()
@@ -213,21 +234,27 @@ local function hookAnimation()
             PlayAnimation(AnimationState[1],AnimationState[2], LocalPlayer.Character.Humanoid)
         end
     end
-    task.wait()
     if PlayAnimation == nil then
-        print("the animation script is f*cked")
+        print("the animation script is f*cked"..RunID)
     end
-    print("Updated animation hook values")
+    print("Updated animation hook values"..RunID)
+    connection = LocalPlayer.CharacterAdded:Connect(function(char)
+        local animate = char:WaitForChild("Animate")
+        if animate.Enabled == true then
+            hookAnimation()
+        end
+    end)
+    return connection
 end
 
+local Map
 local function SetUpMap()
-    local Map
     local CurrentInfo
     function game.ReplicatedStorage.Remote.ReqCharVars.OnClientInvoke() return {} end
     function game.ReplicatedStorage.Remote.FetchPos.OnClientInvoke() return CFrame.new() end
     SetPrimaryPart()
     MapName = game.Workspace.Multiplayer.Map.Settings:GetAttribute("MapName")
-    print(MapName)
+    print(MapName..RunID)
     Map = game.Workspace.Multiplayer.Map:Clone()
     Map.Parent = game.Workspace
     --Map:MoveTo(Vector3.new(0,1000,0))
@@ -260,7 +287,7 @@ local function SetUpMap()
     TimePauseHolder = tick()
     TimeStart = tick()
     hookAnimation()
-    LocalPlayer.CharacterAdded:Connect(function(char)
+    AnimationHookConnection = LocalPlayer.CharacterAdded:Connect(function(char)
         local animate = char:WaitForChild("Animate")
         if animate.Enabled == true then
             hookAnimation()
@@ -281,8 +308,17 @@ local function SetUpMap()
     end
     for _, v in ipairs(Map:GetDescendants()) do
         if isRandomString(v.Name) then 
-            local Hitbox = v:GetChildren()[2]
-            if Hitbox and isRandomString(Hitbox.Name) then
+            local Children = (function()
+                local parts = {}
+                for _, huh in ipairs(v:GetChildren()) do
+                    if huh:IsA("BasePart") then
+                        table.insert(parts, huh)
+                    end
+                end
+                return parts
+            end)()
+            local Hitbox = Children[2]
+            if Hitbox and Hitbox:IsA("BasePart") and isRandomString(Hitbox.Name) then
                 local selectbox = Instance.new("SelectionBox", Hitbox)
                 Hitbox.Color = Color3.fromRGB(255,140,0)
 
@@ -301,6 +337,8 @@ local function SetUpMap()
             end
         end
     end
+    game.Workspace.Multiplayer.Map:Destroy()
+    print("Finished setting up map"..RunID)
 end
 local function SetTimeGui()
     local TimePlayed = tick() - TimeStart - TimePaused
@@ -355,6 +393,13 @@ end
 local function UpdSavestatesGUI()
     SaveStatesCount.Text = "Savestates "..tostring(#Savestates)
 end
+local function UpdFramesGUI()
+    local count = 0
+    for i = 1, #Savestates do
+        count = count + #Savestates[i]
+    end
+    FrameCount.Text = "Frames "..tostring(count)
+end
 local function AddSavestate()
     Alert("Added Savestate",Color3.fromRGB(0, 255, 0),1)
     table.insert(Savestates,PlayerInfo)
@@ -378,6 +423,96 @@ local function CollisionToggler()
         MouseTarget.Transparency = 0.8
     end
 end
+
+-- beginning of fram forward
+local isFrameForwardHeld = false
+local FrameForwardLoopThread
+
+local function GoForwardFrame()
+    if Pause then
+        UserPause()
+        for i = 1, 2 do
+            RunService.Heartbeat:Wait()
+        end
+        UserPause()
+    end
+end
+
+local function FrameForwardLoop()
+    while isFrameForwardHeld do
+        GoForwardFrame()
+        wait(.1) 
+    end
+end
+
+local function FrameForwardStart()
+    if not isFrameForwardHeld then
+        isFrameForwardHeld = true
+        FrameForwardLoopThread = task.spawn(FrameForwardLoop)
+    end
+end
+
+local function FrameForwardStop()
+    if isFrameForwardHeld then
+        isFrameForwardHeld = false
+        if FrameForwardLoopThread then
+            FrameForwardLoopThread:cancel()
+        end
+    end
+end
+--End of Frame forward
+
+-- beginning of frame back
+local isFrameBackHeld = false
+local FrameBackLoopThread
+
+local function GoBackFrame()
+    if LocalPlayer.Character then
+        local InfoState = PlayerInfo[#PlayerInfo - 1]
+        if not InfoState then
+            InfoState = Savestates[#Savestates][#Savestates[#Savestates] - 1]
+        elseif not Pause then
+            UserPause()
+        end
+        LocalPlayer.Character.HumanoidRootPart.CFrame = InfoState.CFrame + Vector3.new(Xoff, Yoff - 1000, Zoff)
+        LocalPlayer.Character.HumanoidRootPart.Velocity = InfoState.Velocity
+        game.Workspace.CurrentCamera.CFrame = InfoState.CameraCFrame
+        TimePauseHolder = tick()
+        TimeStart = tick() - InfoState.Time
+        TimePaused = 0
+        PlayAnimation(InfoState.Animation[1], InfoState.Animation[2], LocalPlayer.Character.Humanoid)
+        if InfoState.Animation[1] == "walk" then
+            SenvAnimation.setAnimationSpeed(.76)
+        end
+        SetTimeGui()
+        PlayerInfo[#PlayerInfo] = nil
+    end
+end
+
+local function FrameBackLoop()
+    while isFrameBackHeld do
+        GoBackFrame()
+        wait(.1) 
+    end
+end
+
+local function FrameBackStart()
+    if not isFrameBackHeld then
+        isFrameBackHeld = true
+        FrameBackLoopThread = task.spawn(FrameBackLoop)
+    end
+end
+
+local function FrameBackStop()
+    if isFrameBackHeld then
+        isFrameBackHeld = false
+        if FrameBackLoopThread then
+            FrameBackLoopThread:cancel()
+        end
+    end
+end
+-- end of frame back
+
 local function SaveRun()
     local AllPlayerInfo = {}
     for i = 1, #Savestates do
@@ -440,7 +575,22 @@ if not isfolder("TAS") then
 end
 
 local timer = tick()
-RunService.Heartbeat:Connect(function(deltaTime)
+local RecordLoop
+local KeybindsConnect
+local Death
+local function ResetToNormal()
+    AnimationHookConnection:Disconnect()
+    hookAnimation = function()end
+    RecordLoop:Disconnect()
+    KeybindsConnect:Disconnect()
+    Death:Disconnect()
+    Map:Destroy()
+    RealHUD.Parent = HUD.Parent
+    HUD:Destroy()
+    LocalPlayer.Character.Humanoid.Health = 0
+    print("Reset to normal"..RunID)
+end
+RecordLoop = RunService.Heartbeat:Connect(function(deltaTime)
     if not Pause then
         SetTimeGui()
         table.insert(PlayerInfo, ReturnPlayerInfo())
@@ -448,12 +598,14 @@ RunService.Heartbeat:Connect(function(deltaTime)
         	AddSavestate()
         	timer = tick()
         end
+    else
+        timer = tick()
     end
     UpdSavestatesGUI()
 end)
 
 SaveRun()
-UserInputService.InputBegan:Connect(function(Key,Typing)
+KeybindsConnect = UserInputService.InputBegan:Connect(function(Key, Typing)
     if not Typing then
         Key = Key.KeyCode.Name
         if Key == Keybinds.UserPause then
@@ -468,15 +620,32 @@ UserInputService.InputBegan:Connect(function(Key,Typing)
             CollisionToggler()
         elseif Key == Keybinds.SaveRun then
             SaveRun()
+        elseif Key == Keybinds.GoFrameForward then
+            FrameForwardStart()
+        elseif Key == Keybinds.GoFrameBack then
+            FrameBackStart()
+        elseif Key == Keybinds.ResetToNormal then
+            ResetToNormal()
         end
     end
 end)
 
+UserInputService.InputEnded:Connect(function(Key, Typing)
+    if not Typing then
+        Key = Key.KeyCode.Name
+        if Key == Keybinds.GoFrameBack then
+            FrameBackStop()
+        elseif Key == Keybinds.GoFrameForward then
+            FrameForwardStop()
+        end
+    end
+end)
 
-LocalPlayer.Character.Humanoid.Died:Connect(function()
+Death = LocalPlayer.Character.Humanoid.Died:Connect(function()
     if Pause == false and UserPause then
         UserPause()
         LocalPlayer.CharacterAdded:wait()
+        task.wait(.1)
         BackSavestate()
     end
 end)
