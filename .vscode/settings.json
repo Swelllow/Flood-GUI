@@ -5,6 +5,7 @@
         "isfile",
         "writefile",
         "loadfile",
-        "readfile"
+        "readfile",
+        "delfolder"
     ]
 }

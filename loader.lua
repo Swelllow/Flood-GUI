@@ -1,5 +1,8 @@
 local Branch = ...
 local FloodGUIRepo = "https://raw.githubusercontent.com/ImMejor35/Flood-GUI/"..Branch
+if isfolder("Flood-GUI") then
+    delfolder("Flood-GUI")
+  end
 if not isfolder("Flood-GUI") then
 	makefolder("Flood-GUI")
 elseif not isfolder("Flood-GUI/TAS") then
@@ -12,12 +15,12 @@ function import(webpath)
         local newdata = game:HttpGet(fullurl)
         local olddata = readfile(filepath)
         if newdata ~= olddata then
-            writefile(filepath, game:HttpGet(fullurl))
+            writefile(filepath, newdata)
         end
         return true
     else
-	writefile(filepath, game:HttpGet(fullurl))
-	return true
+	    writefile(filepath, game:HttpGet(fullurl))
+	    return true
     end
     return false
 end
