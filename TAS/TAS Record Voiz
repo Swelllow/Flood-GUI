@@ -18,7 +18,11 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local LocalPlayer = game.Players.LocalPlayer
 local Alert = getsenv(game.Players.LocalPlayer.PlayerScripts.CL_MAIN_GameScript).newAlert
-local RunID = " "..tostring(math.random(1, 999))
+local RealRunID
+repeat 
+    RealRunID = math.random(1, 999)
+until RealRunID ~= 666 and RealRunID ~= 14
+local RunID = " "..tostring(RealRunID)
 Alert("Started!!!!!"..RunID, Color3.new(0.717647, 0, 1))
 local Key = -game.ReplicatedStorage.Remote.ReqPasskey:InvokeServer()
 local AnimationState = {}
