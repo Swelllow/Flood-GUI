@@ -222,10 +222,6 @@ local function SetUpGui()
 end
 
 local function hookAnimation()
-    if not Pause then
-        UserPause()
-    end
-    local connection
     repeat
         SenvAnimation = getsenv(LocalPlayer.Character:WaitForChild("Animate"))
         task.wait()
@@ -241,13 +237,6 @@ local function hookAnimation()
         print("the animation script is f*cked"..RunID)
     end
     print("Updated animation hook values"..RunID)
-    connection = LocalPlayer.CharacterAdded:Connect(function(char)
-        local animate = char:WaitForChild("Animate")
-        if animate.Enabled == true then
-            hookAnimation()
-        end
-    end)
-    return connection
 end
 
 local Map
@@ -641,7 +630,6 @@ UserInputService.InputEnded:Connect(function(Key, Typing)
 end)
 
 Death = LocalPlayer.Character.Humanoid.Died:Connect(function()
-    PlayAnimation = nil
     task.wait(.1)
     if not Pause then
         UserPause()
