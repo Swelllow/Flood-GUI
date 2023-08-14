@@ -7,7 +7,8 @@ local Keybinds = {
     SaveRun = "Six",
     UserPause = "CapsLock",
     CollisionToggler = "C",
-    ResetToNormal = "Delete"
+    ResetToNormal = "Delete",
+    ViewTAS = "Zero"
 }
 
 
@@ -268,7 +269,9 @@ local function SetUpGui()
     local CanCollideToggle = Instance.new("TextLabel")
     local UITextSizeConstraint_11 = Instance.new("UITextSizeConstraint")
     local Resettonormal = Instance.new("TextLabel")
+    local Viewtas = Instance.new("TextLabel")
     local UITextSizeConstraint_12 = Instance.new("UITextSizeConstraint")
+    local UITextSizeConstraint_69 = Instance.new("UITextSizeConstraint")
     local UIAspectRatioConstraint = Instance.new("UIAspectRatioConstraint")
     local AimLock = Instance.new("TextButton")
     local Icon_3 = Instance.new("ImageLabel")
@@ -1317,6 +1320,7 @@ local function SetUpGui()
     UITextSizeConstraint_3.Parent = FrameCount
     UITextSizeConstraint_3.MaxTextSize = 22
     
+    setscriptable(TextButton, "Text", true)
     TextButton.Parent = GameStats
     TextButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     TextButton.BackgroundTransparency = 1.000
@@ -1359,11 +1363,12 @@ local function SetUpGui()
     KeyBindFrame.BorderSizePixel = 0
     KeyBindFrame.LayoutOrder = 3
     KeyBindFrame.Position = UDim2.new(0.548381984, 0, -2.41520619, 0)
-    KeyBindFrame.Size = UDim2.new(-0.0219492037, 278, 3.41520572, 0)
+    KeyBindFrame.Size = UDim2.new(-0.0219492037, 278, 3.51520572, 0)
     KeyBindFrame.Visible = false
     
     UIListLayout_4.Parent = KeyBindFrame
     UIListLayout_4.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout_4.Padding = UDim.new(0, -4)
     
     CapLockPause.Name = "CapLockPause"
     CapLockPause.Parent = KeyBindFrame
@@ -1470,6 +1475,21 @@ local function SetUpGui()
     UITextSizeConstraint_10.Parent = SaveRun
     UITextSizeConstraint_10.MaxTextSize = 18
     
+    Viewtas.Name = "Viewtas"
+    Viewtas.Parent = KeyBindFrame
+    Viewtas.BackgroundTransparency = 1.000
+    Viewtas.Position = UDim2.new(0, 0, 0.914980233, 0)
+    Viewtas.Size = UDim2.new(1, 0, 0.112999998, 0)
+    Viewtas.Font = Enum.Font.Highway
+    Viewtas.Text = "Zero: View TAS"
+    Viewtas.TextColor3 = Color3.fromRGB(65025, 65025, 65025)
+    Viewtas.TextScaled = true
+    Viewtas.TextSize = 18.000
+    Viewtas.TextWrapped = true
+    
+    UITextSizeConstraint_69.Parent = Viewtas
+    UITextSizeConstraint_69.MaxTextSize = 18
+
     CanCollideToggle.Name = "CanCollideToggle"
     CanCollideToggle.Parent = KeyBindFrame
     CanCollideToggle.BackgroundTransparency = 1.000
@@ -1499,7 +1519,7 @@ local function SetUpGui()
     
     UITextSizeConstraint_12.Parent = Resettonormal
     UITextSizeConstraint_12.MaxTextSize = 18
-    
+
     UIAspectRatioConstraint.Parent = KeyBindFrame
     
     AimLock.Name = "AimLock"
@@ -1591,6 +1611,7 @@ local function SetUpGui()
     UICorner_21.Parent = DropShadowHolder_2
     
     UIAspectRatioConstraint_2.Parent = Dropshadowthingy
+    UIAspectRatioConstraint_2.AspectRatio = 0.975
     
     UICorner_22.CornerRadius = UDim.new(0, 9)
     UICorner_22.Parent = Dropshadowthingy
@@ -1651,31 +1672,24 @@ local function SetUpGui()
     
     -- Scripts:
     
-    local function XNIUXI_fake_script() -- TextButton.LocalScript 
-        local script = Instance.new('LocalScript', TextButton)
+    local frame = TextButton.Parent.Parent.KeyBindFrame
+    local frame2 = TextButton.Parent.Parent.Parent.Main2.Dropshadowthingy
     
-        local frame = script.Parent.Parent.Parent.KeyBindFrame
-        local frame2 = script.Parent.Parent.Parent.Parent.Main2.Dropshadowthingy
-        
-        script.Parent.Activated:Connect(function()
-            frame.Visible = not frame.Visible
-            frame2.Visible = not frame2.Visible
-        end)
-    end
-    coroutine.wrap(XNIUXI_fake_script)()
-    local function HLRWL_fake_script() -- AimLock.LocalScript 
-        local script = Instance.new('LocalScript', AimLock)
-    
-        -- Decompiling is disabled
-    end
-    coroutine.wrap(HLRWL_fake_script)()
-    
-   print("pro")
-   local Clone = UIListLayout_5:Clone()
-   local VeryParent = UIListLayout_5.Parent
-   UIListLayout_5:Destroy()
-   task.wait()
-   Clone.Parent = VeryParent
+    TextButton.Activated:Connect(function()
+        frame.Visible = not frame.Visible
+        frame2.Visible = not frame2.Visible
+        if frame.Visible then
+            TextButton.Text = "Hide Keybinds"
+        else
+            TextButton.Text = "Show Keybinds"
+        end
+    end)
+    print("pro")
+    local Clone = UIListLayout_5:Clone()
+    local VeryParent = UIListLayout_5.Parent
+    UIListLayout_5:Destroy()
+    task.wait()
+    Clone.Parent = VeryParent
 end
 
 local function hookAnimation()
@@ -1789,6 +1803,7 @@ local function SetUpMap()
     game.Workspace.Multiplayer.Map:Destroy()
     print("Finished setting up map"..RunID)
 end
+
 local function UpdSavestatesGUI()
     SavestatesCount.Text = "Savestates "..tostring(#Savestates)
 end
@@ -1936,20 +1951,143 @@ end
 
 local function FrameBackStart()
     isFrameBackHeld = true
-    while task.wait(.1) and isFrameBackHeld do
+    GoBackFrame()
+    while task.wait(.05) and isFrameBackHeld do
         GoBackFrame()
     end
 end
 
 local function FrameForwardStart()
     isFrameForwardHeld = true
-    while task.wait(.1) and isFrameForwardHeld do
+    GoForwardFrame()
+    while task.wait(.05) and isFrameForwardHeld do
         GoForwardFrame()
     end
 end
 
 -- end of frame back
-
+local ViewingTAS = false
+local function ViewTAS(TAS)
+    ViewingTAS = true
+    local NewV = Vector3.new
+    local NewC = CFrame.new
+    local AngC = CFrame.fromEulerAnglesXYZ
+    local LP = game.Players.LocalPlayer
+    local CurrentCamera = workspace.CurrentCamera
+    local Animate = SenvAnimation
+    local function toggleSlide(newValue)
+        if newValue == true then
+            LP.Character.HumanoidRootPart.Size = Vector3.new(2, 1, 1)
+            LP.Character.BoundingBox.Size = Vector3.new(2, 1, 1)
+            LP.Character.Humanoid.HipHeight = -1.5
+        else
+            LP.Character.HumanoidRootPart.Size = Vector3.new(2, 2, 1)
+            LP.Character.BoundingBox.Size = Vector3.new(2, 2, 1)
+            LP.Character.Humanoid.HipHeight = 0
+        end
+        LP.Character.Animate.Sliding:Fire(newValue)
+    end
+    local function doSlide(delay)
+        toggleSlide(true)
+        task.wait(delay)
+        toggleSlide(false)
+    end
+    local RS = game:GetService('RunService')
+    local Spawn = Map.PrimaryPart
+    local PlayAnim = PlayAnimation
+    local BoundingBox = LP.Character.BoundingBox
+    BoundingBox.CanTouch = false
+    local function toggleTouch(bool)
+        BoundingBox.CanTouch = bool
+    end
+    local function isRandomString(str)
+        for i = 1, #str do
+            local ltr = str:sub(i, i)
+            if ltr:lower() == ltr then
+                return false
+            end     
+        end
+        return true
+    end
+    local function badCheck(Thing)
+        local Parent = Thing.Parent
+        if not Thing:FindFirstChild("_Wall") then
+            if Parent and not (Thing.Name == "Part" and isRandomString(Parent.Name)) then
+                if Parent.Name == "AirTank" then
+                    return true
+                end
+                return true
+            end
+            return true
+        end
+        return false
+    end
+    local walljumpfix
+    local walljumpfix2
+    walljumpfix = LP.Character.HumanoidRootPart.Touched:Connect(function(Thing)
+        if badCheck(Thing) then
+            toggleTouch(true)
+        elseif Thing.Name == "RopeStart" then
+            toggleTouch(true)
+        end
+    end)
+    walljumpfix2 = LP.Character.HumanoidRootPart.TouchEnded:Connect(function(Thing)
+        if badCheck(Thing) then
+            toggleTouch(false)
+        elseif Thing.Name == "RopeStart" then
+            toggleTouch(false)
+        end
+    end)
+    local function activateAnimation(CurrentAnimation)
+        if CurrentAnimation and CurrentAnimation[1] and CurrentAnimation[2] and LP.Character and LP.Character.Humanoid then
+            PlayAnim(CurrentAnimation[1],CurrentAnimation[2], LP.Character.Humanoid)
+            if CurrentAnimation[1] == "walk" then
+                Animate.setAnimationSpeed(.76) 
+            elseif CurrentAnimation[1] == "slide" then
+                task.spawn(doSlide, 0.10)
+            end
+        end
+    end
+    local Offset = Spawn.Position - NewV(0, 1000, 0)
+    local OldFrame = 3
+    local Loop
+    local Death
+    Death = LP.Character.Humanoid.Changed:Connect(function(Change)
+        if Change == "Health" and LP.Character.Humanoid.Health == 0 then
+            Death:Disconnect()
+            Loop:Disconnect()
+        end
+    end)
+    local RootPart = LP.Character.HumanoidRootPart
+    local TimeStart = tick()
+    Loop = RS.Heartbeat:Connect(function(DeltaTime)
+        local NewFrame = #TAS
+        local Divider = OldFrame + 60
+        if Divider < #TAS then
+            NewFrame = Divider
+        end
+       for i = OldFrame, NewFrame do
+            local CurrentInfo = TAS[i]
+            if (tick() - TimeStart) < CurrentInfo.time then
+                break
+            elseif i >= #TAS then
+                Death:Disconnect()
+                Loop:Disconnect()
+                walljumpfix:Disconnect()
+                walljumpfix2:Disconnect()
+                toggleTouch(true)
+                ViewingTAS = false
+            elseif (tick() - TimeStart) >= CurrentInfo.time then
+                OldFrame = i
+                local CCFrame = CurrentInfo.CCFrame
+                local CCameraCFrame = CurrentInfo.CCameraCFrame
+                RootPart.CFrame = NewC(CCFrame[1], CCFrame[2], CCFrame[3]) * AngC(CCFrame[4], CCFrame[5], CCFrame[6]) + Offset
+                CurrentCamera.CFrame = NewC(CCameraCFrame[1], CCameraCFrame[2], CCameraCFrame[3]) * AngC(CCameraCFrame[4], CCameraCFrame[5], CCameraCFrame[6]) + Offset
+                activateAnimation(CurrentInfo.AAnimation)
+            end
+        end
+    end)
+end
 local function SaveRun()
     local AllPlayerInfo = {}
     for i = 1, #Savestates do
@@ -2064,6 +2202,29 @@ KeybindsConnect = UserInputService.InputBegan:Connect(function(Key, Typing)
             FrameBackStart()
         elseif Key == Keybinds.ResetToNormal then
             ResetToNormal()
+        elseif Key == Keybinds.ViewTAS then
+            if not ViewingTAS then
+                AddSavestate()
+                local TAS = {}
+                for i = 1, #Savestates do
+                    for j = 1, #Savestates[i] do
+                        local InfoFromSavestates = Savestates[i][j]
+                        local InfoAddingToAllPlayerInfo = {}
+                        InfoAddingToAllPlayerInfo.AAnimationChanged = InfoFromSavestates.Animation[2]
+                        InfoAddingToAllPlayerInfo.VVelocity = {InfoFromSavestates.Velocity.X, InfoFromSavestates.Velocity.Y, InfoFromSavestates.Velocity.Z}
+                        InfoAddingToAllPlayerInfo.CCameraCFrame = {InfoFromSavestates.CameraCFrame.X, InfoFromSavestates.CameraCFrame.Y, InfoFromSavestates.CameraCFrame.Z, InfoFromSavestates.CameraCFrame:ToEulerAnglesXYZ()}
+                        InfoAddingToAllPlayerInfo.CCFrame = {InfoFromSavestates.CFrame.X, InfoFromSavestates.CFrame.Y, InfoFromSavestates.CFrame.Z, InfoFromSavestates.CFrame:ToEulerAnglesXYZ()}
+                        if InfoFromSavestates.Animation and InfoFromSavestates.Animation[1] then
+                            InfoAddingToAllPlayerInfo.AAnimation = {InfoFromSavestates.Animation[1], InfoFromSavestates.Animation[2]}
+                        else
+                            InfoAddingToAllPlayerInfo.AAnimation = {"walk", 0.1}
+                        end
+                        InfoAddingToAllPlayerInfo.time = InfoFromSavestates.Time
+                        table.insert(TAS, InfoAddingToAllPlayerInfo)
+                    end
+                end
+                ViewTAS(TAS)
+            end
         end
     end
 end)
