@@ -3,15 +3,17 @@ local FloodGUIRepo = "https://raw.githubusercontent.com/ImMejor35/Flood-GUI/"..B
 
 if not isfolder("Flood-GUI") then
     makefolder("Flood-GUI")
-elseif not isfolder("Flood-GUI/TAS") then
+end
+if not isfolder("Flood-GUI/TAS") then
     makefolder("Flood-GUI/TAS")
-elseif not isfolder("Flood-GUI/TAS FILES") then
+end
+if not isfolder("Flood-GUI/TAS FILES") then
     makefolder("Flood-GUI/TAS FILES")
 end
 function import(webpath)
     local filepath = "Flood-GUI"..webpath
     local fullurl = (FloodGUIRepo..webpath):gsub(" ", "%%20")
-	writefile(filepath, game:HttpGet(fullurl))
+    writefile(filepath, game:HttpGet(fullurl))
     return true
 end
 
