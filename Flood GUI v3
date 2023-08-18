@@ -310,9 +310,11 @@ Legit = false
 auto:NewToggle("Auto-Play [Working]", "Requires TAS files", function(t)
 	getgenv().play = t
 end)
+--[[
 auto:NewToggle("Legit Mode", "Makes serverside look more legit but not on your screen.", function(t)
 	Legit = t
 end)
+]]
 getgenv().play = false
 task.spawn(function()
 		while task.wait(1) do
