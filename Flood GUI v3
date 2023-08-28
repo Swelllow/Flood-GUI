@@ -30,7 +30,7 @@ end
 wait = task.wait
 
 local clmain = getsenv( LocalPlayer.PlayerScripts["CL_MAIN_GameScript"] )
-local LatestBuild = 57.11
+local LatestBuild = 58
 local CurrentBuild = tonumber(game:GetService("ReplicatedStorage").Config:GetAttribute("BuildVersion"))
 if LatestBuild < CurrentBuild then
 	clmain.newAlert("Flood GUI v3 is outdated please report all issues on the discord server!", Color3.new(1, 0.1, 0.1))
