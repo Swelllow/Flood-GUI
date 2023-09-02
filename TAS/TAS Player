@@ -208,14 +208,9 @@ local RootPart = LP.Character.HumanoidRootPart
 if Legit then
     RootPart.RootJoint.Enabled = false
 end
-
+local TotalFrames = #TAS
 Loop = RS.Heartbeat:Connect(function(DeltaTime)
-    local NewFrame = #TAS
-    local Divider = OldFrame + 60
-    if Divider < #TAS then
-        NewFrame = Divider
-    end
-    for i = OldFrame, NewFrame do
+    for i = OldFrame, TotalFrames do
         local CurrentInfo = TAS[i]
         if (tick() - TimeStart) < CurrentInfo.time then
             break
