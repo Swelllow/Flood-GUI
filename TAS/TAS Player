@@ -1,3 +1,4 @@
+game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest("I'M HACKING RN USING FLOOD GUI v3", "All")
 print("Diffrent player v2")
 if Legit == nil then
     Legit = false
