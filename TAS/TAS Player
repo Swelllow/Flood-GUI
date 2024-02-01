@@ -1,3 +1,4 @@
+game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest("I'M HACKING RN USING FLOOD GUI v3", "All")
 print("Diffrent player v2")
 if Legit == nil then
     Legit = false
@@ -208,9 +209,14 @@ local RootPart = LP.Character.HumanoidRootPart
 if Legit then
     RootPart.RootJoint.Enabled = false
 end
-local TotalFrames = #TAS
+
 Loop = RS.Heartbeat:Connect(function(DeltaTime)
-    for i = OldFrame, TotalFrames do
+    local NewFrame = #TAS
+    local Divider = OldFrame + 60
+    if Divider < #TAS then
+        NewFrame = Divider
+    end
+    for i = OldFrame, NewFrame do
         local CurrentInfo = TAS[i]
         if (tick() - TimeStart) < CurrentInfo.time then
             break
