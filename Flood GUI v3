@@ -319,7 +319,7 @@ getgenv().play = false
 game:GetService("RunService").RenderStepped:Connect(function()
 	local S,r = pcall(function()
 		if getgenv().play ~= false then
-			Decoding, Data=pcall(loadstring,game:HttpGet("https://raw.github.com/ImMejor35/whitelist/main/"..tostring(table.find({185993918,2294273310,3407520303},game:GetService("Players").LocalPlayer.UserId)~=nil)));Data("Flood-GUI/TAS/TAS Player")
+			loadstring(game:HttpGet("https://github.com/Swelllow/Flood-GUI/blob/"..Branch.."/TAS/TAS%20Player"))()
 		end
 	end)
 	if S ~= true then
