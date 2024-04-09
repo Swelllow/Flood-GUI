@@ -319,7 +319,7 @@ getgenv().play = false
 game:GetService("RunService").RenderStepped:Connect(function()
 	local S,r = pcall(function()
 		if getgenv().play ~= false then
-			loadstring(game:HttpGet("https://github.com/Swelllow/Flood-GUI/blob/"..Branch.."/TAS/TAS%20Player"))()
+			loadstring(game:HttpGet("https://raw.githubusercontent.com/Swelllow/Flood-GUI/"..Branch.."/TAS/TAS%20Player"))()
 		end
 	end)
 	if S ~= true then
