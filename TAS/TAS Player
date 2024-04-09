@@ -1,3 +1,4 @@
+while wait() do
 print("Diffrent player v2")
 if Legit == nil then
     Legit = false
@@ -56,10 +57,17 @@ if not getrenv().alreadystarted then
 else
     CLMAIN.newAlert("TAS Player ready for next map.", Color3.new(0,1,.5))
 end
+
 local Animate = getsenv(LP.Character.Animate)
 local Map = Multi:WaitForChild('NewMap', 9e6)
-local mapName = Map:WaitForChild('Settings'):GetAttribute("MapName")
-local path = game:HttpGet("https://raw.githubusercontent.com/Swelllow/Testing/main/Flood-GUI-main/TAS%20FILES/"..map..".json") -- may be more lag spikey but should work with wave readfile("Flood-GUI/TAS FILES/" .. mapName .. ".json")
+local mapName = game:GetService("HttpService"):UrlEncode(Map:WaitForChild('Settings'):GetAttribute("MapName"))
+print(mapName)
+local path = game:HttpGet("https://raw.githubusercontent.com/Swelllow/Testing/main/Flood-GUI-main/TAS%20FILES/"..mapName..".json") -- may be more lag spikey but should work with wave readfile("Flood-GUI/TAS FILES/" .. mapName .. ".json")
+if #path > 50 then
+    print("TAS FILE IS REAL")
+else
+    print("TAS FILE BROKEN")
+end
 local TAS = game:GetService("HttpService"):JSONDecode(path)
 print(#path)
 if not TAS then
@@ -251,4 +259,5 @@ Loop = RS.Heartbeat:Connect(function(DeltaTime)
         end
     end
 end)
+end
 end
