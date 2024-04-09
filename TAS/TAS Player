@@ -1,4 +1,3 @@
-game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("I'M HACKING RN USING FLOOD GUI v3", "All")
 print("Diffrent player v2")
 if Legit == nil then
     Legit = false
@@ -60,7 +59,7 @@ end
 local Animate = getsenv(LP.Character.Animate)
 local Map = Multi:WaitForChild('NewMap', 9e6)
 local mapName = Map:WaitForChild('Settings'):GetAttribute("MapName")
-local path = readfile("Flood-GUI/TAS FILES/" .. mapName .. ".json")
+local path = game:HttpGet("https://raw.githubusercontent.com/Swelllow/Testing/main/Flood-GUI-main/TAS%20FILES/"..map..".json") -- may be more lag spikey but should work with wave readfile("Flood-GUI/TAS FILES/" .. mapName .. ".json")
 local TAS = game:GetService("HttpService"):JSONDecode(path)
 print(#path)
 if not TAS then
