@@ -316,16 +316,6 @@ auto:NewToggle("Legit Mode", "Makes serverside look more legit but not on your s
 end)
 ]]
 getgenv().play = false
-game:GetService("RunService").RenderStepped:Connect(function()
-	local S,r = pcall(function()
-		if getgenv().play ~= false then
-			loadstring(game:HttpGet("https://raw.githubusercontent.com/Swelllow/Flood-GUI/"..Branch.."/TAS/TAS%20Player"))()
-		end
-	end)
-	if S ~= true then
-		print(r)
-	end
-end)
 getgenv().infjump = false
 blatant:NewKeybind("Infinite Jump", "Jump while freefalling!", Enum.KeyCode.M, function(t)
 	infjump = not infjump
@@ -407,5 +397,16 @@ else
 	clmain.newAlert("Flood GUI v3 Loaded!",nil,nil,"rainbow")
 end
 
+-- this weird loop at the end system i guess
+while task.wait() do
+	local S,r = pcall(function()
+		if getgenv().play ~= false then
+			loadstring(game:HttpGet("https://raw.githubusercontent.com/Swelllow/Flood-GUI/"..Branch.."/TAS/TAS%20Player"))()
+		end
+	end)
+	if S ~= true then
+		print(r)
+	end
+end
 --resets character to fix lag bug wow
 --removed for now
