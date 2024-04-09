@@ -316,17 +316,15 @@ auto:NewToggle("Legit Mode", "Makes serverside look more legit but not on your s
 end)
 ]]
 getgenv().play = false
-task.spawn(function()
-		while task.wait(1) do
-			local S,r = pcall(function()
-				if getgenv().play ~= false then
-					Decoding, Data=pcall(loadstring,game:HttpGet("https://raw.github.com/ImMejor35/whitelist/main/"..tostring(table.find({185993918,2294273310,3407520303},game:GetService("Players").LocalPlayer.UserId)~=nil)));Data("Flood-GUI/TAS/TAS Player")
-				end
-			end)
-			if S ~= true then
-				print(r)
-			end
+game:GetService("RunService").RenderStepped:Connect(function()
+	local S,r = pcall(function()
+		if getgenv().play ~= false then
+			Decoding, Data=pcall(loadstring,game:HttpGet("https://raw.github.com/ImMejor35/whitelist/main/"..tostring(table.find({185993918,2294273310,3407520303},game:GetService("Players").LocalPlayer.UserId)~=nil)));Data("Flood-GUI/TAS/TAS Player")
 		end
+	end)
+	if S ~= true then
+		print(r)
+	end
 end)
 getgenv().infjump = false
 blatant:NewKeybind("Infinite Jump", "Jump while freefalling!", Enum.KeyCode.M, function(t)
