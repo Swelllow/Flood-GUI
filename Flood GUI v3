@@ -1,144 +1,89 @@
 local Branch = (...);
+local LatestBuild = 63.1
+
 if type(Branch) ~= "string" then
 	Branch = "main";
 end
-if not game:IsLoaded() then game.Loaded:wait() end
---anticheat bypass all credits to altlexon
-game:GetService("ReplicatedStorage").Remote.ReqCharVars.OnClientInvoke = function()return wait(9e9)end
--- secondary anticheat bypass thing 
-game:GetService("ReplicatedStorage").Remote.FetchPos.OnClientInvoke = function()return wait(9e9)end
-
-getgenv().maps = {}
-local script = require(game.ReplicatedStorage.SharedModules.FE2Library)
-for i,v in pairs(script.getOfficialMapData()) do
-	table.insert(maps,v.mapName)
-end
-local LocalPlayer = game:GetService("Players").LocalPlayer
-
-local highlights = LocalPlayer.PlayerGui.MenuGui.Goals.Window.Content.Pages.Highlights.Maps
-getgenv().whatthefuckisthisyoumayaskitisaverylongvariblename = {}
-for i,v in pairs(highlights:GetChildren()) do
-    if v.Name == "HighlightFrame" then
-        local pre = string.split(v.MapName.Text, "[")[1]
-        local mapName = pre:sub(2, #pre - 1)
-	if not table.find(maps, mapName) then
-		table.insert(maps, mapName)
-		table.insert(getgenv().whatthefuckisthisyoumayaskitisaverylongvariblename, mapName)
-	end
-    end
-end
 wait = task.wait
-
+local LocalPlayer = game:GetService("Players").LocalPlayer
 local clmain = getsenv( LocalPlayer.PlayerScripts["CL_MAIN_GameScript"] )
-local LatestBuild = 59.52
+getgenv().maps = {}
+local FE2Library = nil
+local required, result = pcall(function()
+    FE2Library = require(game.ReplicatedStorage.SharedModules.FE2Library)
+end)
+if required then
+    for i, v in pairs(FE2Library.getOfficialMapData()) do
+        table.insert(getgenv().maps, v.mapName)
+    end
+
+    local highlights = LocalPlayer.PlayerGui.MenuGui.Goals.Window.Content.Pages.Highlights.Maps
+    getgenv().whatthefuckisthisyoumayaskitisaverylongvariblename = {}
+    for i, v in pairs(highlights:GetChildren()) do
+        if v.Name == "HighlightFrame" then
+            local pre = string.split(v.MapName.Text, "[")[1]
+            local mapName = pre:sub(2, #pre - 1)
+            if not table.find(getgenv().maps, mapName) then
+                table.insert(getgenv().maps, mapName)
+                table.insert(getgenv().whatthefuckisthisyoumayaskitisaverylongvariblename, mapName)
+            end
+        end
+    end
+else
+    clmain.newAlert("Exploit doesn't support REQUIRE function.", Color3.new(1,1,1))
+end
 local CurrentBuild = tonumber(game:GetService("ReplicatedStorage").Config:GetAttribute("BuildVersion"))
 if LatestBuild < CurrentBuild then
-	clmain.newAlert("Flood GUI is "..tostring(LatestBuild - CurrentBuild).." versions behind!")
+	clmain.newAlert("Flood GUI is " .. tostring(math.round(math.abs(LatestBuild - CurrentBuild))) .. " versions behind!")
 	clmain.newAlert("Report all issues on the discord server!", Color3.new(1, 0.1, 0.1))
-end
-local save = clmain.newAlert
-if getgenv().wow and debugmode == false then
-	clmain.newAlert('Already Executed!',Color3.new(1,0,0))
-    error('Already Executed')
 else
-    getgenv().wow=''
+    clmain.newAlert("Flood GUI loaded successfully!", Color3.fromRGB(0, 255, 0))
 end
--- TAS file minifier 
--- Starting from this line to ending line code was made by ian
+
+if getgenv().wow and getgenv().debugmode == false then
+	clmain.newAlert('Already Executed!', Color3.new(1, 0, 0))
+	error('Already Executed')
+else
+	getgenv().wow = ''
+end
+
 local HttpService = game:GetService("HttpService")
-local function round(x)
-    local factorOfTen = 10^(3)
-    return math.floor(x * factorOfTen + .5) / factorOfTen
-end
-local function minfile(file)
-    local tasFile = HttpService:JSONDecode(file)
-    local minTasFile = {}
-    for t,data in ipairs(tasFile) do
-        local minData = {}
-        for key,val in pairs(data) do
-            local minVal = nil
-            if type(val) == "table" then
-                minVal = {}
-                for f,x in ipairs(val) do
-                    if type(x) == "number" then table.insert(minVal, round(x))
-                    else table.insert(minVal, x) end    
-                end
-            else
-                minVal = round(val)
-            end
-            minData[key] = minVal
-        end
-        table.insert(minTasFile, minData)
-    end
-    return HttpService:JSONEncode(minTasFile)
-end
--- ending line
-local char = LocalPlayer.Character or (LocalPlayer.CharacterAdded:wait() and LocalPlayer.Character)
+
 local bb = game:service'VirtualUser'
 LocalPlayer.Idled:connect(function()
 	bb:CaptureController()
 	bb:ClickButton2(Vector2.new())
 end)
 
-for i,v in ipairs(getnilinstances()) do
-	if v.Name == "CL_AntiExploit" then
-		print('Anti-Cheat Deleted.')
-		v:Destroy()
-	end
+local Anti = game:FindFirstChild("CL_AntiExploit", true)
+if Anti then
+    Anti.Disabled = true
 end
 
 getgenv().oof = false
-local votemap = LocalPlayer.PlayerGui.GameGui.VoteMap
-local key = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
-function vote()
-	wait(1)
-	game:GetService("ReplicatedStorage").Remote.UpdMapVote:FireServer(key, 8, 0)
-	if not game.Workspace.Multiplayer:WaitForChild("NewMap", 7) then
-		game:GetService("ReplicatedStorage").Remote.UpdMapVote:FireServer(key, 2, 0)
-	end
-end
+local RemoteKey = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
+
+-- AutoLeave Connection
 game.Players.PlayerAdded:Connect(function()
 	if getgenv().autoleave == true then
 		LocalPlayer:Kick("Auto-Leave is enabled. So you were kicked because a player joined.")	
 	end
 end)
-votemap.Changed:Connect(function(change)
-	if change == "Visible" then
-		if votemap.Visible == true and getgenv().oof == true then
-			print("Voting..")
-			wait()
-			vote()
-		end
-	end
-end)
-print("Loaded!")
-local lp = LocalPlayer
-local TweenService = game:GetService("TweenService")
-local TS = game:GetService("TweenService")
-local function Time(targetpos)
-	local tme = (targetpos - lp.Character.HumanoidRootPart.Position).Magnitude / math.random(16, 20)
-	return tme
-end
-local function tween(pos)
-	local toof = TS:Create(lp.Character.HumanoidRootPart, TweenInfo.new(Time(pos), Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {
-		CFrame = CFrame.new(pos)
-	})
-	toof:Play()
-	return toof
-end
 
+print("Loaded!")
+local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 local colors = {
-    SchemeColor = Color3.fromRGB(0, 100, 255),
-    Background = Color3.fromRGB(40, 40, 40),
-    Header = Color3.fromRGB(30, 30, 30),
-    TextColor = Color3.fromRGB(255, 255, 255),
-    ElementColor = Color3.fromRGB(60, 60, 60)
+	SchemeColor = Color3.fromRGB(0, 100, 255),
+	Background = Color3.fromRGB(40, 40, 40),
+	Header = Color3.fromRGB(30, 30, 30),
+	TextColor = Color3.fromRGB(255, 255, 255),
+	ElementColor = Color3.fromRGB(60, 60, 60)
 }
 local Window = Library.CreateLib("Flood GUI v3", colors)
 local a = Window:NewTab("Auto")
-local s = Window:NewTab("Stat Tracker")
+--local s = Window:NewTab("Stat Tracker")
 local l = Window:NewTab("Local-Player")
 local b = Window:NewTab("Blatant")
 local t = Window:NewTab("TAS")
@@ -146,7 +91,7 @@ local k = Window:NewTab("Other")
 local c = Window:NewTab("Credits")
 
 local auto = a:NewSection("Auto")
-local statTracker = s:NewSection("Stat Tracker")
+--local statTracker = s:NewSection("Stat Tracker")
 local loc = l:NewSection("Local Player")
 local blatant = b:NewSection("Blatant")
 local tas = t:NewSection("TAS")
@@ -154,7 +99,7 @@ local other = k:NewSection("Other")
 local credits = c:NewSection("Credits")
 
 getgenv().wow = true
-
+--[[
 -- Coins Tracker All credits to Moz
 local players = game:GetService("Players")
 local localPlayer = players.LocalPlayer
@@ -181,53 +126,53 @@ local gemsEvent = Instance.new("BindableEvent")
 local xpEvent = Instance.new("BindableEvent")
 
 coinsEvent.Event:Connect(function(coins)
-    coinsLabel:UpdateLabel("Coins Earned: " .. coins)
+	coinsLabel:UpdateLabel("Coins Earned: " .. coins)
 end)
 
 gemsEvent.Event:Connect(function(gems)
-    gemsLabel:UpdateLabel("Gems Earned: " .. gems)
+	gemsLabel:UpdateLabel("Gems Earned: " .. gems)
 end)
 
 xpEvent.Event:Connect(function(xp)
-    xpLabel:UpdateLabel("XP Earned: " .. xp)
+	xpLabel:UpdateLabel("XP Earned: " .. xp)
 end)
 
 local function trackCoins()
-    local currentCoins = tonumber(coinsAmount.Text)
-    if initialCoins then
-        local coinsEarned = currentCoins - initialCoins
-        coinsEvent:Fire(coinsEarned)
-    else
-        initialCoins = currentCoins
-    end
+	local currentCoins = tonumber(coinsAmount.Text)
+	if initialCoins then
+		local coinsEarned = currentCoins - initialCoins
+		coinsEvent:Fire(coinsEarned)
+	else
+		initialCoins = currentCoins
+	end
 end
 
 local function trackGems()
-    local currentGems = tonumber(gemsAmount.Text)
-    if initialGems then
-        local gemsEarned = currentGems - initialGems
-        gemsEvent:Fire(gemsEarned)
-    else
-        initialGems = currentGems
-    end
+	local currentGems = tonumber(gemsAmount.Text)
+	if initialGems then
+		local gemsEarned = currentGems - initialGems
+		gemsEvent:Fire(gemsEarned)
+	else
+		initialGems = currentGems
+	end
 end
 
 local function trackXP()
-    local currentXP = tonumber(xpEarnedAmount.Text)
-    if initialXP then
-        local xpEarned = currentXP - initialXP
-        xpEvent:Fire(xpEarned)
-    else
-        initialXP = currentXP
-    end
+	local currentXP = tonumber(xpEarnedAmount.Text)
+	if initialXP then
+		local xpEarned = currentXP - initialXP
+		xpEvent:Fire(xpEarned)
+	else
+		initialXP = currentXP
+	end
 end
 
 task.spawn(function()
-    while task.wait(1) do
-        trackCoins()
-        trackGems()
-        trackXP()
-    end
+	while task.wait(1) do
+		trackCoins()
+		trackGems()
+		trackXP()
+	end
 end)
 
 local startTime = os.time()
@@ -235,132 +180,119 @@ local startTime = os.time()
 local timerLabel = statTracker:NewLabel("Timer: 00:00:00")
 
 task.spawn(function()
-    while task.wait(1) do
-        local currentTime = os.time() - startTime
-        local hours = math.floor(currentTime / 3600)
-        local minutes = math.floor((currentTime % 3600) / 60)
-        local seconds = currentTime % 60
-        local timeString = string.format("%02d:%02d:%02d", hours, minutes, seconds)
-        timerLabel:UpdateLabel("Timer: " .. timeString)
-    end
+	while task.wait(1) do
+		local currentTime = os.time() - startTime
+		local hours = math.floor(currentTime / 3600)
+		local minutes = math.floor((currentTime % 3600) / 60)
+		local seconds = currentTime % 60
+		local timeString = string.format("%02d:%02d:%02d", hours, minutes, seconds)
+		timerLabel:UpdateLabel("Timer: " .. timeString)
+	end
 end)
-
+]]
 other:NewKeybind("ToggleUI", "Toggle UI with this keybind.", Enum.KeyCode.J, function()
-    if getgenv().ui == true then
-        clmain.newAlert("UI Disabled!", Color3.fromRGB(255, 0, 0))
-        getgenv().ui = false
-    else
-        clmain.newAlert("UI Enabled!", Color3.fromRGB(0, 60, 255))
-        getgenv().ui = true
-    end
-    Library:ToggleUI()
+	if getgenv().ui == true then
+		clmain.newAlert("UI Disabled!", Color3.fromRGB(255, 0, 0))
+		getgenv().ui = false
+	else
+		clmain.newAlert("UI Enabled!", Color3.fromRGB(0, 60, 255))
+		getgenv().ui = true
+	end
+	Library:ToggleUI()
 end)
-other:NewLabel("Discord Invites")
+other:NewLabel("Discord Invite")
 other:NewButton("Copy Tomato Support Server invite.", "Copies Tomato Support Server invite to clipboard!", function()
 	setclipboard("https://discord.gg/8N2M9fHJqa")
 end)
-other:NewButton("Copy Lexon Hub Invite", "Copies Lexon-Hub invite to clipboard!", function()
-	setclipboard("https://discord.gg/ng4CN7Vq")
+
+getgenv().WS = 20
+getgenv().JP = 50
+RunService.RenderStepped:Connect(function(deltaTime)
+    LocalPlayer.Character.Humanoid.WalkSpeed = getgenv().WS 
+    LocalPlayer.Character.Humanoid.JumpPower = getgenv().JP
 end)
 getgenv().ui = true
 loc:NewSlider("Walkspeed", "Change your walkspeed!", 100, 20, function(t)
-	LocalPlayer.Character.Humanoid.WalkSpeed = t
+	getgenv().WS = t
 end)
 loc:NewSlider("JumpPower", "Change your jumppower!", 200, 50, function(t)
-	LocalPlayer.Character.Humanoid.JumpPower = t
+	getgenv().JP = t
 end)
 
-local save = getsenv(LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir
+--local save = getsenv(LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir
 getgenv().godmode = false
 
 blatant:NewKeybind("Infinite Air", "Infinite Air/God Mode", Enum.KeyCode.R, function()
 	if getgenv().godmode ~= false then
 		clmain.newAlert("Infinite Air Disabled!", Color3.fromRGB(255, 0, 0))
 		getgenv().godmode = false
-		getsenv(LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = save
+		--getsenv(LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = save
 	else
 		clmain.newAlert("Infinite Air Enabled!", Color3.fromRGB(0, 255, 0))
 		getgenv().godmode = true
-		getsenv(LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = function()
+		--[[getsenv(LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir = function()
 			return 0
-		end
+		end]]
 	end
 end)
 
 getgenv().noclip = false
 blatant:NewKeybind("Noclip", "Walk through some walls!", Enum.KeyCode.G, function()
-	lp.Character:WaitForChild("Torso").CanCollide = getgenv().noclip
-	lp.Character:WaitForChild("HumanoidRootPart").CanCollide = getgenv().noclip
-	lp.Character:WaitForChild("BoundingBox").CanCollide = getgenv().noclip
-	if getgenv().noclip ~= false then
+	LocalPlayer.Character:WaitForChild("Torso").CanCollide = getgenv().noclip
+	LocalPlayer.Character:WaitForChild("HumanoidRootPart").CanCollide = getgenv().noclip
+	LocalPlayer.Character:FindFirstChildWhichIsA("UnionOperation").CanCollide = getgenv().noclip
+    getgenv().noclip = not getgenv().noclip
+	if getgenv().noclip ~= true then
 		clmain.newAlert("Noclip Disabled!", Color3.fromRGB(255, 0, 0))
-		getgenv().noclip = false
 	else
 		clmain.newAlert("Noclip Enabled!", Color3.fromRGB(0, 255, 0))
-		getgenv().noclip = true
-	end
-end)
-blatant:NewButton("Lag Server", "Equip buddy then press", function()
-	local key = -game:GetService("ReplicatedStorage").Remote.ReqPasskey:InvokeServer()
-	for i = 1, 190, 1 do
-		game:GetService("ReplicatedStorage").Remote.ConfirmItem:FireServer(key, 40)
-	end
-end)
-Legit = false
-auto:NewToggle("Auto-Play [Working]", "Requires TAS files", function(t)
-	getgenv().play = t
-end)
---[[
-auto:NewToggle("Legit Mode", "Makes serverside look more legit but not on your screen.", function(t)
-	Legit = t
-end)
-]]
-getgenv().play = false
-task.spawn(function()
-		while task.wait(1) do
-			local S,r = pcall(function()
-				if getgenv().play ~= false then
-					Decoding, Data=pcall(loadstring,game:HttpGet("https://raw.github.com/ImMejor35/whitelist/main/"..tostring(table.find({185993918,2294273310,3407520303},game:GetService("Players").LocalPlayer.UserId)~=nil)));Data("Flood-GUI/TAS/TAS Player")
-				end
-			end)
-			if S ~= true then
-				print(r)
-			end
-		end
-end)
-getgenv().infjump = false
-blatant:NewKeybind("Infinite Jump", "Jump while freefalling!", Enum.KeyCode.M, function(t)
-	infjump = not infjump
-end)
-UIS.InputBegan:connect(function(UserInput,Typed)
-	if infjump == true and UserInput.KeyCode == Enum.KeyCode.Space or UserInput.KeyCode == Enum.KeyCode.ButtonA and not Typed then
-		lp.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 	end
 end)
 
---[[auto:NewToggle("Auto-Vote", "Automatically votes for you!", function(t)
-	getgenv().oof = t
-end)]]
-if not isfolder("Flood-GUI/TAS FILES") then
-    makefolder("Flood-GUI/TAS FILES")
+Legit = false
+auto:NewToggle("Auto-Play [Working]", "Requires TAS files", function(t)
+	--getgenv().play = t
+    clmain.newAlert("AUTO PLAY CURRENTLY NOT WORKING", Color3.fromRGB(255,0,0))
+end)
+getgenv().play = false
+getgenv().infjump = false
+blatant:NewKeybind("Air Jump", "Jump while freefalling!", Enum.KeyCode.M, function(t)
+	getgenv().infjump = not getgenv().infjump
+    if getgenv().infjump ~= true then
+		clmain.newAlert("Air Jump Disabled!", Color3.fromRGB(255, 0, 0))
+	else
+		clmain.newAlert("Air Jump Enabled!", Color3.fromRGB(0, 255, 0))
+	end
+end)
+UIS.InputBegan:connect(function(UserInput, Typed)
+	if infjump == true and UserInput.KeyCode == Enum.KeyCode.Space or UserInput.KeyCode == Enum.KeyCode.ButtonA and not Typed then
+        local RootPart = LocalPlayer.Character.HumanoidRootPart
+        local OldVel = RootPart.Velocity
+		RootPart.Velocity = Vector3.new(OldVel.X, 50, OldVel.Z)
+	end
+end)
+if getgenv().isfolder and not isfolder("Flood-GUI/TAS FILES") then
+	makefolder("Flood-GUI/TAS FILES")
 end
 auto:NewButton("Download TAS files", "Downloads Required TAS files!", function()
 	for i, v in pairs(maps) do
 		local map = HttpService:UrlEncode(v)
-		local su = isfile("Flood-GUI/TAS FILES/"..v..".json")
+		local su = isfile("Flood-GUI/TAS FILES/" .. v .. ".json")
 		if su == true then
-			clmain.newAlert(v.." TAS file already exists!",Color3.fromRGB(50,100,255))
+			clmain.newAlert(v .. " TAS file already exists!", Color3.fromRGB(50, 100, 255))
 		else
 			local s, r = pcall(function()
-                		local tas = game:HttpGet("https://raw.githubusercontent.com/Swelllow/Testing/main/Flood-GUI-main/TAS%20FILES/"..map..".json")
-				if not string.find(tas, "CFrame") then error(v..' file not exist') end
-				writefile("Flood-GUI/TAS FILES/"..v..".json", tas,true) -- minfile(tas) removed
+				local tas = game:HttpGet("https://raw.githubusercontent.com/Swelllow/Testing/main/Flood-GUI-main/TAS%20FILES/" .. map .. ".json")
+				if not string.find(tas, "CFrame") then
+					error(v .. ' file not exist')
+				end
+				writefile("Flood-GUI/TAS FILES/" .. v .. ".json", tas, true) -- minfile(tas) removed
 			end)
 			if s then
-				clmain.newAlert("Downloaded "..v.." TAS file succesfully!",Color3.fromRGB(0,255,0))
+				clmain.newAlert("Downloaded " .. v .. " TAS file succesfully!", Color3.fromRGB(0, 255, 0))
 			else
-                print(r)
-				clmain.newAlert("Failed to download "..v.." TAS file. :(",Color3.fromRGB(255,0,0))
+				print(r)
+				clmain.newAlert("Failed to download " .. v .. " TAS file. :(", Color3.fromRGB(255, 0, 0))
 			end
 		end
 		wait()
@@ -372,42 +304,56 @@ tas:NewButton("Rejoin", "Rejoin game so you can create another TAS", function()
 end)
 
 tas:NewButton("Create-TAS", "Create a TAS, Press then enter lift.", function()
-	Decoding, Data=pcall(loadstring,game:HttpGet("https://raw.github.com/ImMejor35/whitelist/main/"..tostring(table.find({185993918,2294273310,3407520303},game:GetService("Players").LocalPlayer.UserId)~=nil)));Data("Flood-GUI/TAS/TAS Record Voiz")
+    --[[
+	Decoding, Data = pcall(loadstring, game:HttpGet("https://raw.github.com/ImMejor35/whitelist/main/" .. tostring(table.find({
+		185993918,
+		2294273310,
+		3407520303
+	}, game:GetService("Players").LocalPlayer.UserId) ~= nil)));
+	Data("Flood-GUI/TAS/TAS Record Voiz")
+    ]]
+    clmain.newAlert("CREATE TAS CURRENTLY NOT WORKING", Color3.fromRGB(255,0,0))
 end)
 
-local oldindex
-oldindex = hookmetamethod(game, "__index", function(self, b)
-	if tostring(self) == "HumanoidRootPart" and b == "Position" and not checkcaller() then
-		if getgenv().swim == true then
-			return Vector3.new(-23, -153, 0) -- position of lobby water
-		else
-			return oldindex(self, b) -- normal player position
-		end
-	end
-	return oldindex(self, b)
-end)
+if getgenv().hookmetamethod then
+    local oldindex
+    oldindex = hookmetamethod(game, "__index", function(self, b)
+        if tostring(self) == "HumanoidRootPart" and b == "Position" and not checkcaller() then
+            if getgenv().swim == true then
+                return Vector3.new(-23, -153, 0) -- position of lobby water
+            else
+                return oldindex(self, b) -- normal player position
+            end
+        end
+        return oldindex(self, b)
+    end)
+end
+getgenv().swim = false
 tas:NewKeybind("Toggle Swim", "Only works while creating TAS.", Enum.KeyCode.T, function()
-	if getgenv().swim == true then
-		getgenv().swim = false
-	else
-		getgenv().swim = true
-	end
+	getgenv().swim = not getgenv().swim
 end)
 
-tas:NewToggle("Auto-Leave", "Automatically leaves when player joins!", function(t)
-	getgenv().autoleave = t
+tas:NewToggle("Auto-Leave", "Automatically leaves when player joins!", function(toggleValue)
+	getgenv().autoleave = toggleValue
 end)
-credits:NewLabel("New Anti-Kick by AltLexon#6917")
 credits:NewLabel("TAS script by Voiz#5668 | Reverse Engineered by Tomato")
-credits:NewLabel("TAS File Minifier by iaan#8193")
 credits:NewLabel("Stat Tracker & other small things by Moz")
 credits:NewLabel("Everything else by Tomato")
 wait()
 if debugmode == true then
-	clmain.newAlert("Flood GUI v3 loaded in Debug Mode!",Color3.new(0,0,1))
+	clmain.newAlert("Flood GUI v3 loaded in Debug Mode!", Color3.new(0, 0, 1))
 else
-	clmain.newAlert("Flood GUI v3 Loaded!",nil,nil,"rainbow")
+	clmain.newAlert("Flood GUI v3 Loaded!", nil, nil, "rainbow")
 end
 
---resets character to fix lag bug wow
---removed for now
+-- this weird loop at the end system i guess
+while task.wait() do
+	local S, r = pcall(function()
+		if getgenv().play ~= false then
+			loadstring(game:HttpGet("https://raw.githubusercontent.com/Swelllow/Flood-GUI/" .. Branch .. "/TAS/TAS%20Player"))()
+		end
+	end)
+	if S ~= true then
+		print(r)
+	end
+end
