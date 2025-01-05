@@ -221,7 +221,11 @@ end)
 
 --local save = getsenv(LocalPlayer.PlayerScripts["CL_MAIN_GameScript"]).takeAir
 getgenv().godmode = false
-
+RunService.Heartbeat:Connect(function()
+    if getgenv().godmode == true then
+        LocalPlayer.Character.Humanoid.Health = 100
+    end
+end)
 blatant:NewKeybind("Infinite Air", "Infinite Air/God Mode", Enum.KeyCode.R, function()
 	if getgenv().godmode ~= false then
 		clmain.newAlert("Infinite Air Disabled!", Color3.fromRGB(255, 0, 0))
